@@ -9,3 +9,5 @@ RUN apt-get update && \
 
 RUN pip install --upgrade pip \
 	&& pip install "mysqlclient==1.3.8"
+
+COPY ./app /app
