@@ -1,6 +1,7 @@
 import boto3
 import paramiko
 import os
+import json
 from base64 import b64decode
 
 ENCRYPTED_HOST = os.environ['ec2_host']
@@ -24,10 +25,12 @@ def lambda_handler(event, context):
     # 1. Update application container image
     # 2. Stop and remove existing container
     # 3. Provision a new container with updated image.
-    commands = ['sudo docker pull zakinator123/gear-app',
+    commands = [
+                'sudo docker pull zakinator123/gear-app',
                 "sudo docker stop odc",
                 "sudo docker rm odc",
-                "sudo docker run -d --name odc -p 80:80 --env-file ./env_vars zakinator123/gear-app"]
+                "sudo docker run -d --name odc -p 80:80 --env-file ./env_vars zakinator123/gear-app"
+                ]
 
     # Execute the commands on the instance
     for command in commands:
@@ -35,5 +38,11 @@ def lambda_handler(event, context):
         print(stdout.read())
         print(stderr.read())
 
-    message = { 'message': "Script execution completed. See Cloudwatch logs for complete output"}
+    message = {
+        "statusCode": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps({"message": "Success!"}),
+        "isBase64Encoded": False
+    }
+
     return message
