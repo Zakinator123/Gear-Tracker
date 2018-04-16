@@ -3,13 +3,11 @@ import MySQLdb
 from flask import jsonify
 import os
 
-
 app = Flask(__name__)
 
 @app.route("/")
 def home():
     return "Hello World"
-
 
 @app.route("/gear/<number>")
 def get_gear(number):
@@ -33,4 +31,3 @@ def get_user(id):
 if __name__ == "__main__":
     # Only for debugging while developing
     app.run(host='0.0.0.0', debug=True, port=80)
-
