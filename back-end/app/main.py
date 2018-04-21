@@ -7,9 +7,8 @@ from flask import render_template
 app = Flask(__name__)
 
 @app.route("/")
-@app.route("/<name>")
-def home(name=None):
-    return render_template('hello.html', name=name)
+def home():
+    return ("The Gear-App API is alive and well!")
 
 @app.route("/gear/<number>")
 def get_gear(number):
