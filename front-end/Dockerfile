@@ -11,6 +11,7 @@ RUN npm install -g serve
 WORKDIR /app
 ADD . /app
 
+RUN  chmod +x /app/run.sh
 RUN /app/run.sh build
 
 EXPOSE 80

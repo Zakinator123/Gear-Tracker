@@ -26,10 +26,17 @@ def lambda_handler(event, context):
     # 2. Stop and remove existing container
     # 3. Provision a new container with updated image.
     commands = [
+                # Flask back-end deployment
                 'sudo docker pull zakinator123/gear-app',
                 "sudo docker stop odc",
                 "sudo docker rm odc",
-                "sudo docker run -d --name odc -p 5000:80 --env-file ./env_vars zakinator123/gear-app"
+                "sudo docker run -d --name odc -p 5000:80 --env-file ./env_vars zakinator123/gear-app",
+
+                # React front-end deployment
+                # 'sudo docker pull zakinator123/gear-app-react',
+                # 'sudo docker stop react-front-end',
+                # 'sudo docker rm react-front-end',
+                # 'sudo docker run -d --name react-front-end -p 80:80 zakinator123/gear-app-react',
                 ]
 
     # Execute the commands on the instance
