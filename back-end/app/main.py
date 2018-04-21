@@ -2,12 +2,14 @@ from flask import Flask
 import MySQLdb
 from flask import jsonify
 import os
+from flask import render_template
 
 app = Flask(__name__)
 
 @app.route("/")
-def home():
-    return "Hello World"
+@app.route("/<name>")
+def home(name=None):
+    return render_template('hello.html', name=name)
 
 @app.route("/gear/<number>")
 def get_gear(number):
