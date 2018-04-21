@@ -29,7 +29,7 @@ def lambda_handler(event, context):
                 'sudo docker pull zakinator123/gear-app',
                 "sudo docker stop odc",
                 "sudo docker rm odc",
-                "sudo docker run -d --name odc -p 80:80 --env-file ./env_vars zakinator123/gear-app"
+                "sudo docker run -d --name odc -p 5000:80 --env-file ./env_vars zakinator123/gear-app"
                 ]
 
     # Execute the commands on the instance
