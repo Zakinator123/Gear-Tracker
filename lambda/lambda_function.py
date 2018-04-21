@@ -33,10 +33,10 @@ def lambda_handler(event, context):
                 "sudo docker run -d --name odc -p 5000:80 --env-file ./env_vars zakinator123/gear-app",
 
                 # React front-end deployment
-                # 'sudo docker pull zakinator123/gear-app-react',
-                # 'sudo docker stop react-front-end',
-                # 'sudo docker rm react-front-end',
-                # 'sudo docker run -d --name react-front-end -p 80:80 zakinator123/gear-app-react',
+                'sudo docker pull zakinator123/gear-app-react',
+                'sudo docker stop react-front-end',
+                'sudo docker rm react-front-end',
+                'sudo docker run -d --name react-front-end -p 80:80 zakinator123/gear-app-react',
                 ]
 
     # Execute the commands on the instance

@@ -11,7 +11,7 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <p className="App-intro">
-          To edit <code>src/App.js</code> and save to reload.
+          These words are coming from <code> src/App.js</code>. Since you can see them, the app is working!
         </p>
       </div>
     );
