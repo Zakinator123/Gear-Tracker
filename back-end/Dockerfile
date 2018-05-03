@@ -11,6 +11,7 @@ RUN apk update && \
             rm -rf /var/cache/apk/*
 
 RUN pip install --upgrade pip \
-	&& pip install "mysqlclient"
+	&& pip install "mysqlclient" \
+	&& pip install -U "flask-cors"
 
 COPY ./app /app
