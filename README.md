@@ -83,10 +83,9 @@ Gearmasters and Officers
 * Should be able to do everything General Members can do (above).
 
 * Should be able to view all gear checked out by a specific member (searchable).
-    -
- Renew all/any gear they have checked out
-    - Email member about their overdue gear (with press of button)
-    - View a member’s gear checkout history and associated check in/out notes
+ - Renew all/any gear they have checked out
+ - Email member about their overdue gear (with press of button)
+ - View a member’s gear checkout history and associated check in/out notes
 * Should be able to view the checkout history and associated check in/out notes for any given piece of gear (searchable)
 
 
