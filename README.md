@@ -1,6 +1,15 @@
-# Gear-App
+<h1 align="center"> Gear-App </h1> <br>
+<p align="center">
+  <a href="http://gear-app.com">
+    <img title="GitPoint" src="./front-end/src/Layouts/ODC-logo.png" height=100 width=140 />
+  </a>
+</p>
 
-This application is meant to serve as a gear inventory system for the the Outdoors Club at UVA, which previously kept track of all of its gear on a Google Spreadsheet - an inefficient and suboptimal system.
+
+<p align="center"><a href="http://gear-app.com"> gear-app.com </a> <br />A gear inventory system for the Outdoors Club at UVA.</p>
+
+*******
+This application is meant to serve as an improved gear inventory system for the Outdoors Club at UVA, which previously kept track of all of its gear on a Google Spreadsheet - an inefficient and suboptimal system.
 
 ## Application Stack
 * Database(s):
