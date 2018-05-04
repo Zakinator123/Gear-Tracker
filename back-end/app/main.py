@@ -18,22 +18,23 @@ def get_gear_by_number(number):
     db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'], os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM gear WHERE number=" + number + ";")
-    data1 = cursor.fetchone()
+    data = cursor.fetchone()
     db.close()
 
-    return jsonify(data1)
+    return jsonify(data)
 
 @app.route("/gear/all")
 def get_gear():
     db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'], os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM gear;")
-    data1 = cursor.fetchall()
+    data = cursor.fetchall()
     db.close()
 
-    return jsonify(data1)
+    return jsonify(data)
 
-# Commented out for now to prevent user password visibility (Non-Hashed Passwords are returned by the database)
+### Commented out until a credential system is put into place to prevent user information
+### and passwords being read by malicious users (Non-Hashed Passwords are returned by the database)
 # @app.route("/user/<id>")
 # def get_user_by_id(id):
 #     db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'], os.environ['ODC_DB_DATABASE'])
@@ -42,10 +43,6 @@ def get_gear():
 #     data2=cursor.fetchone()
 #
 #     return jsonify(data2)
-
-
-
-
 
 if __name__ == "__main__":
     # Only for debugging while developing
