@@ -1,10 +1,9 @@
 import React from 'react';
 import { withStyles } from 'material-ui/styles';
+import { Typography } from 'material-ui';
 import GitHubLogo from './GitHub_Logo_White.png';
 import logo from './logo.svg';
 import './BottomBar.css';
-import Paper from 'material-ui/Paper';
-
 
 const styles = {
   root: {
@@ -16,14 +15,13 @@ const styles = {
 };
 
 export const BottomBar = () => {
-        return (
-            <Paper elevation={0}>
-          <div className="App-footer">
-              <img src={logo} className="App-logo" />
-              <p>Gear App by Zakey Faieq <br></br><a href="https://github.com/Zakinator123/Gear-App/"> <img src={GitHubLogo} alt="Github"/></a></p>
-          </div>
-            </Paper>
-        )
-    };
+    return (
+            <div className="App-footer">
+                <img src={logo} className="App-logo" />
+                <Typography variant="body1" color="inherit" style={{lineHeight: '1em'}}>Gear App by Zakey Faieq </Typography>
+                <a href="https://github.com/Zakinator123/Gear-App/"> <img src={GitHubLogo} alt="Github"/></a>
+            </div>
+    )
+};
 
 export default withStyles(styles)(BottomBar);

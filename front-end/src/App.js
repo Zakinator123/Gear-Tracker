@@ -4,6 +4,24 @@ import BottomBar from './Layouts/BottomBar';
 import EnhancedTable from './Components/Table';
 import LinearIndeterminate from './Components/Loading';
 import "./index.css";
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      light: '#60ad5e',
+      main: '#2e7d32',
+      dark: '#005005',
+      contrastText: '#fff',
+    },
+    secondary: {
+      light: '#6f74dd',
+      main: '#3949ab',
+      dark: '#00227b',
+      contrastText: '#fff',
+    },
+  },
+});
 
 class App extends Component {
 
@@ -70,7 +88,7 @@ class App extends Component {
         if (this.state.loading)
         {
             return (
-                <div className="App-Container">
+                <div className="App-Container" style={{width:'100vw'}}>
                     <TopBar />
                     <LinearIndeterminate />
                     <BottomBar />
@@ -79,11 +97,13 @@ class App extends Component {
         }
         else {
             return (
-                <div className="App-Container">
-                    <TopBar />
-                    <EnhancedTable  data={this.state.data}/>
+                <MuiThemeProvider theme={theme} className="App-Container">
+                    <TopBar loginButtonText="gearmaster login"/>
+                    <div style={{height:'70vh'}}>
+                        {/*<EnhancedTable  data={this.state.data}/>*/}
+                    </div>
                     <BottomBar />
-                </div>
+                </MuiThemeProvider>
             );
         }
     }

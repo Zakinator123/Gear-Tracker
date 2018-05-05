@@ -89,7 +89,7 @@ EnhancedTableHead.propTypes = {
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing.unit,
+    // paddingRight: theme.spacing.unit,
   },
   highlight:
     theme.palette.type === 'light'
@@ -160,7 +160,8 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    height: '50vh',
+    // marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3
   },
   table: {
@@ -247,10 +248,10 @@ class EnhancedTable extends React.Component {
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
-      <Paper className={classes.root}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <div className={classes.tableWrapper}>
-          <Table className={classes.table}>
+      <div>
+        <EnhancedTableToolbar numSelected={selected.length} style={{height:'20vh'}}/>
+        <div className={classes.tableWrapper} style={{height:'50vh'}}>
+          <Table className={classes.table} style={{height:'50vh'}} >
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -306,7 +307,7 @@ class EnhancedTable extends React.Component {
           onChangePage={this.handleChangePage}
           onChangeRowsPerPage={this.handleChangeRowsPerPage}
         />
-      </Paper>
+      </div>
     );
   }
 }
