@@ -30,7 +30,7 @@ function TopBar(props) {
                   {/*<IconButton className={classes.menuButton} color="inherit" aria-label="Menu">*/}
                   {/*<MenuIcon />*/}
                   {/*</IconButton>*/}
-                <Typography variant="title" color="inherit" align="left" className={classes.flex}>
+                <Typography variant="body2" color="inherit" align="left" className={classes.flex}>
                   Outdoors at UVA <br/>Gear Inventory
                 </Typography>
                 <Button color="inherit">{props.loginButtonText}</Button>

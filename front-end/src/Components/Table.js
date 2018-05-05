@@ -16,7 +16,7 @@ class InventoryTable extends React.Component {
     console.log(this.state);
 
     return (
-      <Paper style={{height: "65vh"}}>
+      <Paper style={{height: "65vh", }}>
         {/*<div style={{height:'5.0vh', paddingTop:'1.5vh', fontSize: 12}}>To sort, click the columns headers. Hold shift when sorting to multi-sort! To search on a specific column, type into the textbox below the column headers.</div>*/}
         {/*Need to put a modal containing the above directions in here.*/}
         <ReactTable
@@ -25,10 +25,13 @@ class InventoryTable extends React.Component {
           filterable
           defaultFilterMethod={(filter, row) =>
             String(row[filter.id]) === filter.value}
+          showPaginationBottom={false}
+          defaultPageSize={this.state.length}
+          minRows={this.state.length}
 
           columns={[
             {
-              headerStyle: {fontColor: 'green'},
+              /*Need to figure out how to modify header styling*/
               style: {fontColor:'green'},
               columns: [
                 {
@@ -79,7 +82,6 @@ class InventoryTable extends React.Component {
               ]
             }
           ]}
-          defaultPageSize={10}
           className="-striped -highlight"
         />
 

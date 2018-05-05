@@ -4,23 +4,44 @@
   height: 20vh;
   color: white;
   bottom: 0;
-  position: absolute;
+  position: fixed;
   width: 100%;
 }
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
-  height: 7vh;
-  margin-top: 2vh;
-  margin-bottom: 0vh;
+  height: 40%;
+  margin-top: 1vh;
   position: relative;
 }
 
-img {
-  height: 5vh;
+.Github {
+  height: 30%;
   margin: 0;
 }
 
+@media (max-height: 370px) {
+    .Author-text{
+        font-size: 8px;
+        color: white;
+    }
+}
+
+@media (min-height: 370px) {
+    .Author-text{
+        font-size: 14px;
+        color: white;
+    }
+}
+
+a, a:active, a:visited, a:focus {
+    text-decoration:none;
+}
+
+a:hover{
+  text-decoration: underline;
+  text-decoration-color: white;
+}
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
