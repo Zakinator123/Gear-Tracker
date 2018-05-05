@@ -9,7 +9,7 @@
 <p align="center"><a href="http://gear-app.com"> gear-app.com </a> <br />A gear inventory system for the Outdoors Club at UVA.</p>
 
 ## Purpose
-Gear App is meant to serve as an improved gear inventory system for the [Outdoors Club at UVA](http://outdoorsatuva.org), which previously kept track of all of its gear and gear-checkouts on a Google Spreadsheet - an inefficient and suboptimal system. It is still being actively worked on.<br></br>
+Gear-App is meant to serve as an improved gear inventory system for the [Outdoors Club at UVA](http://outdoorsatuva.org), which currently keeps track of all of its gear and gear-checkouts on a [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1srgTqgGdCj4B-MhF76eLqVhSWUn_IQ7ww_z1VFIGvAU/edit#gid=935307448) - an inefficient and suboptimal system. Gear-App is still being actively worked on.<br></br>
 
 Outdoors at UVa has over 1000 different pieces of equipment that members regularly ‘check out’ and borrow for a week at a time. Members come to ‘Gear Rooms’ - times when club officers make our gear storage spaces accessible to all members so that they may check gear out. During gear rooms, members pick out what gear they would like to check out, and list the numbers written on the gear to an officer, who then ‘checks out’ that gear under that member’s name. This application aims to help not only our general members by improving how they view gear, but it also aims to help the officers and Gearmasters with the pressure-ridden task of quickly checking out, checking in, and accessioning large amounts of gear in addition to helping the officers manage our inventory. <br/><br/>This application is the first step in an effort to completely overhaul the Outdoors Club's current website, a complex piece of software that's critical to the functioning of UVA's largest student-run organization. To follow the current status of this effort, please visit [this repository](https://github.com/Zakinator123/Outdoors-At-UVa-Website-Spec).
 <br/>
@@ -32,12 +32,12 @@ Outdoors at UVa has over 1000 different pieces of equipment that members regular
 To expedite the development/deployment cycle, an customized automated deployment system has been set up. Upon any pushes to GitHub, two automated image builds are triggered in their respective DockerHub repositories - these images are for the Flask back-end and React front-end containers. Upon successful image build(s), an [AWS Lambda function](https://github.com/Zakinator123/Gear-App/blob/master/lambda/lambda_function.py) is triggered and programmatically SSH's into an EC2 instance to take down, update, and redeploy the back-end and front-end containers.
 <br/>
 
-## Database Objects
+## Database Tables
 
 <br/>
-<strong>Gear Item</strong>
+<strong>Gear Item</strong> (In AWS Aurora)
 
-    Characteristics/Fields:
+    Fields:
     - Number
     - ItemType (Can be a Foreign Key) - currently a Text Field.
     - Details
@@ -45,10 +45,9 @@ To expedite the development/deployment cycle, an customized automated deployment
     - Status
     - Notes (Can be Foreign Key)
 
+<strong>Gear Checkout</strong> (In AWS Aurora)
 
-<strong>Gear Checkout</strong>
-
-    Characteristics/Fields:
+    Fields:
     - Checkout ID
     - Gear Item (Foreign Key)
     - Item Checkout Status (Can be foreign key to the status columb in Gear Item?)
@@ -57,6 +56,17 @@ To expedite the development/deployment cycle, an customized automated deployment
     - Date Due
     - Check Out Note
     - Check In Note
+
+<strong>Member</strong> (In Outdoors at UVa's MySQL database)
+
+    Fields:
+    - ID
+    - Email
+    - First Name
+    - Last Name
+    - Phone Number
+    - Gender
+
 
 ## Functional Specifications
 
@@ -122,6 +132,7 @@ To Do:
 - Need to address the issue of consumable gear???
 - Create a ‘maintenance log’ for all pieces of gear.
 - Gear entries should have an option to attach a thumbnail image (helpful for identifying ropes, which cannot be reliably tagged or numbered)
+- Need to add INNER JOIN to Flask API to get member phone numbers.
 
 
 
