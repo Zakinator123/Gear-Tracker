@@ -37,7 +37,7 @@ def lambda_handler(event, context):
 
                 'sudo docker stop react-front-end',
                 'sudo docker rm react-front-end',
-                'sudo docker rmi zakinator123/gear-app:lastest',
+                'sudo docker rmi zakinator123/gear-app-react:latest',
                 'sudo docker pull zakinator123/gear-app-react',
                 'sudo docker run -d --name react-front-end -p 80:80 zakinator123/gear-app-react',
                 ]
