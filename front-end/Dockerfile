@@ -4,6 +4,8 @@ ADD package.json /package.json
 RUN npm install material-ui@next
 RUN npm install @material-ui/icons
 RUN npm install react-table
+RUN npm install --save match-sorter
+
 
 ENV NODE_PATH=/node_modules
 ENV PATH=$PATH:/node_modules/.bin
@@ -21,7 +23,7 @@ RUN /app/run.sh build
  EXPOSE 80
  CMD ["serve" , "-s", "build", "-p", "80"]
 
-# For development: docker run --name react-front-end -it -p 3000:3000 -p 35729:35729 -v $(pwd):/app reactapp
+## For development: docker run --name react-front-end -it -p 3000:3000 -p 35729:35729 -v $(pwd):/app reactapp
 # EXPOSE 3000
 # EXPOSE 35729
 # ENTRYPOINT ["/bin/bash", "/app/run.sh"]

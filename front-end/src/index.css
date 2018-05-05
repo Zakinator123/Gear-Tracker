@@ -9,3 +9,8 @@ body {
   flex-direction: column;
   flex: 1;
 }
+
+.Table {
+  height: 70vh;
+  /*position: relative;*/
+}

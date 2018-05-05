@@ -1,26 +1,29 @@
 import React, { Component } from 'react';
 import TopBar from './Layouts/TopBar';
 import BottomBar from './Layouts/BottomBar';
-import EnhancedTable from './Components/Table';
+import InventoryTable from './Components/Table';
 import LinearIndeterminate from './Components/Loading';
 import "./index.css";
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import 'react-table/react-table.css'
+
+
 
 const theme = createMuiTheme({
-  palette: {
-    primary: {
-      light: '#60ad5e',
-      main: '#2e7d32',
-      dark: '#005005',
-      contrastText: '#fff',
+    palette: {
+        primary: {
+            light: '#60ad5e',
+            main: '#2e7d32',
+            dark: '#005005',
+            contrastText: '#fff',
+        },
+        secondary: {
+            light: '#6f74dd',
+            main: '#3949ab',
+            dark: '#00227b',
+            contrastText: '#fff',
+        },
     },
-    secondary: {
-      light: '#6f74dd',
-      main: '#3949ab',
-      dark: '#00227b',
-      contrastText: '#fff',
-    },
-  },
 });
 
 class App extends Component {
@@ -88,22 +91,28 @@ class App extends Component {
         if (this.state.loading)
         {
             return (
-                <div className="App-Container" style={{width:'100vw'}}>
-                    <TopBar />
-                    <LinearIndeterminate />
-                    <BottomBar />
+                <div className="App-Container">
+                    <MuiThemeProvider theme={theme} >
+                        <TopBar loginButtonText="gearmaster login"/>
+                        <div style={{height:'69vh'}}>
+                            <LinearIndeterminate />
+                        </div>
+                        <BottomBar />
+                    </MuiThemeProvider>
                 </div>
             );
         }
         else {
             return (
-                <MuiThemeProvider theme={theme} className="App-Container">
-                    <TopBar loginButtonText="gearmaster login"/>
-                    <div style={{height:'70vh'}}>
-                        {/*<EnhancedTable  data={this.state.data}/>*/}
-                    </div>
-                    <BottomBar />
-                </MuiThemeProvider>
+                <div className="App-Container">
+                    <MuiThemeProvider theme={theme} >
+                        <TopBar loginButtonText="gearmaster login"/>
+                        <div className='Table'>
+                            <InventoryTable data={this.state.data}/>
+                        </div>
+                        <BottomBar />
+                    </MuiThemeProvider>
+                </div>
             );
         }
     }

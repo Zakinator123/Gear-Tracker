@@ -4,7 +4,7 @@
   height: 20vh;
   color: white;
   bottom: 0;
-  position: fixed;
+  position: absolute;
   width: 100%;
 }
 

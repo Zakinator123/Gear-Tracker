@@ -23,14 +23,14 @@ const styles = {
 function TopBar(props) {
     const { classes } = props;
     return (
-        <div style={{height:'10vh'}}>
-          <div className={classes.root} style={{height:'10vh'}}>
+        <div>
+          <div className={classes.root}>
             <AppBar position="static">
               <Toolbar>
                   {/*<IconButton className={classes.menuButton} color="inherit" aria-label="Menu">*/}
                   {/*<MenuIcon />*/}
                   {/*</IconButton>*/}
-                <Typography variant="body2" color="inherit" align="left" className={classes.flex}>
+                <Typography variant="title" color="inherit" align="left" className={classes.flex}>
                   Outdoors at UVA <br/>Gear Inventory
                 </Typography>
                 <Button color="inherit">{props.loginButtonText}</Button>
