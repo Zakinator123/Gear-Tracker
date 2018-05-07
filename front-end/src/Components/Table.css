@@ -1,0 +1,18 @@
+.Table {
+    height: 100%;
+    margin-bottom: 12vh;
+}
+
+@media (max-height: 375px)
+{
+    .Table{
+        margin-top: 3vh;
+    }
+}
+@media (min-height: 375px)
+{
+    .Table{
+        fontSize:'12px';
+        margin-top: 2vh;
+    }
+}
