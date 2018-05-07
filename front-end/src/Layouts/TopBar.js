@@ -8,8 +8,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 const styles = {
   root: {
     flexGrow: 1,
-    primaryColor: green,
-    color: green,
   },
   flex: {
     flex: 1,
@@ -23,7 +21,7 @@ const styles = {
 function TopBar(props) {
     const { classes } = props;
     return (
-        <div>
+        <div className="TopBar">
           <div className={classes.root}>
             <AppBar position="static">
               <Toolbar>

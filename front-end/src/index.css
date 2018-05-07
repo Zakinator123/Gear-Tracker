@@ -9,8 +9,3 @@ body {
   flex-direction: column;
   flex: 1;
 }
-
-.Table {
-  /*Need to revisit*/
-  height: 69vh;
-}

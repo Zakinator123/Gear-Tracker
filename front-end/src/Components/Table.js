@@ -3,10 +3,10 @@ import ReactTable from "react-table";
 import { Tip } from './Tip';
 import { Paper, Typography } from 'material-ui';
 import matchSorter from 'match-sorter'
+import './Table.css';
 
 
 class InventoryTable extends React.Component {
-
   constructor(props) {
       super(props);
       this.state = props.data;
@@ -16,11 +16,10 @@ class InventoryTable extends React.Component {
     console.log(this.state);
 
     return (
-      <Paper style={{height: "65vh", }}>
-        {/*<div style={{height:'5.0vh', paddingTop:'1.5vh', fontSize: 12}}>To sort, click the columns headers. Hold shift when sorting to multi-sort! To search on a specific column, type into the textbox below the column headers.</div>*/}
-        {/*Need to put a modal containing the above directions in here.*/}
+      <div className='Table'>
+        <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>
         <ReactTable
-          style={{height:'95%', fontSize:'12px'}}
+          style={{height:'100%', fontSize:'11px'}}
           data={this.state}
           filterable
           defaultFilterMethod={(filter, row) =>
@@ -85,11 +84,9 @@ class InventoryTable extends React.Component {
           className="-striped -highlight"
         />
 
-      </Paper>
+      </div>
     );
   }
 }
-
-
 
 export default InventoryTable;

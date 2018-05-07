@@ -1,36 +1,32 @@
 .App-footer {
   text-align: center;
   background-color: #222;
-  height: 20vh;
+  height: 12vh;
   color: white;
   bottom: 0;
   position: fixed;
   width: 100%;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40%;
-  margin-top: 1vh;
-  position: relative;
-}
-
 .Github {
-  height: 30%;
+  height: 35%;
   margin: 0;
 }
 
-@media (max-height: 370px) {
+@media (max-height: 375px) {
     .Author-text{
-        font-size: 8px;
+        font-size: 9px;
         color: white;
+          margin-top: 2vh;
     }
 }
 
-@media (min-height: 370px) {
+@media (min-height: 376px) {
     .Author-text{
         font-size: 14px;
         color: white;
+          margin-top: 3vh;
+
     }
 }
 
@@ -42,7 +38,15 @@ a:hover{
   text-decoration: underline;
   text-decoration-color: white;
 }
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
+
+/*.App-logo {*/
+  /*animation: App-logo-spin infinite 20s linear;*/
+  /*height: 40%;*/
+  /*margin-top: 1vh;*/
+  /*position: relative;*/
+/*}*/
+
+/*@keyframes App-logo-spin {*/
+  /*from { transform: rotate(0deg); }*/
+  /*to { transform: rotate(360deg); }*/
+/*}*/
