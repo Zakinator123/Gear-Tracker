@@ -94,7 +94,7 @@ class App extends Component {
                 <div className="App-Container">
                     <MuiThemeProvider theme={theme} >
                         <TopBar loginButtonText="gearmaster login"/>
-                        <div style={{height:'100%'}}>
+                        <div>
                             <LinearIndeterminate />
                         </div>
                         <BottomBar />
@@ -106,7 +106,7 @@ class App extends Component {
             return (
                 <div className="App-Container">
                     <MuiThemeProvider theme={theme} >
-                        <TopBar loginButtonText="gearmaster login"/>
+                        <TopBar />
                         <InventoryTable data={this.state.data}/>
                         <BottomBar />
                     </MuiThemeProvider>

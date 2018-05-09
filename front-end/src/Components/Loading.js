@@ -12,12 +12,10 @@ const styles = {
 function LinearIndeterminate(props) {
   const { classes } = props;
   return (
-    <div className={classes.root}>
-        <br /><br /><br /><br /><br /><br /><br /><br />
+    <div className={classes.root} style={{marginTop:'30vh', marginBottom: '12vh'}}>
       <LinearProgress />
-      <br />
+        <br/>
       <LinearProgress color="secondary" />
-        <br /><br /><br /><br /><br /><br /><br /><br />
     </div>
   );
 }

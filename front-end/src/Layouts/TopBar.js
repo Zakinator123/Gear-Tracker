@@ -4,6 +4,7 @@ import { withStyles } from 'material-ui/styles';
 import { AppBar, Toolbar, Typography, Button, IconButton } from 'material-ui';
 import green from 'material-ui/colors/purple';
 import MenuIcon from '@material-ui/icons/Menu';
+import LoginModal1 from '../Components/LoginModal'
 
 const styles = {
   root: {
@@ -31,7 +32,7 @@ function TopBar(props) {
                 <Typography variant="body2" color="inherit" align="left" className={classes.flex}>
                   Outdoors at UVA <br/>Gear Inventory
                 </Typography>
-                <Button color="inherit">{props.loginButtonText}</Button>
+                <LoginModal1 />
               </Toolbar>
             </AppBar>
           </div>
