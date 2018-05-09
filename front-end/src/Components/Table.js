@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactTable from "react-table";
-import { Tip } from './Tip';
 import { Paper, Typography } from 'material-ui';
 import matchSorter from 'match-sorter'
 import './Table.css';

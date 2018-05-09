@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 import { AppBar, Toolbar, Typography, Button, IconButton } from 'material-ui';
-import green from 'material-ui/colors/purple';
 import MenuIcon from '@material-ui/icons/Menu';
 import LoginModal1 from '../Components/LoginModal'
 

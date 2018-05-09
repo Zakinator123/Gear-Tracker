@@ -5,7 +5,6 @@ import Typography from 'material-ui/Typography';
 import Modal from 'material-ui/Modal';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
-import { withTheme } from 'material-ui/styles'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 
