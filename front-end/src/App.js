@@ -4,7 +4,7 @@ import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
 import LinearIndeterminate from './Components/Loading';
 import "./index.css";
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'react-table/react-table.css'
 
 

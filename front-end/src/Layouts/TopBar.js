@@ -1,9 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
-import { AppBar, Toolbar, Typography, Button, IconButton } from 'material-ui';
+import { withStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import LoginModal1 from '../Components/LoginModal'
+import LoginModal from '../Components/LoginModal'
 
 const styles = {
   root: {
@@ -31,7 +35,7 @@ function TopBar(props) {
                 <Typography variant="body2" color="inherit" align="left" className={classes.flex}>
                   Outdoors at UVA <br/>Gear Inventory
                 </Typography>
-                <LoginModal1 />
+                <LoginModal />
               </Toolbar>
             </AppBar>
           </div>

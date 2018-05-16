@@ -1,6 +1,6 @@
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
-import { Typography } from 'material-ui';
+import { withStyles } from '@material-ui/core/styles';
+// import { Typography } from 'material-ui/core';
 import GitHubLogo from './GitHub_Logo_White.png';
 import './BottomBar.css';
 
