@@ -7,8 +7,6 @@ import "./index.css";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'react-table/react-table.css'
 
-
-
 const theme = createMuiTheme({
     palette: {
         primary: {
@@ -38,7 +36,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        fetch('http://gear-app.com:5000/gear/all')
+        fetch('https://api.gear-app.com/gear/all')
             .then((response) => {
                 return response.json();
             })
