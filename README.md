@@ -20,9 +20,9 @@ Outdoors at UVa has over 1000 different pieces of equipment that members regular
     - A MySQL database hosted by Pair Networks contains Outdoors at UVA's current website database, which has a 'Members' table.
 
 
-* Back-End: Flask app on AWS EC2 served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) that installs all the dependencies needed for [MySQLdb, a python MySQL client](https://github.com/PyMySQL/mysqlclient-python). The Flask app is a JSON API which makes raw SQL queries to the AWS RDS instance as well as the Outdoors Club's MySQL database.
+* Back-End: Flask app on AWS EC2 served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) that installs all the dependencies needed for [MySQLdb, a python MySQL client](https://github.com/PyMySQL/mysqlclient-python). The Flask app is a JSON API which makes raw SQL queries to the AWS RDS instance as well as the Outdoors Club's MySQL database. HAProxy serves as an SSL Termination Proxy for the Flask App(Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/back-end/haproxy.cfg)).
 
-* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on the same EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables in the UI. Uses [Material UI Next](https://material-ui-next.com/).
+* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on the same EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables in the UI. Uses [Material UI Next](https://material-ui-next.com/). HAProxy serves as an SSL Termination Proxy for the React App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/front-end/haproxy.cfg)).
 <br/>
 
 ## The Automated Deployment System
