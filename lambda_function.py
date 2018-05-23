@@ -2,6 +2,13 @@
 # the Flask and React apps. The Lambda function is triggered when the docker images for the aforementioned containers
 # build successfully on DockerHub.
 
+# How I created the Lambda deployment package (ZIP File):
+# To use paramiko in AWS Lambda, Lambda must be provided with a ZIP file containing all the needed dependencies.
+# This ZIP file was created by zipping the site-packages folder of a python virtual environment (which
+# contains paramiko and its dependencies). To prevent any binary incompatibility issues arising from differing machine
+# architectures, this virtual environment was created on an EC2 instance that uses the same execution environment
+# as AWS Lambda. The AMI name for this execution environment is 'amzn-ami-hvm-2017.03.1.20170812-x86_64-gp2'
+
 import boto3
 import paramiko
 import os
@@ -33,7 +40,7 @@ def lambda_handler(event, context):
                 'sudo docker rm react-front-end',
                 'sudo docker rmi zakinator123/gear-app-react:latest',
                 'sudo docker pull zakinator123/gear-app-react',
-                'sudo docker run -d --name react-front-end -p 80:80 zakinator123/gear-app-react',
+                'sudo docker run -d --name react-front-end -p 8080:80 zakinator123/gear-app-react',
                 'sudo service haproxy restart',
                 ]
 
