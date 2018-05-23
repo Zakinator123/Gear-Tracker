@@ -20,16 +20,16 @@ Outdoors at UVa has over 1000 different pieces of equipment that members regular
     - A MySQL database hosted by Pair Networks contains Outdoors at UVA's current website database, which has a 'Members' table.
 
 
-* Back-End: Flask app on AWS EC2 served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) that installs all the dependencies needed for [MySQLdb, a python MySQL client](https://github.com/PyMySQL/mysqlclient-python). The Flask app is a JSON API which makes raw SQL queries to the AWS RDS instance as well as the Outdoors Club's MySQL database. HAProxy serves as an SSL Termination Proxy for the Flask App(Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/back-end/haproxy.cfg)).
+* Back-End: Flask app served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) running in an AWS EC2 instance. The Flask app is a JSON API which makes raw SQL queries (via a Python MySQL Client) to the AWS RDS instance mentioned above in addition to the Outdoors Club's MySQL database. HAProxy serves as an SSL Termination Proxy for the Flask App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/back-end/haproxy.cfg)).
 
-* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on the same EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables in the UI. Uses [Material UI Next](https://material-ui-next.com/). HAProxy serves as an SSL Termination Proxy for the React App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/front-end/haproxy.cfg)).
+* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on a different EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables in the UI. Uses [Material UI Next](https://material-ui-next.com/). HAProxy serves as an SSL Termination Proxy for the React App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/front-end/haproxy.cfg)).
 <br/>
 
 ## The Automated Deployment System
 
-![Alt text](gear-app-deployment-system.png?raw=true "The system")
+<div align="center"><img src="./front-end/src/Layouts/gear-app-deployment-system.png" /></div>
 
-To expedite the development/deployment cycle, a customized automated deployment system has been set up. Upon any pushes to GitHub, two automated image builds are triggered in their respective DockerHub repositories - these images are for the [Flask back-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) and [React front-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) containers. Upon successful image build(s), an [AWS Lambda function](https://github.com/Zakinator123/Gear-App/blob/master/lambda/lambda_function.py) is triggered and programmatically SSH's into an EC2 instance to take down, update, and redeploy the back-end and front-end containers.
+To expedite the development/deployment cycle, a customized automated deployment system has been set up. Upon any pushes to GitHub, two automated image builds are triggered in their respective DockerHub repositories - these images are for the [Flask back-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) and [React front-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) containers. Upon successful image build(s), an [AWS Lambda function](https://github.com/Zakinator123/Gear-App/blob/master/lambda/lambda_function.py) is triggered that programmatically SSH's into the EC2 instances containing the Flask and React apps. The programmatic SSH commands take down, update, and redeploy the back-end and front-end containers.
 <br/>
 
 ## Database Tables
@@ -142,4 +142,4 @@ To Do:
 
 ## License
 
--- This project is licensed under the terms of the MIT license.
+-- This project is licensed under the terms of the [MIT license](https://github.com/Zakinator123/Gear-App/blob/master/LICENSE.txt).
