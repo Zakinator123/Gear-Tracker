@@ -3,8 +3,8 @@ import MySQLdb
 import MySQLdb.cursors
 from flask import jsonify
 import os
-from flask import render_template
 from flask_cors import CORS
+from flask import request
 
 app = Flask(__name__)
 CORS(app)
@@ -12,6 +12,12 @@ CORS(app)
 @app.route("/")
 def home():
     return ("The Gear-App API is alive and well!!!")
+
+@app.route("/login",methods=['POST'])
+def login():
+    post_body = request.get_json()
+    return jsonify(post_body)
+
 
 @app.route("/gear/<number>")
 def get_gear_by_number(number):

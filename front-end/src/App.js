@@ -31,12 +31,16 @@ class App extends Component {
         super(props);
         this.state = {
             loading: true,
-            data: null
-        }
+            data: null,
+            logged_in: false,
+        };
+
+        this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
+        this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
     }
 
     componentDidMount() {
-        fetch('https://api.gear-app.com/gear/all')
+        fetch('http://192.168.99.100:5000/gear/all')
             .then((response) => {
                 return response.json();
             })
@@ -82,6 +86,14 @@ class App extends Component {
                 console.log(myJson);
                 this.setState({data: myJson, loading: false});
             });
+    }
+
+    gearmasterLoggedIn() {
+        this.setState({logged_in: true})
+    }
+
+    gearmasterLoggedOut() {
+        this.setState({logged_in: false})
     }
 
     render() {

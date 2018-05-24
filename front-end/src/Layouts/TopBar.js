@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import LoginModal from '../Components/LoginModal'
+import LoginDialog from '../Components/LoginDialog'
 
 const styles = {
   root: {
@@ -35,7 +36,8 @@ function TopBar(props) {
                 <Typography variant="body2" color="inherit" align="left" className={classes.flex}>
                   Outdoors at UVA <br/>Gear Inventory
                 </Typography>
-                <LoginModal />
+                {/*<LoginModal />*/}
+                <LoginDialog/>
               </Toolbar>
             </AppBar>
           </div>
