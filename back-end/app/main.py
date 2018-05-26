@@ -5,6 +5,8 @@ from flask import jsonify
 import os
 from flask_cors import CORS
 from flask import request
+import hmac
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
@@ -16,8 +18,103 @@ def home():
 @app.route("/login",methods=['POST'])
 def login():
     post_body = request.get_json()
-    return jsonify(post_body)
 
+    # If login info is user: 'readonly', pass: 'readonly', give user a token value of 0
+    if post_body['email'] == 'readonly' and post_body['password'] == 'readonly':
+        return jsonify({'status': 'Success', 'token': '0', 'message': 'Successfully logged in as read-only user'})
+
+    # Validate login info
+    try:
+        odc_db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'], os.environ['ODC_DB_DATABASE'])
+        cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
+        sql = "SELECT * FROM m_member WHERE c_email='%s' AND c_password='%s'" % (post_body['email'], post_body['password'])
+        cursor.execute(sql)
+
+        if cursor.rowcount == 0:
+            return jsonify({'status': 'Error', 'message': 'Error on Login - incorrect email/password'})
+    except:
+        return jsonify({'status': 'Error', 'message': 'Error retrieving information from ODC database.'})
+
+    member=cursor.fetchone()
+    # Check to see if user is an officer:
+    if (member['c_group_memberships'] & 2 != 2):
+        return jsonify({'status': 'Error', 'message':'Login rejected: User is not an officer'})
+
+
+    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                         os.environ['AWS_DB_DATABASE'])
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    member_id = member['c_uid']
+
+    # Check if user is already logged in: If so, give them the current authenticator in the database if it isn't expired
+    # TODO: Set an authenticator expiration policy
+    sql = "SELECT * FROM authenticator WHERE userid=%d" % (member_id)
+    cursor.execute(sql)
+
+    if cursor.rowcount > 0:
+        auth_token = cursor.fetchone()['token']
+        return jsonify({'status': 'Success', 'token': auth_token, 'message': 'Successfully logged in as privileged user'})
+
+    # Generate an authenticator token for the user
+    k = os.environ['SECRET_KEY']
+    auth_token = hmac.new(
+        key=k.encode('utf-8'),
+        msg=os.urandom(32),
+        digestmod='sha256',
+    ).hexdigest()
+
+    # Save the authenticator token to the database.
+    sql = "INSERT INTO authenticator (token, userid) VALUES ('%s', '%d')" % (auth_token, member_id)
+    cursor.execute(sql)
+    rds_db.commit()
+
+    return jsonify( {'status': 'Success', 'token': auth_token, 'message': 'Successfully logged in as privileged user'})
+
+
+@app.route("/logout",methods=['POST'])
+def logout():
+    post_body = request.get_json()
+    token = post_body['token']
+
+    if token == '0':
+        return jsonify({'status': 'Success', 'message': "Successfully logged out of readonly user"})
+
+    try:
+        db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                             os.environ['AWS_DB_DATABASE'])
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
+        sql = "DELETE FROM authenticator WHERE token='%s'" % (token)
+        cursor.execute(sql)
+        db.commit()
+    except:
+        return jsonify({'status': 'Error', 'message': 'Error deleting authenticator'})
+
+    return jsonify({'status': 'Success', 'message': 'Successfully logged out'})
+
+
+def authenticated_required(f):
+    @wraps(f)
+    def authenticate(*args, **kwargs):
+
+        if 'token' not in request.get_json():
+            return {'Status': 'Error', 'message': 'No authentication token in API request'}
+
+        rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                             os.environ['AWS_DB_DATABASE'])
+        cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+        # Check if user is already logged in:
+        sql = "SELECT * FROM authenticator WHERE authenticator='%s'" % (request.get_json['token'])
+        cursor.execute(sql)
+
+        # TODO: Finish this section!!
+        user_auth = 'The token in the request goes here'
+        database_auth = 'The token in the database goes here'
+        hmac.compare_digest(user_auth, database_auth)
+
+        return f(*args, **kwargs)
+    return authenticate
 
 @app.route("/gear/<number>")
 def get_gear_by_number(number):

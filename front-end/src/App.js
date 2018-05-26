@@ -32,7 +32,7 @@ class App extends Component {
         this.state = {
             loading: true,
             data: null,
-            logged_in: false,
+            loggedIn: false,
         };
 
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
@@ -46,14 +46,12 @@ class App extends Component {
             })
             .then((myJson) => {
 
-                console.log(myJson.length);
-
                 //Needs to be converted to a map function
                 for (let i = 0; i < myJson.length; i++)
                 {
                     myJson[i]['id'] = i;
 
-                    switch(parseInt(myJson[i]['condition_level'])) {
+                    switch(parseInt(myJson[i]['condition_level'], 10)) {
                         case 0:
                             myJson[i]['condition_level'] = "Brand New";
                             break;
@@ -65,6 +63,9 @@ class App extends Component {
                             break;
                         case 3:
                             myJson[i]['condition_level'] = "Poor";
+                            break;
+                        default:
+                            myJson[i]['condition_level'] = "Unknown condition level";
                             break;
                     }
 
@@ -81,19 +82,23 @@ class App extends Component {
                         case 3:
                             myJson[i]['status_level'] = "Permanent";
                             break;
+                        default:
+                            myJson[i]['status_level'] = "Unknown status level";
+                            break;
                     }
                 }
-                console.log(myJson);
                 this.setState({data: myJson, loading: false});
             });
     }
 
     gearmasterLoggedIn() {
-        this.setState({logged_in: true})
+        this.setState({loggedIn: true})
     }
 
     gearmasterLoggedOut() {
-        this.setState({logged_in: false})
+        // Call the logout API here.
+        sessionStorage.removeItem('token');
+        this.setState({loggedIn: false})
     }
 
     render() {
@@ -103,7 +108,7 @@ class App extends Component {
             return (
                 <div className="App-Container">
                     <MuiThemeProvider theme={theme} >
-                        <TopBar loginButtonText="gearmaster login"/>
+                        <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                         <div>
                             <LinearIndeterminate />
                         </div>
@@ -116,7 +121,7 @@ class App extends Component {
             return (
                 <div className="App-Container">
                     <MuiThemeProvider theme={theme} >
-                        <TopBar />
+                        <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                         <InventoryTable data={this.state.data}/>
                         <BottomBar />
                     </MuiThemeProvider>

@@ -6,6 +6,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Typography from '@material-ui/core/Typography';
 
 export default class LoginDialog extends React.Component {
     constructor(props){
@@ -14,6 +15,9 @@ export default class LoginDialog extends React.Component {
             open: false,
             email: '',
             password: '',
+            error: false,
+            errorMessageVisibility: 'hidden',
+            errorMessage: ''
         };
     }
 
@@ -35,18 +39,27 @@ export default class LoginDialog extends React.Component {
 
     handleSubmit = () => {
 
-        console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
+        // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
+        this.setState({error: false, errorMessageVisibility: 'hidden'});
 
         fetch('http://192.168.99.100:5000/login', {
-          method: 'POST', // or 'PUT'
+          method: 'POST',
           body: JSON.stringify({email: this.state.email, password: this.state.password}),
           headers:{
             'Content-Type': 'application/json'
           },
           mode: 'cors'
-        }).then(res => res.json())
-        .catch(error => console.error('Error:', error))
-        .then(response => console.log('Success:', response));
+        }).then(response => response.json())
+        .catch(error => console.error('Error with HTTP request:', error))
+        .then(response => {
+           if (response['status'] !== 'Success')
+                this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
+            else {
+               sessionStorage.setItem('token', response['token']);
+               this.handleClose();
+               this.props.logIn();
+           }
+        });
     };
 
 
@@ -62,11 +75,13 @@ export default class LoginDialog extends React.Component {
                     <DialogTitle id="form-dialog-title">Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            Please login using the same login credentials you use to access your officer account on <a href="outdoorsatuva.org"> oudoorsatuva.org </a>. Alternatively, to login as a read-only user, login using 'test' for the username and password.
+                            Please login using the same login credentials you use to access your officer account on <a href="outdoorsatuva.org"> oudoorsatuva.org </a>. Alternatively, you can login as a read-only user using 'test' for the username and password.
                         </DialogContentText>
+                        <div style={{visibility:this.state.errorMessageVisibility}}><br/><Typography style={{color:'red'}}>{this.state.errorMessage}</Typography></div>
                         <form>
                             <TextField
                                 autoFocus
+                                error={this.state.error}
                                 margin="dense"
                                 id="name"
                                 onChange={this.handleChangeEmail}
@@ -75,6 +90,7 @@ export default class LoginDialog extends React.Component {
                                 fullWidth
                             />
                             <TextField
+                                error={this.state.error}
                                 margin="dense"
                                 id="pass"
                                 label="Password"
@@ -88,8 +104,8 @@ export default class LoginDialog extends React.Component {
                         <Button onClick={this.handleClose} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={this.handleSubmit} color="primary">
-                            Login
+                        <Button style={{backgroundColor: '#43A047'}} onClick={this.handleSubmit} color="primary">
+                            <Typography variant="button" style={{color:'white'}} align="left">Login</Typography>
                         </Button>
                     </DialogActions>
                 </Dialog>

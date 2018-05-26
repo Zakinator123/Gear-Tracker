@@ -9,24 +9,23 @@ import './Table.css';
 class InventoryTable extends React.Component {
   constructor(props) {
       super(props);
-      this.state = props.data;
+      this.state = {
+          data:props.data
+      };
   }
   render() {
-
-    console.log(this.state);
-
     return (
       <div className='Table'>
         <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>
         <ReactTable
           style={{height:'100%', fontSize:'11px'}}
-          data={this.state}
+          data={this.state.data}
           filterable
           defaultFilterMethod={(filter, row) =>
             String(row[filter.id]) === filter.value}
           showPaginationBottom={false}
-          defaultPageSize={this.state.length}
-          minRows={this.state.length}
+          defaultPageSize={this.state.data.length}
+          minRows={this.state.data.length}
 
           columns={[
             {
