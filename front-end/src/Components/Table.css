@@ -1,17 +1,23 @@
-.Table {
+.LoggedIn {
+    height: 100%;
+    margin-bottom: 12vh;
+    margin-top: -1vh;
+}
+
+.LoggedOut{
     height: 100%;
     margin-bottom: 12vh;
 }
 
 @media (max-height: 375px)
 {
-    .Table{
+    .LoggedOut{
         margin-top: 3vh;
     }
 }
 @media (min-height: 375px)
 {
-    .Table{
+    .LoggedOut{
         fontSize:'12px';
         margin-top: 2vh;
     }

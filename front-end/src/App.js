@@ -3,6 +3,7 @@ import TopBar from './Layouts/TopBar';
 import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
 import LinearIndeterminate from './Components/Loading';
+import FullWidthTabs from './Layouts/NavigationTabs'
 import "./index.css";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import 'react-table/react-table.css'
@@ -40,7 +41,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        fetch('https://api.gear-app.com/gear/all')
+        fetch('http://192.168.99.100:5000/gear/all')
             .then((response) => {
                 return response.json();
             })
@@ -118,15 +119,33 @@ class App extends Component {
             );
         }
         else {
-            return (
-                <div className="App-Container">
-                    <MuiThemeProvider theme={theme} >
-                        <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                        <InventoryTable data={this.state.data}/>
-                        <BottomBar />
-                    </MuiThemeProvider>
-                </div>
-            );
+
+            let app_container_when_API_connection_established;
+
+            if (this.state.loggedIn)
+            {
+                app_container_when_API_connection_established = (
+                    <div className="App-Container">
+                        <MuiThemeProvider theme={theme} >
+                            <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                            <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn}/>
+                            <BottomBar />
+                        </MuiThemeProvider>
+                    </div>
+                );
+            }
+            else
+                app_container_when_API_connection_established = (
+                    <div className="App-Container">
+                        <MuiThemeProvider theme={theme} >
+                            <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                            <InventoryTable data={this.state.data} loggedIn={this.state.loggedIn}/>
+                            <BottomBar />
+                        </MuiThemeProvider>
+                    </div>
+                );
+
+            return app_container_when_API_connection_established;
         }
     }
 }
