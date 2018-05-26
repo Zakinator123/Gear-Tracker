@@ -42,7 +42,7 @@ export default class LoginDialog extends React.Component {
         // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
-        fetch('http://192.168.99.100:5000/login', {
+        fetch('https://api.gear-app.com/login', {
           method: 'POST',
           body: JSON.stringify({email: this.state.email, password: this.state.password}),
           headers:{
