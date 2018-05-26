@@ -104,107 +104,10 @@ function getSuggestions(inputValue) {
   });
 }
 
-class DownshiftMultiple extends React.Component {
-  state = {
-    inputValue: '',
-    selectedItem: [],
-  };
-
-  handleKeyDown = event => {
-    const { inputValue, selectedItem } = this.state;
-    if (selectedItem.length && !inputValue.length && keycode(event) === 'backspace') {
-      this.setState({
-        selectedItem: selectedItem.slice(0, selectedItem.length - 1),
-      });
-    }
-  };
-
-  handleInputChange = event => {
-    this.setState({ inputValue: event.target.value });
-  };
-
-  handleChange = item => {
-    let { selectedItem } = this.state;
-
-    if (selectedItem.indexOf(item) === -1) {
-      selectedItem = [...selectedItem, item];
-    }
-
-    this.setState({
-      inputValue: '',
-      selectedItem,
-    });
-  };
-
-  handleDelete = item => () => {
-    const selectedItem = [...this.state.selectedItem];
-    selectedItem.splice(selectedItem.indexOf(item), 1);
-
-    this.setState({ selectedItem });
-  };
-
-  render() {
-    const { classes } = this.props;
-    const { inputValue, selectedItem } = this.state;
-
-    return (
-      <Downshift inputValue={inputValue} onChange={this.handleChange} selectedItem={selectedItem}>
-        {({
-          getInputProps,
-          getItemProps,
-          isOpen,
-          inputValue: inputValue2,
-          selectedItem: selectedItem2,
-          highlightedIndex,
-        }) => (
-          <div className={classes.container}>
-            {renderInput({
-              fullWidth: true,
-              classes,
-              InputProps: getInputProps({
-                startAdornment: selectedItem.map(item => (
-                  <Chip
-                    key={item}
-                    tabIndex={-1}
-                    label={item}
-                    className={classes.chip}
-                    onDelete={this.handleDelete(item)}
-                  />
-                )),
-                onChange: this.handleInputChange,
-                onKeyDown: this.handleKeyDown,
-                placeholder: 'Select multiple countries',
-                id: 'integration-downshift-multiple',
-              }),
-            })}
-            {isOpen ? (
-              <Paper className={classes.paper} square>
-                {getSuggestions(inputValue2).map((suggestion, index) =>
-                  renderSuggestion({
-                    suggestion,
-                    index,
-                    itemProps: getItemProps({ item: suggestion.label }),
-                    highlightedIndex,
-                    selectedItem: selectedItem2,
-                  }),
-                )}
-              </Paper>
-            ) : null}
-          </div>
-        )}
-      </Downshift>
-    );
-  }
-}
-
-DownshiftMultiple.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 250,
+    // height: 250,
   },
   container: {
     flexGrow: 1,
@@ -225,7 +128,7 @@ const styles = theme => ({
   },
 });
 
-function IntegrationDownshift(props) {
+function MemberSearch(props) {
   const { classes } = props;
 
   return (
@@ -237,7 +140,7 @@ function IntegrationDownshift(props) {
               fullWidth: true,
               classes,
               InputProps: getInputProps({
-                placeholder: 'Search a country (start with a)',
+                placeholder: 'Search a Club Member Name',
                 id: 'integration-downshift-simple',
               }),
             })}
@@ -257,15 +160,12 @@ function IntegrationDownshift(props) {
           </div>
         )}
       </Downshift>
-      <DownshiftMultiple classes={classes} />
     </div>
   );
 }
 
-IntegrationDownshift.propTypes = {
+MemberSearch.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(IntegrationDownshift);/**
- * Created by Zakey on 5/26/2018.
- */
+export default withStyles(styles)(MemberSearch);

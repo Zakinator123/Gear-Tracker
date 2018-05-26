@@ -41,7 +41,7 @@ class App extends Component {
     }
 
     componentDidMount() {
-        fetch('http://192.168.99.100:5000/gear/all')
+        fetch('https://api.gear-app.com/gear/all')
             .then((response) => {
                 return response.json();
             })

@@ -42,7 +42,7 @@ export default class LoginDialog extends React.Component {
         // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
-        fetch('http://192.168.99.100:5000/login', {
+        fetch('https://api.gear-app.com/login', {
             method: 'POST',
             body: JSON.stringify({email: this.state.email, password: this.state.password}),
             headers:{
@@ -67,7 +67,7 @@ export default class LoginDialog extends React.Component {
         // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
-        fetch('http://192.168.99.100:5000/login', {
+        fetch('https://api.gear-app.com/login', {
             method: 'POST',
             body: JSON.stringify({email: 'readonly', password: 'readonly'}),
             headers:{
@@ -99,7 +99,7 @@ export default class LoginDialog extends React.Component {
                     <DialogTitle id="form-dialog-title">Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="outdoorsatuva.org"> oudoorsatuva.org </a>. Alternatively, you can login as a read-only user using the button below (no credentials required).</Typography>
+                            <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>. Alternatively, you can login as a read-only user using the button below (no credentials required).</Typography>
                         </DialogContentText>
                         <div style={{visibility:this.state.errorMessageVisibility}}><br/><Typography variant="caption" style={{color:'red'}}>{this.state.errorMessage}</Typography></div>
                         <TextField
