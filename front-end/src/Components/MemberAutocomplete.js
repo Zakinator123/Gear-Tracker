@@ -140,7 +140,7 @@ function MemberSearch(props) {
               fullWidth: true,
               classes,
               InputProps: getInputProps({
-                placeholder: 'Search a Club Member Name',
+                placeholder: 'Search for Club Members',
                 id: 'integration-downshift-simple',
               }),
             })}
