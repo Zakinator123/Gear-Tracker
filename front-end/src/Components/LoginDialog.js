@@ -42,7 +42,7 @@ export default class LoginDialog extends React.Component {
         // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
-        fetch('https://api.gear-app.com/login', {
+        fetch(this.props.apiHost + '/login', {
             method: 'POST',
             body: JSON.stringify({email: this.state.email, password: this.state.password}),
             headers:{
@@ -67,7 +67,9 @@ export default class LoginDialog extends React.Component {
         // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
-        fetch('https://api.gear-app.com/login', {
+        console.log(this.props.apiHost);
+
+        fetch(this.props.apiHost + '/login', {
             method: 'POST',
             body: JSON.stringify({email: 'readonly', password: 'readonly'}),
             headers:{
@@ -77,6 +79,7 @@ export default class LoginDialog extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
+                console.log(response);
                 if (response['status'] !== 'Success')
                     this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
                 else {
@@ -103,7 +106,6 @@ export default class LoginDialog extends React.Component {
                         </DialogContentText>
                         <div style={{visibility:this.state.errorMessageVisibility}}><br/><Typography variant="caption" style={{color:'red'}}>{this.state.errorMessage}</Typography></div>
                         <TextField
-                            autoFocus
                             error={this.state.error}
                             margin="dense"
                             id="name"

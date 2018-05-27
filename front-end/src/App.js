@@ -36,12 +36,14 @@ class App extends Component {
             loggedIn: false,
         };
 
+        this.apiHost = 'http://192.168.99.100:5000';
+
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
     }
 
     componentDidMount() {
-        fetch('https://api.gear-app.com/gear/all')
+        fetch(this.apiHost + '/gear/all')
             .then((response) => {
                 return response.json();
             })
@@ -98,8 +100,23 @@ class App extends Component {
 
     gearmasterLoggedOut() {
         // Call the logout API here.
+        this.setState({loggedIn: false});
+
+        let storedToken = sessionStorage.getItem('token');
+
+        fetch(this.apiHost + '/logout', {
+            method: 'POST',
+            body: JSON.stringify({token: storedToken}),
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => console.log(response));
+
+        // Remove token from local storage.
         sessionStorage.removeItem('token');
-        this.setState({loggedIn: false})
     }
 
     render() {
@@ -138,7 +155,7 @@ class App extends Component {
                 app_container_when_API_connection_established = (
                     <div className="App-Container">
                         <MuiThemeProvider theme={theme} >
-                            <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                            <TopBar loggedIn={this.state.loggedIn} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                             <InventoryTable data={this.state.data} loggedIn={this.state.loggedIn}/>
                             <BottomBar />
                         </MuiThemeProvider>
