@@ -5,6 +5,8 @@ RUN npm install @material-ui/core
 RUN npm install @material-ui/icons
 RUN npm install react-table
 RUN npm install --save match-sorter
+RUN npm install --save downshift
+
 
 
 ENV NODE_PATH=/node_modules
