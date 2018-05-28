@@ -41,66 +41,67 @@ class Checkout extends React.Component{
         const { classes } = this.props;
 
         return(
-            <Grid container
-                  style={{marginBottom: '12vh'}}
-                  direction="column"
-                  alignItems='center'
-                  className={classes.root}
-                  spacing={8}>
-                <Grid item>
-                    <Grid container
-                          alignItems='stretch'
-                          direction="column"
-                    >
-                        <Grid item>
-                            <Paper className={classes.paper}>
-                                <Typography variant="title">Member: </Typography>
-                                <MemberSearch />
-                            </Paper>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item>
+            <div>
                     <Grid container
                           alignItems='center'
-                          direction="row"
-                          justify='center'
-                          spacing={8}>
-
-                        <Grid item>
+                          direction="column"
+                          alignContent="stretch"
+                    >
+                        <Grid md={6} lg={6} xl={6} alignItems="center" item>
                             <Paper className={classes.paper}>
-                                <CheckoutCart/>
+                                <Typography variant="title">Member: </Typography>
+                                <MemberSearch apiHost={this.props.apiHost}/>
                             </Paper>
                         </Grid>
+                    </Grid>
+                <Grid container
+                      style={{marginBottom: '12vh'}}
+                      direction="column"
+                      alignItems='center'
+                      className={classes.root}
+                      spacing={8}>
+                    <Grid item>
+                        <Grid container
+                              alignItems='center'
+                              direction="row"
+                              justify='center'
+                              spacing={8}>
 
-                        <Grid item>
-                            <Grid container
-                            direction="column"
-                            alignItems="stretch">
-                                <Grid item>
-                                    <Paper className={classes.paper}>
-                                        <Typography variant="title">Checkout Notes: </Typography>
-                                        <TextField
-                                            multiline
-                                            label="(Optional)"/>
-                                    </Paper>
-                                </Grid>
-                                <Grid item>
-                                    <Paper className={classes.paper}>
-                                        <DateTimePicker/>
-                                    </Paper>
+                            <Grid item>
+                                <Paper className={classes.paper}>
+                                    <CheckoutCart/>
+                                </Paper>
+                            </Grid>
+
+                            <Grid item>
+                                <Grid container
+                                      direction="column"
+                                      alignItems="stretch">
+                                    <Grid item>
+                                        <Paper className={classes.paper}>
+                                            <Typography variant="title">Checkout Notes: </Typography>
+                                            <TextField
+                                                multiline
+                                                label="(Optional)"/>
+                                        </Paper>
+                                    </Grid>
+                                    <Grid item>
+                                        <Paper className={classes.paper}>
+                                            <DateTimePicker/>
+                                        </Paper>
+                                    </Grid>
                                 </Grid>
                             </Grid>
-                        </Grid>
 
+                        </Grid>
+                    </Grid >
+                    <Grid item>
+                        <Button style={{backgroundColor: '#43A047'}} color="primary">
+                            <Typography variant="button" style={{color:'white'}} align="left">Checkout Gear</Typography>
+                        </Button>
                     </Grid>
-                </Grid >
-                <Grid item>
-                    <Button style={{backgroundColor: '#43A047'}} color="primary">
-                        <Typography variant="button" style={{color:'white'}} align="left">Checkout Gear</Typography>
-                    </Button>
                 </Grid>
-            </Grid>
+            </div>
         );
     }
 }

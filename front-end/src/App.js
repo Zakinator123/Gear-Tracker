@@ -36,7 +36,7 @@ class App extends Component {
             loggedIn: false,
         };
 
-        this.apiHost = 'http://192.168.99.100:5000';
+        this.apiHost = 'https://api.gear-app.com';
 
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
@@ -145,7 +145,7 @@ class App extends Component {
                     <div className="App-Container">
                         <MuiThemeProvider theme={theme} >
                             <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                            <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn}/>
+                            <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>
                             <BottomBar />
                         </MuiThemeProvider>
                     </div>
