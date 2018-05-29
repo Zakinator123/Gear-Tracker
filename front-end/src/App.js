@@ -36,6 +36,7 @@ class App extends Component {
             loggedIn: false,
         };
 
+        // this.apiHost = 'http://192.168.99.100:5000';
         this.apiHost = 'https://api.gear-app.com';
 
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
@@ -126,7 +127,7 @@ class App extends Component {
             return (
                 <div className="App-Container">
                     <MuiThemeProvider theme={theme} >
-                        <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                        <TopBar loggedIn={this.state.loggedIn} connected={false} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                         <div>
                             <LinearIndeterminate />
                         </div>
@@ -144,7 +145,7 @@ class App extends Component {
                 app_container_when_API_connection_established = (
                     <div className="App-Container">
                         <MuiThemeProvider theme={theme} >
-                            <TopBar loggedIn={this.state.loggedIn} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                            <TopBar loggedIn={this.state.loggedIn} connected={true} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                             <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>
                             <BottomBar />
                         </MuiThemeProvider>
@@ -155,7 +156,7 @@ class App extends Component {
                 app_container_when_API_connection_established = (
                     <div className="App-Container">
                         <MuiThemeProvider theme={theme} >
-                            <TopBar loggedIn={this.state.loggedIn} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                            <TopBar loggedIn={this.state.loggedIn} connected={true} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                             <InventoryTable data={this.state.data} loggedIn={this.state.loggedIn}/>
                             <BottomBar />
                         </MuiThemeProvider>
