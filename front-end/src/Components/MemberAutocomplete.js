@@ -121,7 +121,6 @@ class MemberSearch extends React.Component {
                     fontWeight: isSelected ? 500 : 400,
                 }}
             >
-                {/*{suggestion.c_full_name + ' - ' + suggestion.c_email}*/}
                 {suggestion.c_full_name} <br/> {suggestion.c_email}
             </MenuItem>
         );
@@ -149,7 +148,12 @@ class MemberSearch extends React.Component {
 
         return (
             <div className={classes.root}>
-                <Downshift>
+                <Downshift
+                onChange={selection => {
+                    console.log(selection);
+                    this.props.setMember(selection);
+                }}
+                >
                     {({getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex}) => (
                         <div className={classes.container}>
                             {this.renderInput({

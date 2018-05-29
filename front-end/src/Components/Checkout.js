@@ -34,7 +34,15 @@ class Checkout extends React.Component{
 
     constructor(props){
         super(props);
-        this.state = {}
+        this.state = {
+            member: '',
+        };
+
+        this.setMember = this.setMember.bind(this);
+    }
+
+    setMember(member) {
+        this.setState({member: member});
     }
 
     render() {
@@ -47,10 +55,10 @@ class Checkout extends React.Component{
                           direction="column"
                           alignContent="stretch"
                     >
-                        <Grid md={6} lg={6} xl={6} alignItems="center" item>
+                        <Grid md={6} lg={6} xl={6}  item>
                             <Paper className={classes.paper}>
                                 <Typography variant="title">Member: </Typography>
-                                <MemberSearch apiHost={this.props.apiHost}/>
+                                <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
                             </Paper>
                         </Grid>
                     </Grid>

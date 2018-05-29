@@ -11,6 +11,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
+import TextField from '@material-ui/core/TextField'
 
 
 const styles = theme => ({
@@ -22,25 +23,62 @@ const styles = theme => ({
 });
 
 class CheckoutCart extends React.Component {
-    state = {
-        checked: ['wifi'],
-    };
 
-    handleToggle = value => () => {
-        const { checked } = this.state;
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
+    constructor(props)
+    {
+        super(props);
+        this.addTextField = this.addTextField.bind(this);
 
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
+        this.state = {
+            list: (
+                <ListItem>
+                    <Tooltip id="tooltip-fab" title="Add to Gear Cart">
+                        <Button variant="fab" mini onClick={this.addTextField} style={{margin: 'auto'}} color="primary" aria-label="add">
+                            <AddIcon />
+                        </Button>
+                    </Tooltip>
+                </ListItem>
+            )
+        };
+    }
 
-        this.setState({
-            checked: newChecked,
-        });
-    };
+    validateGear(e) {
+        console.log(e.target.value);
+    }
+
+    addTextField() {
+        this.setState((prevState, props) => ({
+            list:  (<div>
+                <ListItem>
+                    <TextField autoFocus onBlur={this.validateGear} placeholder="Add Gear Number Here">
+                    </TextField>
+                        <Tooltip id="tooltip-icon" title="Delete">
+                            <IconButton aria-label="Delete">
+                                  <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                </ListItem>
+                {prevState.list}
+            </div>)
+        }));
+
+    }
+
+    // handleToggle = value => () => {
+    //     const { checked } = this.state;
+    //     const currentIndex = checked.indexOf(value);
+    //     const newChecked = [...checked];
+    //
+    //     if (currentIndex === -1) {
+    //         newChecked.push(value);
+    //     } else {
+    //         newChecked.splice(currentIndex, 1);
+    //     }
+    //
+    //     this.setState({
+    //         checked: newChecked,
+    //     });
+    // };
 
     render() {
         const { classes } = this.props;
@@ -48,40 +86,8 @@ class CheckoutCart extends React.Component {
         return (
             <div className={classes.root}>
                 <List dense={true} subheader={<Typography variant="title"> Gear Checkout Cart</Typography>}>
-                    <ListItem>
-                        <ListItemText
-                            primary="Single-line item"
-                            secondary={'Secondary text'}
-                        />
-                        <ListItemSecondaryAction>
-                            <Tooltip id="tooltip-icon" title="Delete">
-                                <IconButton aria-label="Delete from Cart">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <ListItemText
-                            primary="Single-line item"
-                            secondary={'Secondary text'}
-                        />
-                        <ListItemSecondaryAction>
-                            <Tooltip id="tooltip-icon" title="Delete">
-                                <IconButton aria-label="Delete">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                        <Tooltip id="tooltip-fab" title="Add to Cart">
 
-                            <Button variant="fab" mini style={{margin: 'auto'}} color="primary" aria-label="add" className={classes.button}>
-                                <AddIcon />
-                            </Button>
-                        </Tooltip>
-                    </ListItem>
+                    {this.state.list}
                 </List>
 
             </div>
@@ -94,3 +100,31 @@ CheckoutCart.propTypes = {
 };
 
 export default withStyles(styles)(CheckoutCart);
+
+//
+// <ListItem>
+//                         <ListItemText
+//                             primary="Single-line item"
+//                             secondary={'Secondary text'}
+//                         />
+//                         <ListItemSecondaryAction>
+//                             <Tooltip id="tooltip-icon" title="Delete">
+//                                 <IconButton aria-label="Delete from Cart">
+//                                     <DeleteIcon />
+//                                 </IconButton>
+//                             </Tooltip>
+//                         </ListItemSecondaryAction>
+//                     </ListItem>
+//                     <ListItem>
+//                         <ListItemText
+//                             primary="Single-line item"
+//                             secondary={'Secondary text'}
+//                         />
+//                         <ListItemSecondaryAction>
+//                             <Tooltip id="tooltip-icon" title="Delete">
+//                                 <IconButton aria-label="Delete">
+//                                     <DeleteIcon />
+//                                 </IconButton>
+//                             </Tooltip>
+//                         </ListItemSecondaryAction>
+//                     </ListItem>

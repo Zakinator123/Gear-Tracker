@@ -29,9 +29,11 @@ function TopBar(props) {
 
     let loginLogoutButton;
 
-    console.log(props.loggedIn);
-
-    if (props.loggedIn === false)
+    if (props.connected==false)
+    {
+        loginLogoutButton = <Typography color="inherit" variant="button"> Loading.. </Typography>
+    }
+    else if (props.loggedIn === false)
         loginLogoutButton = <LoginDialog logIn={props.logIn} apiHost={props.apiHost}/>;
     else
         loginLogoutButton = <Button color="inherit" onClick={props.logOut}>Logout</Button>;
