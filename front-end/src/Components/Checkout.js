@@ -77,7 +77,7 @@ class Checkout extends React.Component{
 
                             <Grid item>
                                 <Paper className={classes.paper}>
-                                    <CheckoutCart/>
+                                    <CheckoutCart data={this.props.data}/>
                                 </Paper>
                             </Grid>
 
