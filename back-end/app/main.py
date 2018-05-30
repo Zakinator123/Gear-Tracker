@@ -129,7 +129,7 @@ def get_gear_by_number(number):
                          os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM gear WHERE number=" + number)
-    data = cursor.fetchone()
+    data = cursor.fetchall()
     db.close()
 
     return jsonify(data)
