@@ -18,6 +18,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 
 const styles = theme => ({
@@ -40,32 +42,45 @@ class CheckoutCart extends React.Component {
             open: false,
             multiple: false,
             textFieldVisible : true,
-            textFieldValue: ''
+            textFieldValue: '',
+            validating: false,
         };
     }
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;
-        let gearList = this.props.data;
+        this.setState({validating: true});
 
-        let count = 0;
-        let gear;
-        for (let i = 0; i < gearList.length; i++)
-        {
-            gear = gearList[i];
-            if (gear['number'] == gearNumber)
-            {
-                count++;
-                this.setState((prevState, props) => {
-                    list: prevState.list.push({number: gearNumber, item: gear['item'], description: gear['description']})
-                });
-            }
-        }
+        let url = this.props.apiHost + '/gear/' + gearNumber;
+        fetch(url, {
+            method: 'GET',
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => {
+                console.log(response);
 
-        if (count == 0)
-            this.setState({open: true});
-        else if (count > 1)
-            this.setState({multiple: true, open: true});
+                let count = 0;
+                for (let i = 0; i < response.length; i++) {
+                    let gear = response[i];
+                    this.setState(prevState => ({
+                        list: [...prevState.list, {
+                            number: gearNumber,
+                            item: gear['item'],
+                            description: gear['description']
+                        }]
+                    }));
+                    count++;
+                }
+
+                if (count == 0)
+                    this.setState({open: true});
+                else if (count > 1)
+                    this.setState({multiple: true, open: true});
+
+                this.setState({validating: false});
+
+            });
     }
 
     handleClose = () => {
@@ -112,6 +127,15 @@ class CheckoutCart extends React.Component {
                 </ListItem>
             );
 
+        let validating;
+        if (this.state.validating == true)
+            validating = (
+                <ListItem>
+                    <CircularProgress />
+                </ListItem>);
+        else
+            validating = null;
+
 
         return (
             <div className={classes.root}>
@@ -137,10 +161,12 @@ class CheckoutCart extends React.Component {
 
                     {validatedGearItemsJSX}
 
+                    {validating}
+
                     <Divider/>
 
                     <ListItem>
-                        <TextField autoFocus placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
+                        <TextField label="Add to Cart" placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
                         <Tooltip id="tooltip-fab" title="Add to Gear Cart">
                             <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
                                 <AddIcon />
