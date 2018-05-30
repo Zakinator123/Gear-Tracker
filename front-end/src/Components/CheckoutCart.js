@@ -17,6 +17,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Divider from '@material-ui/core/Divider';
 
 
 const styles = theme => ({
@@ -32,22 +33,19 @@ class CheckoutCart extends React.Component {
     constructor(props)
     {
         super(props);
-        this.addTextField = this.addTextField.bind(this);
         this.validateGear = this.validateGear.bind(this);
-        this.addPlus = this.addPlus.bind(this);
 
         this.state = {
             list: [],
             open: false,
             multiple: false,
-            plusVisible : true,
-            textFieldVisible : false,
+            textFieldVisible : true,
             textFieldValue: ''
         };
     }
 
-    validateGear(e) {
-        let gearNumber = e.target.value;
+    validateGear() {
+        let gearNumber = this.state.textFieldValue;
         let gearList = this.props.data;
 
         let count = 0;
@@ -67,105 +65,52 @@ class CheckoutCart extends React.Component {
         if (count == 0)
             this.setState({open: true});
         else if (count > 1)
-            this.setState({multiple: true, open: true})
-
-    }
-
-    addPlus(e) {
-        this.setState({plusVisible: true, textFieldValue : e.target.value});
-    }
-
-    addTextField() {
-        this.setState({
-            plusVisible: false,
-            textFieldVisible: true,
-            textFieldValue: ''
-        });
+            this.setState({multiple: true, open: true});
     }
 
     handleClose = () => {
         this.setState({ open: false, multiple: false });
     };
 
+    handleChange = (e) => {
+        this.setState({textFieldValue: e.target.value});
+    };
+
     render() {
         const { classes } = this.props;
 
-        console.log("plus state visible" + this.state.plusVisible);
-
         let dialogMessage;
-        if (this.state.multiple)
+        if (this.state.multiple == false)
             dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database). Please accession the gear to check it out.</Typography>;
         else
             dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database. All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
 
-        let plus;
-        if (this.state.plusVisible)
-            plus = (
-                <ListItem>
-                    <Tooltip id="tooltip-fab" title="Add to Gear Cart">
-                        <Button variant="fab" mini onClick={this.addTextField} style={{margin: 'auto'}} color="primary" aria-label="add">
-                            <AddIcon />
-                        </Button>
-                    </Tooltip>
-                </ListItem>
-            );
-        else
-            plus = null;
+        // List of gear values:
+        let validatedGearItemsJSX;
 
-        let textField;
-        if (this.state.textFieldVisible)
-            textField = (
-                <ListItem>
-                    <TextField autoFocus onChange={this.addPlus} onBlur={this.validateGear} placeholder="Add Gear Number Here" value={this.state.textFieldValue}/>
+        if (this.state.list.length > 0) {
+            let validatedGearItems = this.state.list;
+            validatedGearItemsJSX = validatedGearItems.map((gearItem) => (<ListItem>
+                <ListItemText
+                    primary={gearItem['number'] + ' - ' + gearItem['item']}
+                    secondary={gearItem['description']}
+                />
+                <ListItemSecondaryAction>
                     <Tooltip id="tooltip-icon" title="Delete">
-                        <IconButton aria-label="Delete">
+                        <IconButton aria-label="Delete from Cart">
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
+                </ListItemSecondaryAction>
+            </ListItem>));
+        }
+        else
+            validatedGearItemsJSX = (
+                <ListItem>
+                    <ListItemText primary="Cart is Empty - Add Gear by typing into the box below."/>
+                    <Divider/>
                 </ListItem>
             );
-        else
-            textField = null;
-
-        // List of gear values:
-        let validatedGearItems = this.state.list;
-
-                let validatedGearItemsJSX = validatedGearItems.map((gearItem) => (<ListItem>
-                        <ListItemText
-                            inset={true}
-                            primary={gearItem['number'] + ' - ' + gearItem['item']}
-                            secondary={gearItem['description']}
-                        />
-                        <ListItemSecondaryAction>
-                            <Tooltip id="tooltip-icon" title="Delete">
-                                <IconButton aria-label="Delete from Cart">
-                                    <DeleteIcon />
-                                </IconButton>
-                            </Tooltip>
-                        </ListItemSecondaryAction>
-                    </ListItem>));
-
-        // {/*let validatedGearItemsJSX;*/}
-        // {/*for (let i = 0; i < validatedGearItems.length; i++)*/}
-        // {/*{*/}
-        //     {/*let gearItem = validatedGearItems[i];*/}
-        //     {/*let gearItemPrimary = gearItem['number'] + gearItem['item'];*/}
-        //
-        //     {/*validatedGearItemsJSX += <ListItem>*/}
-        //                 {/*<ListItemText*/}
-        //                     {/*inset={true}*/}
-        //                     {/*primary={gearItemPrimary}*/}
-        //                     secondary={gearItem['description']}
-        //                 />
-        //                 <ListItemSecondaryAction>
-        //                     <Tooltip id="tooltip-icon" title="Delete">
-        //                         <IconButton aria-label="Delete from Cart">
-        //                             <DeleteIcon />
-        //                         </IconButton>
-        //                     </Tooltip>
-        //                 </ListItemSecondaryAction>
-        //             </ListItem>
-        // }
 
 
         return (
@@ -174,8 +119,7 @@ class CheckoutCart extends React.Component {
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
-                    aria-labelledby="form-dialog-title"
-                >
+                    aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title">Invalid Gear Entry</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
@@ -189,13 +133,20 @@ class CheckoutCart extends React.Component {
                     </DialogActions>
                 </Dialog>
 
-
                 <List dense={true} subheader={<Typography variant="title"> Gear Checkout Cart</Typography>}>
 
                     {validatedGearItemsJSX}
-                    {textField}
-                    {plus}
 
+                    <Divider/>
+
+                    <ListItem>
+                        <TextField autoFocus placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
+                        <Tooltip id="tooltip-fab" title="Add to Gear Cart">
+                            <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
+                                <AddIcon />
+                            </Button>
+                        </Tooltip>
+                    </ListItem>
                 </List>
 
             </div>
@@ -208,31 +159,3 @@ CheckoutCart.propTypes = {
 };
 
 export default withStyles(styles)(CheckoutCart);
-
-//
-// <ListItem>
-//                         <ListItemText
-//                             primary="Single-line item"
-//                             secondary={'Secondary text'}
-//                         />
-//                         <ListItemSecondaryAction>
-//                             <Tooltip id="tooltip-icon" title="Delete">
-//                                 <IconButton aria-label="Delete from Cart">
-//                                     <DeleteIcon />
-//                                 </IconButton>
-//                             </Tooltip>
-//                         </ListItemSecondaryAction>
-//                     </ListItem>
-//                     <ListItem>
-//                         <ListItemText
-//                             primary="Single-line item"
-//                             secondary={'Secondary text'}
-//                         />
-//                         <ListItemSecondaryAction>
-//                             <Tooltip id="tooltip-icon" title="Delete">
-//                                 <IconButton aria-label="Delete">
-//                                     <DeleteIcon />
-//                                 </IconButton>
-//                             </Tooltip>
-//                         </ListItemSecondaryAction>
-//                     </ListItem>
