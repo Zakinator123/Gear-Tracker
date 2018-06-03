@@ -16,36 +16,61 @@ const styles = theme => ({
     },
 });
 
-function DateTimePicker(props) {
-    const { classes } = props;
+class DateTimePicker extends React.Component {
+    constructor(props) {
+        super(props);
+        this.classes = props;
 
-    let weekFromTodayMilliseconds = new Date(Date.now() + 604800000);
-    console.log(weekFromTodayMilliseconds.getMilliseconds());
-    let weekFromToday = new Date(weekFromTodayMilliseconds);
+        // Get initial date to populate picker: By default this is 7 days from now.
+        let weekFromTodayMilliseconds = new Date(Date.now() + 604800000);
+        console.log(weekFromTodayMilliseconds.getMilliseconds());
+        let weekFromToday = new Date(weekFromTodayMilliseconds);
 
-    let datetime = weekFromToday.getFullYear() + "-"
-        + "0" + (weekFromToday.getMonth()+1) + "-"
-        + "0" + weekFromToday.getDate() +  "T"
-        + "23:59";
+        let date;
+        if (weekFromToday.getDate().toString().length > 1)
+            date = weekFromToday.getDate().toString();
+        else
+            date = "0" + weekFromToday.getDate();
 
-    console.log(datetime);
+        let month;
+        if ((weekFromToday.getMonth() + 1).toString().length > 1)
+            month = (weekFromToday.getMonth() + 1).toString();
+        else
+            month = "0" + (weekFromToday.getMonth() + 1);
 
-    return (
-        <div>
-            <Typography variant="title">Gear Due Date</Typography> <br/>
-            <form className={classes.container} noValidate>
-                <TextField
-                    id="datetime-local"
-                    type="datetime-local"
-                    defaultValue={datetime}
-                    className={classes.textField}
-                    InputLabelProps={{
-                        shrink: true,
-                    }}
-                />
-            </form>
-        </div>
-    );
+        let datetime = weekFromToday.getFullYear() + "-"
+            + month + "-"
+            + date + "T"
+            + "23:59";
+
+        props.setDateTime(datetime);
+        this.handleChange = this.handleChange.bind(this);
+    }
+
+    handleChange(e){
+        let newDateTime = e.target.value;
+        this.props.setDateTime(newDateTime);
+    }
+
+    render() {
+        return (
+            <div>
+                <Typography variant="title">Gear Due Date</Typography> <br/>
+                <form className={this.classes.container} noValidate>
+                    <TextField
+                        id="datetime-local"
+                        type="datetime-local"
+                        value={this.props.datetime}
+                        onChange={this.handleChange}
+                        className={this.classes.textField}
+                        InputLabelProps={{
+                            shrink: true,
+                        }}
+                    />
+                </form>
+            </div>
+        );
+    }
 }
 
 DateTimePicker.propTypes = {

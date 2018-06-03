@@ -35,12 +35,14 @@ class Checkout extends React.Component{
         this.state = {
             member: '',
             list : [],
+            datetime : ''
         };
 
         this.setMember = this.setMember.bind(this);
         this.removeGear = this.removeGear.bind(this);
         this.addGearToList = this.addGearToList.bind(this);
         this.checkoutGear = this.checkoutGear.bind(this);
+        this.setDateTime = this.setDateTime.bind(this);
     }
 
     removeGear(uid) {
@@ -52,6 +54,10 @@ class Checkout extends React.Component{
                     return {list: [...prevState.list]};
                 });
         }
+    }
+
+    setDateTime (newDateTime) {
+        this.setState({datetime: newDateTime})
     }
 
     addGearToList(response) {
@@ -77,6 +83,9 @@ class Checkout extends React.Component{
         let gear_uids = (this.state.list).map(gear => gear['uid']);
         let member = this.state.member;
         console.log(gear_uids);
+        console.log(this.state.datetime);
+        let token = sessionStorage.getItem('token');
+        console.log(token);
 
         // fetch(this.props.apiHost + '/login', {
         //     method: 'POST',
@@ -154,7 +163,7 @@ class Checkout extends React.Component{
                                     </Grid>
                                     <Grid item>
                                         <Paper className={classes.paper}>
-                                            <DateTimePicker/>
+                                            <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
                                         </Paper>
                                     </Grid>
                                 </Grid>
