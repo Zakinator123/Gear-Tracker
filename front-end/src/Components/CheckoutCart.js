@@ -36,7 +36,7 @@ class CheckoutCart extends React.Component {
     {
         super(props);
         this.validateGear = this.validateGear.bind(this);
-        this.removeGear = this.removeGear.bind(this);
+        // this.removeGear = this.removeGear.bind(this);
 
         this.state = {
             list: [],
@@ -48,32 +48,19 @@ class CheckoutCart extends React.Component {
         };
     }
 
-    removeGear(uid) {
-        for (let i = 0; i < this.state.list.length; i++)
-        {
-            if (this.state.list[i]['uid'] == uid)
-                this.setState(prevState=>{
-                    prevState.list.splice(i, 1);
-                    return {list: [...prevState.list]};
-                });
-        }
-    }
-
     validateGear() {
         let gearNumber = this.state.textFieldValue;
         if (gearNumber == '')
             return this.setState({open: true});
 
-        for (let i = 0; i < this.state.list.length; i++) {
-            if (gearNumber == this.state.list[i]['number']) {
-
+        for (let i = 0; i < this.props.list.length; i++) {
+            if (gearNumber == this.props.list[i]['number']) {
                 this.setState({open: true, alreadyAdded: true});
                 return;
             }
         }
 
         this.setState({validating: true});
-
 
         let url = this.props.apiHost + '/gear/' + gearNumber;
         fetch(url, {
@@ -82,21 +69,8 @@ class CheckoutCart extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
 
-                let count = 0;
-                for (let i = 0; i < response.length; i++) {
-                    let gear = response[i];
-                    this.setState(prevState => ({
-                        list: [...prevState.list, {
-                            number: gearNumber,
-                            item: gear['item'],
-                            description: gear['description'],
-                            uid: gear['uid']
-                        }]
-                    }));
-                    count++;
-                }
+                let count = this.props.addGearToList(response);
 
                 if (count == 0)
                     this.setState({open: true});
@@ -129,8 +103,8 @@ class CheckoutCart extends React.Component {
         // List of gear values:
         let validatedGearItemsJSX;
 
-        if (this.state.list.length > 0) {
-            let validatedGearItems = this.state.list;
+        if (this.props.list.length > 0) {
+            let validatedGearItems = this.props.list;
             validatedGearItemsJSX = validatedGearItems.map((gearItem) => (<ListItem key={gearItem['uid']}>
                 <ListItemText
                     primary={gearItem['number'] + ' - ' + gearItem['item']}
@@ -138,7 +112,7 @@ class CheckoutCart extends React.Component {
                 />
                 <ListItemSecondaryAction>
                     <Tooltip id="tooltip-icon" title="Delete">
-                        <IconButton onClick={(e) => this.removeGear(gearItem['uid'])} aria-label="Delete from Cart">
+                        <IconButton onClick={(e) => this.props.removeGear(gearItem['uid'])} aria-label="Delete from Cart">
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
