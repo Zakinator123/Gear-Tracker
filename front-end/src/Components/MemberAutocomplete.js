@@ -1,54 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import keycode from 'keycode';
 import Downshift from 'downshift';
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import Typography from  '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
-// const suggestions = [
-//     { label: 'Afghanistan' },
-//     { label: 'Aland Islands' },
-//     { label: 'Albania' },
-//     { label: 'Algeria' },
-//     { label: 'American Samoa' },
-//     { label: 'Andorra' },
-//     { label: 'Angola' },
-//     { label: 'Anguilla' },
-//     { label: 'Antarctica' },
-//     { label: 'Antigua and Barbuda' },
-//     { label: 'Argentina' },
-//     { label: 'Armenia' },
-//     { label: 'Aruba' },
-//     { label: 'Australia' },
-//     { label: 'Austria' },
-//     { label: 'Azerbaijan' },
-//     { label: 'Bahamas' },
-//     { label: 'Bahrain' },
-//     { label: 'Bangladesh' },
-//     { label: 'Barbados' },
-//     { label: 'Belarus' },
-//     { label: 'Belgium' },
-//     { label: 'Belize' },
-//     { label: 'Benin' },
-//     { label: 'Bermuda' },
-//     { label: 'Bhutan' },
-//     { label: 'Bolivia, Plurinational State of' },
-//     { label: 'Bonaire, Sint Eustatius and Saba' },
-//     { label: 'Bosnia and Herzegovina' },
-//     { label: 'Botswana' },
-//     { label: 'Bouvet Island' },
-//     { label: 'Brazil' },
-//     { label: 'British Indian Ocean Territory' },
-//     { label: 'Brunei Darussalam' },
-// ];
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        // height: 250,
     },
     container: {
         flexGrow: 1,
@@ -75,6 +37,7 @@ class MemberSearch extends React.Component {
         super(props);
         this.suggestions = "Loading suggestions, please wait";
         let url = this.props.apiHost + '/get_active_members';
+        this.state = {fetchingMembers : true};
         fetch(url, {
             method: 'GET',
             headers:{
@@ -85,8 +48,10 @@ class MemberSearch extends React.Component {
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
                 console.log(response);
-                if (response['status'] !== 'Success')
+                if (response['status'] !== 'Success') {
                     this.suggestions = response;
+                    this.setState({fetchingMembers: false});
+                }
                 else {
                     console.log("Something went wrong with the API request.")
                 }
@@ -146,9 +111,11 @@ class MemberSearch extends React.Component {
     render() {
         const { classes } = this.props;
 
-        return (
-            <div className={classes.root}>
-                <Downshift
+        let jsx;
+        if (this.state.fetchingMembers)
+            jsx = <CircularProgress />;
+        else
+            jsx = (<Downshift
                 onChange={selection => {
                     console.log(selection);
                     this.props.setMember(selection);
@@ -179,7 +146,11 @@ class MemberSearch extends React.Component {
                             ) : null}
                         </div>
                     )}
-                </Downshift>
+                </Downshift>);
+
+        return (
+            <div className={classes.root}>
+                {jsx}
             </div>
         )
     }
