@@ -36,20 +36,44 @@ class CheckoutCart extends React.Component {
     {
         super(props);
         this.validateGear = this.validateGear.bind(this);
+        this.removeGear = this.removeGear.bind(this);
 
         this.state = {
             list: [],
             open: false,
             multiple: false,
-            textFieldVisible : true,
             textFieldValue: '',
             validating: false,
+            alreadyAdded: false
         };
+    }
+
+    removeGear(uid) {
+        for (let i = 0; i < this.state.list.length; i++)
+        {
+            if (this.state.list[i]['uid'] == uid)
+                this.setState(prevState=>{
+                    prevState.list.splice(i, 1);
+                    return {list: [...prevState.list]};
+                });
+        }
     }
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;
+        if (gearNumber == '')
+            return this.setState({open: true});
+
+        for (let i = 0; i < this.state.list.length; i++) {
+            if (gearNumber == this.state.list[i]['number']) {
+
+                this.setState({open: true, alreadyAdded: true});
+                return;
+            }
+        }
+
         this.setState({validating: true});
+
 
         let url = this.props.apiHost + '/gear/' + gearNumber;
         fetch(url, {
@@ -67,7 +91,8 @@ class CheckoutCart extends React.Component {
                         list: [...prevState.list, {
                             number: gearNumber,
                             item: gear['item'],
-                            description: gear['description']
+                            description: gear['description'],
+                            uid: gear['uid']
                         }]
                     }));
                     count++;
@@ -79,12 +104,11 @@ class CheckoutCart extends React.Component {
                     this.setState({multiple: true, open: true});
 
                 this.setState({validating: false});
-
             });
     }
 
     handleClose = () => {
-        this.setState({ open: false, multiple: false });
+        this.setState({ open: false, multiple: false, alreadyAdded: false});
     };
 
     handleChange = (e) => {
@@ -95,9 +119,11 @@ class CheckoutCart extends React.Component {
         const { classes } = this.props;
 
         let dialogMessage;
-        if (this.state.multiple == false)
+        if (this.state.alreadyAdded == true)
+            dialogMessage= <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
+        else if (this.state.multiple == false)
             dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database). Please accession the gear to check it out.</Typography>;
-        else
+        else if (this.state.multiple)
             dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database. All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
 
         // List of gear values:
@@ -105,14 +131,14 @@ class CheckoutCart extends React.Component {
 
         if (this.state.list.length > 0) {
             let validatedGearItems = this.state.list;
-            validatedGearItemsJSX = validatedGearItems.map((gearItem) => (<ListItem>
+            validatedGearItemsJSX = validatedGearItems.map((gearItem) => (<ListItem key={gearItem['uid']}>
                 <ListItemText
                     primary={gearItem['number'] + ' - ' + gearItem['item']}
                     secondary={gearItem['description']}
                 />
                 <ListItemSecondaryAction>
                     <Tooltip id="tooltip-icon" title="Delete">
-                        <IconButton aria-label="Delete from Cart">
+                        <IconButton onClick={(e) => this.removeGear(gearItem['uid'])} aria-label="Delete from Cart">
                             <DeleteIcon />
                         </IconButton>
                     </Tooltip>
@@ -122,7 +148,7 @@ class CheckoutCart extends React.Component {
         else
             validatedGearItemsJSX = (
                 <ListItem>
-                    <ListItemText primary="Cart is Empty - Add Gear by typing into the box below."/>
+                    <ListItemText primary="Cart is Empty"/>
                     <Divider/>
                 </ListItem>
             );
