@@ -113,7 +113,7 @@ class MemberSearch extends React.Component {
 
         let jsx;
         if (this.state.fetchingMembers)
-            jsx = <CircularProgress />;
+            jsx = <CircularProgress/>;
         else
             jsx = (<Downshift
                 onChange={selection => {
