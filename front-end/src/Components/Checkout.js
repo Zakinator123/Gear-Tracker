@@ -9,6 +9,19 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper'
 import { withStyles } from '@material-ui/core/styles';
 
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import green from '@material-ui/core/colors/green';
+import amber from '@material-ui/core/colors/amber';
+import blue from '@material-ui/core/colors/blue';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import WarningIcon from '@material-ui/icons/Warning';
+import IconButton from '@material-ui/core/IconButton';
+import classNames from 'classnames';
+
 
 const styles = theme => ({
     root: {
@@ -28,14 +41,87 @@ const styles = theme => ({
     },
 });
 
+
+const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+};
+
+
+const styles1 = theme => ({
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: '#B71C1C',
+    },
+    info: {
+        backgroundColor: blue[900],
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
+    close:{marginTop: -20},
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+});
+
+function MySnackbarContent(props) {
+    const { classes, className, message, onClose, variant, ...other } = props;
+    const Icon = variantIcon[variant];
+
+    return (
+        <SnackbarContent
+            className={classNames(classes[variant], className)}
+            aria-describedby="client-snackbar"
+            message={
+                <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+                    {message}
+        </span>
+            }
+            action={
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            }
+            {...other}
+        />
+    );
+}
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+
+
 class Checkout extends React.Component{
 
     constructor(props){
         super(props);
+
         this.state = {
             member: '',
             list : [],
-            datetime : ''
+            datetime : '',
+            snackbarVisible: false,
+            snackbarMessage: '',
+            variant: ''
         };
 
         this.setMember = this.setMember.bind(this);
@@ -78,33 +164,32 @@ class Checkout extends React.Component{
         return count;
     }
 
+    handleSnackbarClose = () => {
+        this.setState({snackbarVisible : false})
+    };
+
     checkoutGear() {
 
-        let gear_uids = (this.state.list).map(gear => gear['uid']);
-        let member = this.state.member;
-        console.log(gear_uids);
-        console.log(this.state.datetime);
-        let token = sessionStorage.getItem('token');
-        console.log(token);
+        if (sessionStorage.getItem('token') == 0) {
+            this.setState({snackbarMessage: 'Checkout unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
+            return;
+        }
 
-        // fetch(this.props.apiHost + '/login', {
-        //     method: 'POST',
-        //     body: JSON.stringify({email: this.state.email, password: this.state.password}),
-        //     headers:{
-        //         'Content-Type': 'application/json'
-        //     },
-        //     mode: 'cors'
-        // }).then(response => response.json())
-        //     .catch(error => console.error('Error with HTTP request:', error))
-        //     .then(response => {
-        //         if (response['status'] !== 'Success')
-        //             this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
-        //         else {
-        //             sessionStorage.setItem('token', response['token']);
-        //             this.handleClose();
-        //             this.props.logIn();
-        //         }
-        //     });
+        fetch(this.props.apiHost + '/gear/checkout', {
+            method: 'POST',
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: (this.state.list).map(gear => gear['uid']), member: this.state.member, dueDate: this.state.datetime}),
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => {
+                console.log(response);
+                if (response['status'] == 'Success!')
+                    this.setState({snackbarVisible: true, snackbarMessage: response['gear'].length.toString() + ' pieces of gear were successfully checked out.', variant: 'success'})
+            })
+            .catch(error => console.error(error));
     }
 
     setMember(member) {
@@ -153,14 +238,15 @@ class Checkout extends React.Component{
                                 <Grid container
                                       direction="column"
                                       alignItems="stretch">
-                                    <Grid item>
-                                        <Paper className={classes.paper}>
-                                            <Typography variant="title">Checkout Notes: </Typography>
-                                            <TextField
-                                                multiline
-                                                label="(Optional)"/>
-                                        </Paper>
-                                    </Grid>
+                                    {/*TODO: Finish issue of checkout notes for items and checkout groups.*/}
+                                    {/*<Grid item>*/}
+                                    {/*<Paper className={classes.paper}>*/}
+                                    {/*<Typography variant="title">Cart Checkout Notes: </Typography>*/}
+                                    {/*<TextField*/}
+                                    {/*multiline*/}
+                                    {/*label="(Optional)"/>*/}
+                                    {/*</Paper>*/}
+                                    {/*</Grid>*/}
                                     <Grid item>
                                         <Paper className={classes.paper}>
                                             <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
@@ -177,6 +263,25 @@ class Checkout extends React.Component{
                         </Button>
                     </Grid>
                 </Grid>
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    style={{margin: '2vh'}}
+                    open={this.state.snackbarVisible}
+                    autoHideDuration={7000}
+                    onClose={this.handleSnackbarClose}
+                >
+                    <MySnackbarContentWrapper
+                        onClose={this.handleSnackbarClose}
+                        variant={this.state.variant}
+                        message={this.state.snackbarMessage}
+                    />
+                </Snackbar>
+
+
             </div>
         );
     }

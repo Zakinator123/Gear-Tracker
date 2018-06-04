@@ -20,7 +20,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-
+import classNames from 'classnames';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import green from '@material-ui/core/colors/green';
+import amber from '@material-ui/core/colors/amber';
+import blue from '@material-ui/core/colors/blue';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import WarningIcon from '@material-ui/icons/Warning';
 
 const styles = theme => ({
     root: {
@@ -30,6 +40,74 @@ const styles = theme => ({
     },
 });
 
+const variantIcon = {
+  success: CheckCircleIcon,
+  warning: WarningIcon,
+  error: ErrorIcon,
+  info: InfoIcon,
+};
+
+
+const styles1 = theme => ({
+  success: {
+    backgroundColor: green[600],
+  },
+  error: {
+    backgroundColor: '#B71C1C',
+  },
+  info: {
+    backgroundColor: blue[900],
+  },
+  warning: {
+    backgroundColor: amber[700],
+  },
+  icon: {
+    fontSize: 20,
+  },
+    close:{marginTop: -20},
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing.unit,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+});
+
+function MySnackbarContent(props) {
+  const { classes, className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      className={classNames(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={
+        <IconButton
+          key="close"
+          aria-label="Close"
+          color="inherit"
+          className={classes.close}
+          onClick={onClose}
+        >
+          <CloseIcon className={classes.icon} />
+        </IconButton>
+      }
+      {...other}
+    />
+  );
+}
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+
+
 class CheckoutCart extends React.Component {
 
     constructor(props)
@@ -38,13 +116,23 @@ class CheckoutCart extends React.Component {
         this.validateGear = this.validateGear.bind(this);
         // this.removeGear = this.removeGear.bind(this);
 
+        let message = '';
+        let visible = false;
+        if (sessionStorage.getItem('token') == 0) {
+            message = 'You are in read-only mode. This means that none of your actions will be saved to the database.';
+            visible = true;
+        }
+
         this.state = {
             list: [],
             open: false,
             multiple: false,
             textFieldValue: '',
             validating: false,
-            alreadyAdded: false
+            alreadyAdded: false,
+            snackbarVisible: visible,
+            snackbarMessage: message,
+            variant: 'info'
         };
     }
 
@@ -69,21 +157,47 @@ class CheckoutCart extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-
+                console.log(response);
                 let count = this.props.addGearToList(response);
+
+                let checkedOutList = [];
+                for (let i = 0; i < response.length; i++)
+                    if (response[i]['status_level'] == 1)
+                        checkedOutList.push(response[i]);
+
+                // TODO: Make a check-in dialog that can be used on the spot.
+                if (checkedOutList.length == 1)
+                    this.setState({
+                        variant: 'warning', snackbarVisible: true, snackbarMessage: 'Gear Item #' +
+                        checkedOutList[0]['number'] + ' is already checked out. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'
+                    });
+                else if (checkedOutList.length > 1)
+                {
+                    let messageList = checkedOutList[0]['number'].toString();
+                    for (let i=1; i < checkedOutList.length; i++)
+                        messageList = messageList + ', ' + checkedOutList[i]['number'];
+
+                    this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The follow gear numbers are already checked out: ' + messageList +
+                     'Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
+                }
+
 
                 if (count == 0)
                     this.setState({open: true});
                 else if (count > 1)
                     this.setState({multiple: true, open: true});
 
-                this.setState({validating: false});
+                this.setState({validating: false, textFieldValue: ''});
             });
     }
 
     handleClose = () => {
         this.setState({ open: false, multiple: false, alreadyAdded: false});
     };
+
+    handleSnackbarClose = () => {
+        this.setState({snackbarVisible : false})
+};
 
     handleChange = (e) => {
         this.setState({textFieldValue: e.target.value});
@@ -122,7 +236,7 @@ class CheckoutCart extends React.Component {
         else
             validatedGearItemsJSX = (
                 <ListItem>
-                    <ListItemText primary="Cart is Empty"/>
+                    <ListItemText primary="Cart is Empty, enter a valid gear number below (e.g. 954) to add to cart."/>
                     <Divider/>
                 </ListItem>
             );
@@ -139,6 +253,23 @@ class CheckoutCart extends React.Component {
 
         return (
             <div className={classes.root}>
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    style={{margin: '2vh'}}
+                    open={this.state.snackbarVisible}
+                    autoHideDuration={7000}
+                    onClose={this.handleSnackbarClose}
+                >
+                    <MySnackbarContentWrapper
+                        onClose={this.handleSnackbarClose}
+                        variant={this.state.variant}
+                        message={this.state.snackbarMessage}
+                    />
+                </Snackbar>
 
                 <Dialog
                     open={this.state.open}
@@ -166,7 +297,7 @@ class CheckoutCart extends React.Component {
                     <Divider/>
 
                     <ListItem>
-                        <TextField label="Add to Cart" placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
+                        <TextField label="Add Gear to Cart" type="number" placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
                         <Tooltip id="tooltip-fab" title="Add to Gear Cart">
                             <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
                                 <AddIcon />

@@ -31,7 +31,7 @@ def login():
                                  os.environ['ODC_DB_DATABASE'])
         cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
         sql = "SELECT * FROM m_member WHERE c_email='%s' AND c_password='%s'" % (
-        post_body['email'], post_body['password'])
+            post_body['email'], post_body['password'])
         cursor.execute(sql)
 
         if cursor.rowcount == 0:
@@ -101,25 +101,24 @@ def logout():
 def authenticated_required(f):
     @wraps(f)
     def authenticate(*args, **kwargs):
-
-        if 'token' not in request.headers.get('authorization'):
-            return {'Status': 'Error', 'message': 'No authentication token in API request'}
+        post_body = request.get_json()
+        # if not post_body['authorization']:
+        #     return {'Status': 'Error', 'message': 'No authentication token in API request'}
 
         rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
                                  os.environ['AWS_DB_DATABASE'])
         cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
 
         # Check if user is already logged in:
-        sql = "SELECT * FROM authenticator WHERE authenticator='%s'" % (request.headers.get('authorization'))
+        sql = "SELECT * FROM authenticator WHERE token='%s'" % (post_body['authorization'])
         cursor.execute(sql)
 
-        if cursor.rowcount > 0:
+        if cursor.rowcount > 0:     
             authenticator_data = cursor.fetchone()
             # TODO: Check to make sure token isn't too old.
             return f(*args, **kwargs)
         else:
-            return {'Status': 'Error', 'message': 'Invalid authentication'}
-
+            return jsonify({'Status': 'Error', 'message': 'Invalid authentication'})
     return authenticate
 
 
@@ -146,6 +145,44 @@ def get_gear():
 
     return jsonify(data)
 
+
+@app.route("/gear/checkout", methods=['POST'])
+@authenticated_required
+def checkout_gear():
+    post_body = request.get_json()
+
+    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                             os.environ['AWS_DB_DATABASE'])
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    old_datetime = (post_body['dueDate'] + ':00')
+    sql_datetime = old_datetime.replace('T', ' ')
+
+    not_checked_out = []
+    already_checked_out = []
+    for gear in post_body['gear']:
+        sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear, 1)
+        cursor.execute(sql)
+        if cursor.rowcount > 0:
+            sql = "UPDATE checkout SET member='%s', date_due='%s' WHERE gear_uid=%d" % (post_body['member'], sql_datetime, gear)
+            cursor.execute(sql)
+            rds_db.commit()
+            already_checked_out.append(gear)
+        else:
+            not_checked_out.append(gear)
+
+
+    for gear in not_checked_out:
+        sql = "INSERT INTO checkout (gear_uid, checkout_status, member, date_due) VALUES (%d, %d, '%s', '%s');" % (gear, 1, post_body['member'], sql_datetime)
+        cursor.execute(sql)
+        sql = "UPDATE gear SET status_level = 1 WHERE uid=%d;" % (gear)
+
+    rds_db.commit()
+
+    post_body['status'] = "Success!"
+    post_body['not_checked_out'] = not_checked_out
+    post_body['already_checked_out'] = already_checked_out
+    return jsonify(post_body)
 
 ### Commented out until a credential system is put into place to prevent user information
 ### and passwords being read by malicious users (Non-Hashed Passwords are returned by the database)
