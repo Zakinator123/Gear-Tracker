@@ -145,6 +145,16 @@ def get_gear():
 
     return jsonify(data)
 
+@app.route("/checkout/all")
+def get_checkouts():
+    db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                         os.environ['AWS_DB_DATABASE'])
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM checkout;")
+    data = cursor.fetchall()
+    db.close()
+
+    return jsonify(data)
 
 @app.route("/gear/checkout", methods=['POST'])
 @authenticated_required
