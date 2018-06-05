@@ -80,7 +80,7 @@ class InventoryTable extends React.Component {
                 {
                   Header: "Status",
                   accessor: "status_level",
-                  minWidth: 70,
+                  minWidth: 78,
                   filterMethod: (filter, rows) =>
                     matchSorter(rows, filter.value, { keys: ["status_level"] }),
                   filterAll: true
