@@ -1,7 +1,23 @@
 import React from 'react';
 import ReactTable from "react-table";
-import matchSorter from 'match-sorter'
 import LinearIndeterminate from './Loading';
+import Button from '@material-ui/core/Button';
+
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import green from '@material-ui/core/colors/green';
+import amber from '@material-ui/core/colors/amber';
+import blue from '@material-ui/core/colors/blue';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import WarningIcon from '@material-ui/icons/Warning';
+import IconButton from '@material-ui/core/IconButton';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
+
+import SubRowComponent from './CheckoutTableExpansionRow'
 
 
 class CheckoutTable extends React.Component {
@@ -10,7 +26,10 @@ class CheckoutTable extends React.Component {
 
         this.state = {
             data : [],
-            fetched : false
+            fetched : false,
+            snackbarVisible: true,
+            snackbarMessage: 'To check in, renew, or send a late reminder email for any piece of gear, press the row expansion arrows to the left!',
+            variant: 'info'
         };
 
         fetch(props.apiHost + '/checkout/all')
@@ -19,10 +38,23 @@ class CheckoutTable extends React.Component {
             })
             .then((myJson) => {
                 this.setState({data: myJson,
-                    fetched: true})
+                    fetched: true});
+                console.log(myJson[0]['date_due'].substring(0, 10));
+                let date1 = new Date(myJson['date_due']);
+                console.log(date1);
             });
+
+        this.handleCheckIn = this.handleCheckIn.bind(this);
+        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     }
 
+    handleCheckIn() {
+        this.setState({snackbarVisible: true, snackbarMessage: "This functionality is not available yet. Please use the 'Check In' Tab to check gear in.", variant: 'info'})
+    }
+
+    handleSnackbarClose = () => {
+        this.setState({snackbarVisible : false})
+    };
 
     render() {
 
@@ -35,37 +67,44 @@ class CheckoutTable extends React.Component {
                     showPaginationBottom={false}
                     defaultPageSize={this.state.data.length}
                     minRows={this.state.data.length}
+                    SubComponent={row => {
+                        return (
+                            <SubRowComponent row={row}/>
+                        );
+                    }}
 
                     columns={[
                         {
-                            /*Need to figure out how to modify header styling*/
-                            style: {fontColor:'green'},
                             columns: [
                                 {
                                     Header: "Gear #",
                                     /*Need to find out what 'id' does - look in react-table documentatinon*/
                                     id: "number",
-                                    minWidth: 70,
+                                    minWidth: 50,
                                     accessor: d => d.number,
                                 },
                                 {
                                     Header: "Item Type",
                                     accessor: "item",
+                                    minWidth: 70,
+
                                     /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
                                 },
                                 {
                                     Header: "Checked Out To",
-                                    accessor: "member"
+                                    accessor: "member",
+                                    minWidth: 100,
+
                                 },
                                 {
                                     Header: "Checkout Date",
-                                    minWidth: 150,
+                                    minWidth: 80,
                                     accessor: "date_checked_out",
                                 },
                                 {
                                     Header: "Due Date",
                                     accessor: "date_due",
-                                    minWidth: 150,
+                                    minWidth: 80,
                                 },
                                 {
                                     Header: "Officer Out",
@@ -83,10 +122,96 @@ class CheckoutTable extends React.Component {
 
         return (
             <div style={{marginBottom: '12vh', height: '100%', }}>
+
                 {jsx}
+
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    style={{margin: '2vh'}}
+                    open={this.state.snackbarVisible}
+                    autoHideDuration={7000}
+                    onClose={this.handleSnackbarClose}
+                >
+                    <MySnackbarContentWrapper
+                        onClose={this.handleSnackbarClose}
+                        variant={this.state.variant}
+                        message={this.state.snackbarMessage}
+                    />
+                </Snackbar>
+
             </div>
         );
     }
 }
+
+const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+};
+
+
+const styles1 = theme => ({
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: '#B71C1C',
+    },
+    info: {
+        backgroundColor: blue[900],
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
+    close:{marginTop: -20},
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+});
+
+function MySnackbarContent(props) {
+    const { classes, className, message, onClose, variant, ...other } = props;
+    const Icon = variantIcon[variant];
+
+    return (
+        <SnackbarContent
+            className={classNames(classes[variant], className)}
+            aria-describedby="client-snackbar"
+            message={
+                <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+                    {message}
+        </span>
+            }
+            action={
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            }
+            {...other}
+        />
+    );
+}
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default CheckoutTable;

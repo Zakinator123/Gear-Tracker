@@ -33,7 +33,7 @@ def login():
         sql = "SELECT * FROM m_member WHERE c_email='%s' AND c_password='%s'" % (
             post_body['email'], post_body['password'])
         cursor.execute(sql)
-
+        odc_db.close()
         if cursor.rowcount == 0:
             return jsonify({'status': 'Error', 'message': 'Error on Login - incorrect email/password'})
     except Exception as e:
@@ -73,6 +73,7 @@ def login():
     sql = "INSERT INTO authenticator (token, userid) VALUES ('%s', '%d')" % (auth_token, member_id)
     cursor.execute(sql)
     rds_db.commit()
+    rds_db.close()
 
     return jsonify({'status': 'Success', 'token': auth_token, 'message': 'Successfully logged in as privileged user'})
 
@@ -92,6 +93,7 @@ def logout():
         sql = "DELETE FROM authenticator WHERE token='%s'" % (token)
         cursor.execute(sql)
         db.commit()
+        db.close()
     except:
         return jsonify({'status': 'Error', 'message': 'Error deleting authenticator'})
 
@@ -113,6 +115,7 @@ def authenticated_required(f):
         sql = "SELECT * FROM authenticator WHERE token='%s'" % (post_body['authorization'])
         cursor.execute(sql)
 
+        rds_db.close()
         if cursor.rowcount > 0:     
             authenticator_data = cursor.fetchone()
             # TODO: Check to make sure token isn't too old.
@@ -150,7 +153,7 @@ def get_checkouts():
     db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
                          os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT checkout.*, gear.number, gear.item, gear.description FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid ORDER BY checkout.date_due;")
+    cursor.execute("SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.gear_uid, checkout.officer_out, checkout.member, gear.number, gear.item, gear.description FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid")
     data = cursor.fetchall()
     db.close()
     return jsonify(data)
@@ -231,6 +234,7 @@ def get_active_members():
     cursor.execute(
         "select m_member.c_uid, c_full_name, c_email from m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_expiration_date != '2020-12-31' and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;")
     data = cursor.fetchall()
+    db.close()
 
     return jsonify(data)
 
