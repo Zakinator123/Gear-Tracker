@@ -47,7 +47,7 @@ class MemberSearch extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
+                // console.log(response);
                 if (response['status'] !== 'Success') {
                     this.suggestions = response;
                     this.setState({fetchingMembers: false});
@@ -117,7 +117,7 @@ class MemberSearch extends React.Component {
         else
             jsx = (<Downshift
                 onChange={selection => {
-                    console.log(selection);
+                    {/*console.log(selection);*/}
                     this.props.setMember(selection);
                 }}
                 >
