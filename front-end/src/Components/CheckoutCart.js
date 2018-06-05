@@ -41,68 +41,68 @@ const styles = theme => ({
 });
 
 const variantIcon = {
-  success: CheckCircleIcon,
-  warning: WarningIcon,
-  error: ErrorIcon,
-  info: InfoIcon,
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
 };
 
 
 const styles1 = theme => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: '#B71C1C',
-  },
-  info: {
-    backgroundColor: blue[900],
-  },
-  warning: {
-    backgroundColor: amber[700],
-  },
-  icon: {
-    fontSize: 20,
-  },
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: '#B71C1C',
+    },
+    info: {
+        backgroundColor: blue[900],
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
     close:{marginTop: -20},
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing.unit,
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 });
 
 function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
+    const { classes, className, message, onClose, variant, ...other } = props;
+    const Icon = variantIcon[variant];
 
-  return (
-    <SnackbarContent
-      className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
-      message={
-        <span id="client-snackbar" className={classes.message}>
+    return (
+        <SnackbarContent
+            className={classNames(classes[variant], className)}
+            aria-describedby="client-snackbar"
+            message={
+                <span id="client-snackbar" className={classes.message}>
           <Icon className={classNames(classes.icon, classes.iconVariant)} />
-          {message}
+                    {message}
         </span>
-      }
-      action={
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={onClose}
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>
-      }
-      {...other}
-    />
-  );
+            }
+            action={
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            }
+            {...other}
+        />
+    );
 }
 
 const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
@@ -119,7 +119,7 @@ class CheckoutCart extends React.Component {
         let message = '';
         let visible = false;
         if (sessionStorage.getItem('token') == 0) {
-            message = 'You are in read-only mode. This means that none of your actions will be saved to the database.';
+            message = 'You are in view-only mode. This means that none of your actions will be saved to the database.';
             visible = true;
         }
 
@@ -178,7 +178,7 @@ class CheckoutCart extends React.Component {
                         messageList = messageList + ', ' + checkedOutList[i]['number'];
 
                     this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The follow gear numbers are already checked out: ' + messageList +
-                     'Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
+                    'Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
                 }
 
 
@@ -197,7 +197,7 @@ class CheckoutCart extends React.Component {
 
     handleSnackbarClose = () => {
         this.setState({snackbarVisible : false})
-};
+    };
 
     handleChange = (e) => {
         this.setState({textFieldValue: e.target.value});
@@ -207,12 +207,16 @@ class CheckoutCart extends React.Component {
         const { classes } = this.props;
 
         let dialogMessage;
-        if (this.state.alreadyAdded == true)
-            dialogMessage= <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
-        else if (this.state.multiple == false)
+        let dialogTitle;
+        if (this.state.alreadyAdded == true){
+            dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
+            dialogTitle = "Duplicate Gear Entry";}
+        else if (this.state.multiple == false){
             dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database). Please accession the gear to check it out.</Typography>;
-        else if (this.state.multiple)
+            dialogTitle = "Invalid Gear Entry";}
+        else if (this.state.multiple){
             dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database. All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
+            dialogTitle = "Multiple Gear Items Added";}
 
         // List of gear values:
         let validatedGearItemsJSX;
@@ -275,7 +279,7 @@ class CheckoutCart extends React.Component {
                     open={this.state.open}
                     onClose={this.handleClose}
                     aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Invalid Gear Entry</DialogTitle>
+                    <DialogTitle id="form-dialog-title">{dialogTitle}</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             {dialogMessage}

@@ -175,9 +175,16 @@ class Checkout extends React.Component{
             return;
         }
 
+        if (this.state.member == '')
+        {
+            this.setState({snackbarMessage: 'Checkout unsuccessful - please enter a valid member name.', snackbarVisible: true, variant: 'error'});
+            return;
+        }
+
         fetch(this.props.apiHost + '/gear/checkout', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: (this.state.list).map(gear => gear['uid']), member: this.state.member, dueDate: this.state.datetime}),
+            // body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: (this.state.list).map(gear => gear['uid']), member: this.state.member, dueDate: this.state.datetime}),
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list, member: this.state.member, dueDate: this.state.datetime}),
             headers:{
                 'Content-Type': 'application/json'
             },
@@ -186,15 +193,20 @@ class Checkout extends React.Component{
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
                 console.log(response);
-                if (response['status'] == 'Success!')
-                    this.setState({snackbarVisible: true, snackbarMessage: response['gear'].length.toString() + ' pieces of gear were successfully checked out.', variant: 'success'})
+                if (response['status'] == 'Success!') {
+                    this.setState({
+                        snackbarVisible: true,
+                        snackbarMessage: response['gear'].length.toString() + ' piece(s) of gear were successfully checked out to ' + response['member'],
+                        variant: 'success',
+                        list: [],
+                    })
+                }
             })
             .catch(error => console.error(error));
     }
 
     setMember(member) {
         this.setState({member: member});
-        console.log(member);
     }
 
 

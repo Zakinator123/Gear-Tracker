@@ -7,7 +7,7 @@ import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import InventoryTable from '../Components/Table';
 import Checkout from '../Components/Checkout'
-import CheckoutTable from '../Components/ViewCheckouts.js'
+import CheckoutTable from '../Components/CheckoutTable.js'
 
 function TabContainer(props) {
     return (
@@ -64,9 +64,9 @@ class ScrollableTabsButtonAuto extends React.Component {
                     </Tabs>
                 </AppBar>
                 {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} data={this.props.data} /> </TabContainer>}
-                {value === 1 && <TabContainer> <CheckoutTable apiHost={this.props.apiHost}/> </TabContainer>}
+                {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}
                 {/*{value === 1 && <TabContainer> To be completed. </TabContainer>}*/}
-                {value === 2 && <TabContainer> <InventoryTable loggedIn={this.props.loggedIn} data={this.props.data}/> </TabContainer>}
+                {value === 2 &&  <InventoryTable loggedIn={this.props.loggedIn} data={this.props.data}/> }
                 {/*{value === 4 && <TabContainer>Item Five</TabContainer>}*/}
                 {/*{value === 5 && <TabContainer>Item Six</TabContainer>}*/}
                 {/*{value === 6 && <TabContainer>Item Seven</TabContainer>}*/}

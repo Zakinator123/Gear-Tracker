@@ -150,10 +150,9 @@ def get_checkouts():
     db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
                          os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT * FROM checkout;")
+    cursor.execute("SELECT checkout.*, gear.number, gear.item, gear.description FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid ORDER BY checkout.date_due;")
     data = cursor.fetchall()
     db.close()
-
     return jsonify(data)
 
 @app.route("/gear/checkout", methods=['POST'])
@@ -165,16 +164,32 @@ def checkout_gear():
                              os.environ['AWS_DB_DATABASE'])
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
 
+    # Get officer name
+    token = post_body['authorization']
+    sql = "SELECT userid FROM authenticator WHERE token='%s'" % (token)
+    cursor.execute(sql)
+    officer_uid = cursor.fetchone()['userid']
+
+    odc_db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'],
+                             os.environ['ODC_DB_DATABASE'])
+    cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
+    sql = "SELECT * FROM m_member WHERE c_uid=%d" % (officer_uid)
+    cursor.execute(sql)
+    officer_name = cursor.fetchone()['c_full_name']
+    odc_db.close()
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+    print(officer_name)
+
     old_datetime = (post_body['dueDate'] + ':00')
     sql_datetime = old_datetime.replace('T', ' ')
 
     not_checked_out = []
     already_checked_out = []
     for gear in post_body['gear']:
-        sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear, 1)
+        sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear['uid'], 1)
         cursor.execute(sql)
         if cursor.rowcount > 0:
-            sql = "UPDATE checkout SET member='%s', date_due='%s' WHERE gear_uid=%d" % (post_body['member'], sql_datetime, gear)
+            sql = "UPDATE checkout SET member='%s', date_due='%s' officer_out='%s' WHERE gear_uid=%d" % (post_body['member'], sql_datetime, officer_name, gear['uid'])
             cursor.execute(sql)
             rds_db.commit()
             already_checked_out.append(gear)
@@ -183,12 +198,15 @@ def checkout_gear():
 
 
     for gear in not_checked_out:
-        sql = "INSERT INTO checkout (gear_uid, checkout_status, member, date_due) VALUES (%d, %d, '%s', '%s');" % (gear, 1, post_body['member'], sql_datetime)
+        sql = "INSERT INTO checkout (gear_uid, checkout_status, member, date_due, officer_out) VALUES (%d, %d, '%s', '%s', '%s');" % (gear['uid'], 1, post_body['member'], sql_datetime, officer_name)
         cursor.execute(sql)
-        sql = "UPDATE gear SET status_level = 1 WHERE uid=%d;" % (gear)
+        sql = "UPDATE gear SET status_level = 1 WHERE uid=%d" % (gear['uid'])
+        cursor.execute(sql)
 
     rds_db.commit()
+    rds_db.close()
 
+    # TODO: Something with this message.
     post_body['status'] = "Success!"
     post_body['not_checked_out'] = not_checked_out
     post_body['already_checked_out'] = already_checked_out
