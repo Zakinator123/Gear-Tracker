@@ -8,6 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import InventoryTable from '../Components/Table';
 import Checkout from '../Components/Checkout'
 import CheckoutTable from '../Components/CheckoutTable.js'
+import CheckIn from '../Components/CheckIn';
 
 function TabContainer(props) {
     return (
@@ -50,26 +51,20 @@ class ScrollableTabsButtonAuto extends React.Component {
                         onChange={this.handleChange}
                         indicatorColor="primary"
                         textColor="primary"
+                        scrollButtons="on"
                         scrollable
-                        scrollButtons="auto"
-                    >
+                        className={classes.tabs}>
 
                         <Tab label="Check Out Gear" />
                         <Tab label="View Checkouts" />
-                        {/*<Tab label="Check In Gear" />*/}
+                        <Tab label="Check In Gear" />
                         <Tab label="Inventory" />
-                        {/*<Tab label="Item Five" />*/}
-                        {/*<Tab label="Item Six" />*/}
-                        {/*<Tab label="Item Seven" />*/}
                     </Tabs>
                 </AppBar>
-                {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} data={this.props.data} /> </TabContainer>}
+                {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} /> </TabContainer>}
                 {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}
-                {/*{value === 1 && <TabContainer> To be completed. </TabContainer>}*/}
-                {value === 2 &&  <InventoryTable loggedIn={this.props.loggedIn} data={this.props.data}/> }
-                {/*{value === 4 && <TabContainer>Item Five</TabContainer>}*/}
-                {/*{value === 5 && <TabContainer>Item Six</TabContainer>}*/}
-                {/*{value === 6 && <TabContainer>Item Seven</TabContainer>}*/}
+                {value === 2 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
+                {value === 3 &&  <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
             </div>
         );
     }

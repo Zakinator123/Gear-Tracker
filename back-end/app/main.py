@@ -153,7 +153,7 @@ def get_checkouts():
     db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
                          os.environ['AWS_DB_DATABASE'])
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.gear_uid, checkout.officer_out, checkout.member, gear.number, gear.item, gear.description FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid")
+    cursor.execute("SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.gear_uid, checkout.officer_out, checkout.member, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0")
     data = cursor.fetchall()
     db.close()
     return jsonify(data)
@@ -225,6 +225,32 @@ def checkout_gear():
 #     data=cursor.fetchone()
 #
 #     return jsonify(data)
+
+@app.route("/gear/checkin", methods=['POST'])
+@authenticated_required
+def checkin_gear():
+    post_body = request.get_json()
+
+    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                             os.environ['AWS_DB_DATABASE'])
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    count = 0
+    for gear in post_body['gear']:
+        sql = "SELECT * FROM gear WHERE uid=%d" % (gear['uid'])
+        cursor.execute(sql)
+        if cursor.fetchone()['status_level'] == 1:
+            sql = "UPDATE gear SET status_level = 0 WHERE uid=%d" % (gear['uid'])
+            cursor.execute(sql)
+            rds_db.commit()
+            sql = "UPDATE checkout SET checkout_status=0 WHERE gear_uid=%d" % (gear['uid'])
+            cursor.execute(sql)
+            rds_db.commit()
+            count = count + 1
+
+    rds_db.close()
+    return jsonify({'status': 'Success!', 'count': count})
+
 
 @app.route("/get_active_members")
 def get_active_members():
