@@ -5,6 +5,7 @@ import matchSorter from 'match-sorter'
 import LoadingBar from './Loading';
 import 'react-table/react-table.css'
 import './Table.css';
+import Fade from '@material-ui/core/Fade';
 
 
 class InventoryTable extends React.Component {
@@ -63,9 +64,9 @@ class InventoryTable extends React.Component {
                             break;
                     }
                 }
-                console.log("This gets executed");
                 this.setState({data: myJson, fetched: true});
-                console.log("This also gets executed!");
+                if (!this.props.loggedIn)
+                    this.props.connectionEstablished();
             });
     }
 
@@ -86,82 +87,83 @@ class InventoryTable extends React.Component {
         let jsx;
         if (this.state.fetched)
         {
-            console.log("Even this gets executed!");
             jsx = (
                 <div className={divClassName}>
 
                     {explanationText}
+                    <Fade in={true} mountOnEnter unmountOnExit>
 
-                    <ReactTable
-                        style={{height:'100%'}}
-                        data={this.state.data}
-                        filterable
-                        defaultFilterMethod={(filter, row) =>
-                        String(row[filter.id]) === filter.value}
-                        showPaginationBottom={false}
-                        defaultPageSize={this.state.data.length}
-                        minRows={this.state.data.length}
+                        <ReactTable
+                            style={{height:'100%'}}
+                            data={this.state.data}
+                            filterable
+                            defaultFilterMethod={(filter, row) =>
+                            String(row[filter.id]) === filter.value}
+                            showPaginationBottom={false}
+                            defaultPageSize={this.state.data.length}
+                            minRows={this.state.data.length}
 
-                        columns={[
-                            {
-                                /*Need to figure out how to modify header styling*/
-                                style: {fontColor:'green'},
-                                columns: [
-                                    {
-                                        Header: "Number",
-                                        /*Need to find out what 'id' does - look in react-table documentatinon*/
-                                        id: "number",
-                                        minWidth: 53,
-                                        accessor: d => d.number,
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["number"] }),
-                                        filterAll: true
-                                    },
-                                    {
-                                        Header: "Item Type",
-                                        accessor: "item",
-                                        /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["item"] }),
-                                        filterAll: true
-                                    },
-                                    {
-                                        Header: "Description",
-                                        accessor: "description",
-                                        minWidth: 200,
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["description"] }),
-                                        filterAll: true
-                                    },
-                                    {
-                                        Header: "Condition",
-                                        minWidth: 60,
-                                        accessor: "condition_level",
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["condition_level"] }),
-                                        filterAll: true
-                                    },
-                                    {
-                                        Header: "Status",
-                                        accessor: "status_level",
-                                        minWidth: 78,
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["status_level"] }),
-                                        filterAll: true
-                                    },
-                                    {
-                                        Header: "Notes",
-                                        accessor: "notes",
-                                        minWidth: 150,
-                                        filterMethod: (filter, rows) =>
-                                            matchSorter(rows, filter.value, { keys: ["notes"] }),
-                                        filterAll: true
-                                    },
-                                ]
-                            }
-                        ]}
-                        className="-striped -highlight"
-                    />
+                            columns={[
+                                {
+                                    /*Need to figure out how to modify header styling*/
+                                    style: {fontColor:'green'},
+                                    columns: [
+                                        {
+                                            Header: "Number",
+                                            /*Need to find out what 'id' does - look in react-table documentatinon*/
+                                            id: "number",
+                                            minWidth: 53,
+                                            accessor: d => d.number,
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["number"] }),
+                                            filterAll: true
+                                        },
+                                        {
+                                            Header: "Item Type",
+                                            accessor: "item",
+                                            /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["item"] }),
+                                            filterAll: true
+                                        },
+                                        {
+                                            Header: "Description",
+                                            accessor: "description",
+                                            minWidth: 200,
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["description"] }),
+                                            filterAll: true
+                                        },
+                                        {
+                                            Header: "Condition",
+                                            minWidth: 60,
+                                            accessor: "condition_level",
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["condition_level"] }),
+                                            filterAll: true
+                                        },
+                                        {
+                                            Header: "Status",
+                                            accessor: "status_level",
+                                            minWidth: 78,
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["status_level"] }),
+                                            filterAll: true
+                                        },
+                                        {
+                                            Header: "Notes",
+                                            accessor: "notes",
+                                            minWidth: 150,
+                                            filterMethod: (filter, rows) =>
+                                                matchSorter(rows, filter.value, { keys: ["notes"] }),
+                                            filterAll: true
+                                        },
+                                    ]
+                                }
+                            ]}
+                            className="-striped -highlight"
+                        />
+                    </Fade>
                 </div>
             );
         }
@@ -172,8 +174,7 @@ class InventoryTable extends React.Component {
                 </div>
             );
 
-        return <div>{jsx}</div>
-        ;
+        return <div>{jsx}</div>;
     }
 }
 

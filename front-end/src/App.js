@@ -31,6 +31,7 @@ class App extends Component {
         super(props);
         this.state = {
             loggedIn: false,
+            connected: false,
         };
 
         // this.apiHost = 'http://192.168.99.100:5000';
@@ -38,6 +39,11 @@ class App extends Component {
 
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
+        this.connectionEstablished = this.connectionEstablished.bind(this);
+    }
+
+    connectionEstablished() {
+        this.setState({connected: true})
     }
 
     // Event handler called upon successful login.
@@ -65,16 +71,18 @@ class App extends Component {
     }
 
     render() {
-            return (
-                <div className="App-Container">
-                        <MuiThemeProvider theme={theme} >
-                            <TopBar loggedIn={this.state.loggedIn} connected={true} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                            {(this.state.loggedIn) ? <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/> : <InventoryTable loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
-                            <BottomBar />
-                        </MuiThemeProvider>
-                    </div>
-            );
-        }
+        return (
+            <div className="App-Container">
+                <MuiThemeProvider theme={theme} >
+                    <TopBar loggedIn={this.state.loggedIn} connected={this.state.connected} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                    {(this.state.loggedIn) ?
+                        <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/> :
+                        <InventoryTable  connectionEstablished={this.connectionEstablished} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
+                    <BottomBar />
+                </MuiThemeProvider>
+            </div>
+        );
+    }
 }
 
 export default App;
