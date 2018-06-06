@@ -9,16 +9,25 @@
     margin-bottom: 12vh;
 }
 
-@media (max-height: 375px)
+@media (max-width: 375px)
 {
     .LoggedOut{
-        margin-top: 3vh;
+        margin-top: 2vh;
+        font-size: 10.5px;
+    }
+    .LoggedIn{
+        margin-top: 1vh;
+        font-size: 10.5px;
     }
 }
-@media (min-height: 375px)
+@media (min-width: 375px)
 {
     .LoggedOut{
-        fontSize:'12px';
-        margin-top: 2vh;
+        margin-top: 1.5vh;
+        font-size: 13px;
+    }
+    .LoggedIn{
+        margin-top: 1vh;
+        font-size: 13px;
     }
 }

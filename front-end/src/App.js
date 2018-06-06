@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import TopBar from './Layouts/TopBar';
 import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
-import LinearIndeterminate from './Components/Loading';
+import LoadingBar from './Components/Loading';
 import FullWidthTabs from './Layouts/NavigationTabs'
 import "./index.css";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import 'react-table/react-table.css'
 
 const theme = createMuiTheme({
     palette: {
@@ -31,8 +30,6 @@ class App extends Component {
     {
         super(props);
         this.state = {
-            loading: true,
-            data: null,
             loggedIn: false,
         };
 
@@ -43,68 +40,15 @@ class App extends Component {
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
     }
 
-    componentDidMount() {
-        fetch(this.apiHost + '/gear/all')
-            .then((response) => {
-                return response.json();
-            })
-            .then((myJson) => {
-
-                //Needs to be converted to a map function
-                for (let i = 0; i < myJson.length; i++)
-                {
-                    myJson[i]['id'] = i;
-
-                    switch(parseInt(myJson[i]['condition_level'], 10)) {
-                        case 0:
-                            myJson[i]['condition_level'] = "Brand New";
-                            break;
-                        case 1:
-                            myJson[i]['condition_level'] = "Good";
-                            break;
-                        case 2:
-                            myJson[i]['condition_level'] = "Fair";
-                            break;
-                        case 3:
-                            myJson[i]['condition_level'] = "Poor";
-                            break;
-                        default:
-                            myJson[i]['condition_level'] = "Unknown condition level";
-                            break;
-                    }
-
-                    switch(myJson[i]['status_level']) {
-                        case 0:
-                            myJson[i]['status_level'] = "Checked In";
-                            break;
-                        case 1:
-                            myJson[i]['status_level'] = "Checked Out";
-                            break;
-                        case 2:
-                            myJson[i]['status_level'] = "Missing";
-                            break;
-                        case 3:
-                            myJson[i]['status_level'] = "Permanent";
-                            break;
-                        default:
-                            myJson[i]['status_level'] = "Unknown status level";
-                            break;
-                    }
-                }
-                this.setState({data: myJson, loading: false});
-            });
-    }
-
+    // Event handler called upon successful login.
     gearmasterLoggedIn() {
         this.setState({loggedIn: true})
     }
 
+    //Event handler called upon logout
     gearmasterLoggedOut() {
-        // Call the logout API here.
         this.setState({loggedIn: false});
-
         let storedToken = sessionStorage.getItem('token');
-
         fetch(this.apiHost + '/logout', {
             method: 'POST',
             body: JSON.stringify({token: storedToken}),
@@ -121,51 +65,16 @@ class App extends Component {
     }
 
     render() {
-
-        if (this.state.loading)
-        {
             return (
                 <div className="App-Container">
-                    <MuiThemeProvider theme={theme} >
-                        <TopBar loggedIn={this.state.loggedIn} connected={false} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                        <div>
-                            <LinearIndeterminate />
-                        </div>
-                        <BottomBar />
-                    </MuiThemeProvider>
-                </div>
-            );
-        }
-        else {
-
-            let app_container_when_API_connection_established;
-
-            if (this.state.loggedIn)
-            {
-                app_container_when_API_connection_established = (
-                    <div className="App-Container">
-                        <MuiThemeProvider theme={theme} >
-                            <TopBar loggedIn={this.state.loggedIn} connected={true} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                            <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>
-                            <BottomBar />
-                        </MuiThemeProvider>
-                    </div>
-                );
-            }
-            else
-                app_container_when_API_connection_established = (
-                    <div className="App-Container">
                         <MuiThemeProvider theme={theme} >
                             <TopBar loggedIn={this.state.loggedIn} connected={true} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
-                            <InventoryTable data={this.state.data} loggedIn={this.state.loggedIn}/>
+                            {(this.state.loggedIn) ? <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/> : <InventoryTable loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
                             <BottomBar />
                         </MuiThemeProvider>
                     </div>
-                );
-
-            return app_container_when_API_connection_established;
+            );
         }
-    }
 }
 
 export default App;

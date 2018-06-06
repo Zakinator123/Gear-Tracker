@@ -9,7 +9,7 @@ const styles = {
   },
 };
 
-function LinearIndeterminate(props) {
+function LoadingBar(props) {
   const { classes } = props;
   return (
     <div className={classes.root} style={{marginTop:'30vh', marginBottom: '12vh'}}>
@@ -20,8 +20,8 @@ function LinearIndeterminate(props) {
   );
 }
 
-LinearIndeterminate.propTypes = {
+LoadingBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(LinearIndeterminate);
+export default withStyles(styles)(LoadingBar);
