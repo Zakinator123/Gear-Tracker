@@ -16,13 +16,13 @@ Outdoors at UVa has over 1000 different pieces of equipment that members regular
 ## Application Stack
 * Database(s):
     - AWS Aurora instance contains the 'Gear' database, which was created by importing a CSV that was extracted from the current Gear Inventory Spreadsheet.
-        * Currently contains a single table for gear items. Will eventually contain a table for gear checkouts.
-    - A MySQL database hosted by Pair Networks contains Outdoors at UVA's current website database, which has a 'Members' table.
+        * Contains a tables for gear, checkouts, and authenticator tokens (used for managing sessions/authentication).
+    - A MySQL database hosted by Pair Networks contains Outdoors at UVA's current website database, which has a 'Members' table that's used to authenticate users in Gear-App.
 
 
-* Back-End: Flask app served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) running in an AWS EC2 instance. The Flask app is a JSON API which makes raw SQL queries (via a Python MySQL Client) to the AWS RDS instance mentioned above in addition to the Outdoors Club's MySQL database. HAProxy serves as an SSL Termination Proxy for the Flask App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/back-end/haproxy.cfg)).
+* Back-End: Flask app served with [uWSGI+nginx](http://flask.pocoo.org/docs/1.0/deploying/uwsgi/) on a [docker container](https://hub.docker.com/r/zakinator123/gear-app/~/dockerfile/) running in an AWS EC2 instance. The Flask app is a RESTful JSON API which makes raw SQL queries (via a Python MySQL Client) to the AWS RDS instance mentioned above in addition to the Outdoors Club's MySQL database. HAProxy serves as an SSL Termination Proxy for the Flask App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/back-end/haproxy.cfg)).
 
-* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on a different EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables in the UI. Uses [Material UI Next](https://material-ui-next.com/). HAProxy serves as an SSL Termination Proxy for the React App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/front-end/haproxy.cfg)).
+* Front-End: ReactJS application running on a different [docker container](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) deployed on a different EC2 instance. Contains AJAX calls to the Flask back-end above to populate data tables as well as to make state-changing POST requests (if authenticated) for checking gear in/out. Uses [Material UI Next](https://material-ui-next.com/). HAProxy serves as an SSL Termination Proxy for the React App (Config file can be found [here](https://github.com/Zakinator123/Gear-App/blob/master/front-end/haproxy.cfg)).
 <br/>
 
 ## The Automated Deployment System
