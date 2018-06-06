@@ -8,42 +8,30 @@ import RenewIcon from '@material-ui/icons/Autorenew';
 import ReturnIcon from '@material-ui/icons/AssignmentReturned'
 
 
-const styles = theme => ({
-    button: {
-        margin: theme.spacing.unit,
-    },
-    rightIcon: {
-        marginLeft: theme.spacing.unit*5,
-    },
-    paper : {
-        margin: theme.spacing.unit
-    },
-});
-
-class SubRowComponent extends React.Component{
+export default class SubRowComponent extends React.Component{
     constructor(props)
     {
         super(props);
         this.classes = props;
     }
 
-
     render() {
-        return (<Paper className={this.classes.paper}>
-            <Button style={{backgroundColor: '#81C784'}} variant="contained" className={this.classes.button}>
-                Check In
-                <ReturnIcon style={{marginLeft: '1vh'}}/>
-            </Button>
-            <Button variant="contained" style={{marginLeft: '1vh'}} color="primary" >
-                Renew
-                <RenewIcon className={this.classes.rightIcon}/>
-            </Button>
-            <Button variant="contained" style={{marginLeft: '1vh'}} color="secondary" >
-                Email
-                <EmailIcon className={this.classes.rightIcon}/>
-            </Button>
-        </Paper>);
+        return (
+            <Paper style={{margin: '1vh', width:'98vw'}} elevation={1}>
+                <Button style={{width: '34vw', marginRight: '1vw'}} onClick={this.props.handleButtonPress} size="small" color="primary" variant="contained">
+                    Check In
+                    <ReturnIcon style={{marginLeft: '1vh'}}/>
+                </Button>
+                <Button style={{width: '30vw', marginRight: '1vw'}} onClick={this.props.handleButtonPress} variant="contained" color="secondary" >
+                    Renew
+                    <RenewIcon style={{marginLeft: '1vh'}}/>
+                </Button>
+                <Button variant="contained" onClick={this.props.handleButtonPress} style={{width: '30vw'}}>
+                    Email
+                    <EmailIcon style={{marginLeft: '1vh'}}/>
+                </Button>
+            </Paper>
+        );
     }
 }
 
-export default withStyles(styles)(SubRowComponent);

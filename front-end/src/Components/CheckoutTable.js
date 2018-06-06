@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactTable from "react-table";
-import LinearIndeterminate from './Loading';
+import LoadingBar from './Loading';
 import Button from '@material-ui/core/Button';
 
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -44,12 +44,12 @@ class CheckoutTable extends React.Component {
                 console.log(date1);
             });
 
-        this.handleCheckIn = this.handleCheckIn.bind(this);
+        this.handleButtonPress = this.handleButtonPress.bind(this);
         this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
     }
 
-    handleCheckIn() {
-        this.setState({snackbarVisible: true, snackbarMessage: "This functionality is not available yet. Please use the 'Check In' Tab to check gear in.", variant: 'info'})
+    handleButtonPress() {
+        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
     }
 
     handleSnackbarClose = () => {
@@ -69,7 +69,7 @@ class CheckoutTable extends React.Component {
                     minRows={this.state.data.length}
                     SubComponent={row => {
                         return (
-                            <SubRowComponent row={row}/>
+                            <SubRowComponent handleButtonPress={this.handleButtonPress} row={row}/>
                         );
                     }}
 
@@ -98,7 +98,7 @@ class CheckoutTable extends React.Component {
                                 },
                                 {
                                     Header: "Checkout Date",
-                                    minWidth: 80,
+                                    minWidth: 100,
                                     accessor: "date_checked_out",
                                 },
                                 {
@@ -118,7 +118,7 @@ class CheckoutTable extends React.Component {
                 />
             );
         else
-            jsx = <LinearIndeterminate />;
+            jsx = <LoadingBar />;
 
         return (
             <div style={{marginBottom: '12vh', height: '100%', }}>

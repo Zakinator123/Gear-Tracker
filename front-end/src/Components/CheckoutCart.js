@@ -114,7 +114,6 @@ class CheckoutCart extends React.Component {
     {
         super(props);
         this.validateGear = this.validateGear.bind(this);
-        // this.removeGear = this.removeGear.bind(this);
 
         let message = '';
         let visible = false;
@@ -177,7 +176,7 @@ class CheckoutCart extends React.Component {
                     for (let i=1; i < checkedOutList.length; i++)
                         messageList = messageList + ', ' + checkedOutList[i]['number'];
 
-                    this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The follow gear numbers are already checked out: ' + messageList +
+                    this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked out: ' + messageList +
                     'Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
                 }
 

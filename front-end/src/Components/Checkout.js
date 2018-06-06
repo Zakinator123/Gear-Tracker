@@ -183,7 +183,6 @@ class Checkout extends React.Component{
 
         fetch(this.props.apiHost + '/gear/checkout', {
             method: 'POST',
-            // body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: (this.state.list).map(gear => gear['uid']), member: this.state.member, dueDate: this.state.datetime}),
             body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list, member: this.state.member, dueDate: this.state.datetime}),
             headers:{
                 'Content-Type': 'application/json'
@@ -214,7 +213,7 @@ class Checkout extends React.Component{
         const { classes } = this.props;
 
         return(
-            <div>
+            <div style={{marginBottom: '12vh'}}>
                 <Grid container
                       alignItems='center'
                       direction="column"
@@ -226,53 +225,39 @@ class Checkout extends React.Component{
                             <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
                         </Paper>
                     </Grid>
-                </Grid>
-                <Grid container
-                      style={{marginBottom: '12vh'}}
-                      direction="column"
-                      alignItems='center'
-                      className={classes.root}
-                      spacing={8}>
-                    <Grid item>
+
+
+                    <Grid md={6} lg={6} xl={6} item>
+                        <Paper className={classes.paper}>
+                            <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
+                        </Paper>
+                    </Grid>
+
+                    {/*TODO: Finish issue of checkout notes for items and checkout groups.*/}
+                    {/*<Grid item>*/}
+                    {/*<Paper className={classes.paper}>*/}
+                    {/*<Typography variant="title">Cart Checkout Notes: </Typography>*/}
+                    {/*<TextField*/}
+                    {/*multiline*/}
+                    {/*label="(Optional)"/>*/}
+                    {/*</Paper>*/}
+                    {/*</Grid>*/}
+
+                    <Grid md={6} lg={6} xl={6} item>
+                        <Paper className={classes.paper}>
+                            <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
+                        </Paper>
+                    </Grid>
+
+                    <Grid md={6} lg={6} xl={6} item>
+
                         <Grid container
-                              alignItems='center'
-                              direction="row"
-                              justify='center'
-                              spacing={8}>
-
-                            <Grid item>
-                                <Paper className={classes.paper}>
-                                    <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
-                                </Paper>
-                            </Grid>
-
-                            <Grid item>
-                                <Grid container
-                                      direction="column"
-                                      alignItems="stretch">
-                                    {/*TODO: Finish issue of checkout notes for items and checkout groups.*/}
-                                    {/*<Grid item>*/}
-                                    {/*<Paper className={classes.paper}>*/}
-                                    {/*<Typography variant="title">Cart Checkout Notes: </Typography>*/}
-                                    {/*<TextField*/}
-                                    {/*multiline*/}
-                                    {/*label="(Optional)"/>*/}
-                                    {/*</Paper>*/}
-                                    {/*</Grid>*/}
-                                    <Grid item>
-                                        <Paper className={classes.paper}>
-                                            <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
-                                        </Paper>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-
+                              alignItems="center"
+                              direction="column">
+                            <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                                <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Checkout Gear</Typography>
+                            </Button>
                         </Grid>
-                    </Grid >
-                    <Grid item>
-                        <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                            <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Checkout Gear</Typography>
-                        </Button>
                     </Grid>
                 </Grid>
 
