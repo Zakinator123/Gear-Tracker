@@ -115,13 +115,6 @@ class CheckoutCart extends React.Component {
         super(props);
         this.validateGear = this.validateGear.bind(this);
 
-        let message = '';
-        let visible = false;
-        if (sessionStorage.getItem('token') == 0) {
-            message = 'You are in view-only mode. This means that none of your actions will be saved to the database.';
-            visible = true;
-        }
-
         this.state = {
             list: [],
             open: false,
@@ -129,11 +122,12 @@ class CheckoutCart extends React.Component {
             textFieldValue: '',
             validating: false,
             alreadyAdded: false,
-            snackbarVisible: visible,
-            snackbarMessage: message,
+            snackbarVisible: false,
+            snackbarMessage: '',
             variant: 'info'
         };
     }
+
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;

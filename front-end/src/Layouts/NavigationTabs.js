@@ -9,6 +9,7 @@ import InventoryTable from '../Components/Table';
 import Checkout from '../Components/Checkout'
 import CheckoutTable from '../Components/CheckoutTable.js'
 import CheckIn from '../Components/CheckIn';
+import Slide from '@material-ui/core/Slide';
 
 function TabContainer(props) {
     return (
@@ -46,20 +47,21 @@ class ScrollableTabsButtonAuto extends React.Component {
         return (
             <div className={classes.root}>
                 <AppBar position="static" color="default">
-                    <Tabs
-                        value={value}
-                        onChange={this.handleChange}
-                        indicatorColor="primary"
-                        textColor="primary"
-                        scrollButtons="on"
-                        scrollable
-                        className={classes.tabs}>
+                    <Slide in={true} direction='right' style={{ transitionDelay: 300}}  mountOnEnter unmountOnExit>
+                        <Tabs
+                            value={value}
+                            onChange={this.handleChange}
+                            indicatorColor="primary"
+                            textColor="primary"
+                            scrollable
+                            className={classes.tabs}>
 
-                        <Tab label="Check Out Gear" />
-                        <Tab label="View Checkouts" />
-                        <Tab label="Check In Gear" />
-                        <Tab label="Inventory" />
-                    </Tabs>
+                            <Tab label="Check Out Gear" />
+                            <Tab label="View Checkouts" />
+                            <Tab label="Check In Gear" />
+                            <Tab label="Inventory" />
+                        </Tabs>
+                    </Slide>
                 </AppBar>
                 {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} /> </TabContainer>}
                 {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}

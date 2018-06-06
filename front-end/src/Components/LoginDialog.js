@@ -92,8 +92,8 @@ export default class LoginDialog extends React.Component {
 
     render() {
         return (
-            <div>
-                <Button color="inherit" onClick={this.handleClickOpen}>GearMaster Login</Button>
+            <div style={this.props.style}>
+                <Button color="primary"  variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>GearMaster Login</Typography> </Button>
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}

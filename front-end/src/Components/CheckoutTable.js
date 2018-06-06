@@ -16,7 +16,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-
+import Fade from '@material-ui/core/Fade';
 import SubRowComponent from './CheckoutTableExpansionRow'
 
 
@@ -61,61 +61,64 @@ class CheckoutTable extends React.Component {
         let jsx;
         if (this.state.fetched)
             jsx = (
-                <ReactTable
-                    style={{height:'100%', fontSize:'11px'}}
-                    data={this.state.data}
-                    showPaginationBottom={false}
-                    defaultPageSize={this.state.data.length}
-                    minRows={this.state.data.length}
-                    SubComponent={row => {
-                        return (
-                            <SubRowComponent handleButtonPress={this.handleButtonPress} row={row}/>
-                        );
-                    }}
+                <Fade in={true} mountOnEnter unmountOnExit>
 
-                    columns={[
-                        {
-                            columns: [
-                                {
-                                    Header: "Gear #",
-                                    /*Need to find out what 'id' does - look in react-table documentatinon*/
-                                    id: "number",
-                                    minWidth: 50,
-                                    accessor: d => d.number,
-                                },
-                                {
-                                    Header: "Item Type",
-                                    accessor: "item",
-                                    minWidth: 70,
+                    <ReactTable
+                        style={{height:'100%', fontSize:'11px'}}
+                        data={this.state.data}
+                        showPaginationBottom={false}
+                        defaultPageSize={this.state.data.length}
+                        minRows={this.state.data.length}
+                        SubComponent={row => {
+                            return (
+                                <SubRowComponent handleButtonPress={this.handleButtonPress} row={row}/>
+                            );
+                        }}
 
-                                    /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
-                                },
-                                {
-                                    Header: "Checked Out To",
-                                    accessor: "member",
-                                    minWidth: 100,
+                        columns={[
+                            {
+                                columns: [
+                                    {
+                                        Header: "Gear #",
+                                        /*Need to find out what 'id' does - look in react-table documentatinon*/
+                                        id: "number",
+                                        minWidth: 50,
+                                        accessor: d => d.number,
+                                    },
+                                    {
+                                        Header: "Item Type",
+                                        accessor: "item",
+                                        minWidth: 70,
 
-                                },
-                                {
-                                    Header: "Checkout Date",
-                                    minWidth: 100,
-                                    accessor: "date_checked_out",
-                                },
-                                {
-                                    Header: "Due Date",
-                                    accessor: "date_due",
-                                    minWidth: 80,
-                                },
-                                {
-                                    Header: "Officer Out",
-                                    accessor: "officer_out",
-                                    minWidth: 70,
-                                },
-                            ]
-                        }
-                    ]}
-                    className="-striped -highlight"
-                />
+                                        /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
+                                    },
+                                    {
+                                        Header: "Checked Out To",
+                                        accessor: "member",
+                                        minWidth: 100,
+
+                                    },
+                                    {
+                                        Header: "Checkout Date",
+                                        minWidth: 100,
+                                        accessor: "date_checked_out",
+                                    },
+                                    {
+                                        Header: "Due Date",
+                                        accessor: "date_due",
+                                        minWidth: 80,
+                                    },
+                                    {
+                                        Header: "Officer Out",
+                                        accessor: "officer_out",
+                                        minWidth: 70,
+                                    },
+                                ]
+                            }
+                        ]}
+                        className="-striped -highlight"
+                    />
+                </Fade>
             );
         else
             jsx = <LoadingBar />;

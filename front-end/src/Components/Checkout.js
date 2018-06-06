@@ -21,7 +21,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
-
+import Slide from '@material-ui/core/Slide';
 
 const styles = theme => ({
     root: {
@@ -42,86 +42,25 @@ const styles = theme => ({
 });
 
 
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close:{marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
-
 class Checkout extends React.Component{
 
     constructor(props){
         super(props);
 
+        let message = '';
+        let visible = false;
+        if (sessionStorage.getItem('token') == 0) {
+            message = 'You are in view-only mode. This means that none of your actions will be saved to the database.';
+            visible = false;
+        }
+
         this.state = {
             member: '',
             list : [],
             datetime : '',
-            snackbarVisible: false,
-            snackbarMessage: '',
-            variant: ''
+            snackbarVisible: visible,
+            snackbarMessage: message,
+            variant: 'info'
         };
 
         this.setMember = this.setMember.bind(this);
@@ -129,6 +68,11 @@ class Checkout extends React.Component{
         this.addGearToList = this.addGearToList.bind(this);
         this.checkoutGear = this.checkoutGear.bind(this);
         this.setDateTime = this.setDateTime.bind(this);
+    }
+
+
+    componentDidMount() {
+        setTimeout(function() {if (sessionStorage.getItem('token') == 0) {this.setState({snackbarVisible: true});}}.bind(this), 2000);
     }
 
     removeGear(uid) {
@@ -220,17 +164,19 @@ class Checkout extends React.Component{
                       alignContent="stretch"
                 >
                     <Grid md={6} lg={6} xl={6}  item>
-                        <Paper className={classes.paper}>
-                            <Typography variant="title">Member: </Typography>
-                            <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
-                        </Paper>
+                            <Paper className={classes.paper}>
+                                <Typography variant="title">Member: </Typography>
+                                <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
+                            </Paper>
                     </Grid>
 
 
                     <Grid md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
-                        </Paper>
+                        <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
+                            <Paper className={classes.paper}>
+                                <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
+                            </Paper>
+                        </Slide>
                     </Grid>
 
                     {/*TODO: Finish issue of checkout notes for items and checkout groups.*/}
@@ -244,9 +190,11 @@ class Checkout extends React.Component{
                     {/*</Grid>*/}
 
                     <Grid md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
-                        </Paper>
+                        <Slide in={true}  style={{ transitionDelay: 300}} direction="up" mountOnEnter unmountOnExit>
+                            <Paper className={classes.paper}>
+                                <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
+                            </Paper>
+                        </Slide>
                     </Grid>
 
                     <Grid md={6} lg={6} xl={6} item>
@@ -254,9 +202,12 @@ class Checkout extends React.Component{
                         <Grid container
                               alignItems="center"
                               direction="column">
-                            <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                                <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Checkout Gear</Typography>
-                            </Button>
+                            <Slide in={true}  style={{ transitionDelay: 400}} direction="up" mountOnEnter unmountOnExit>
+
+                                <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                                    <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Checkout Gear</Typography>
+                                </Button>
+                            </Slide>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -283,5 +234,74 @@ class Checkout extends React.Component{
         );
     }
 }
+
+
+
+const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+};
+
+
+const styles1 = theme => ({
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: '#B71C1C',
+    },
+    info: {
+        backgroundColor: blue[900],
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
+    close:{marginTop: -20},
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+});
+
+function MySnackbarContent(props) {
+    const { classes, className, message, onClose, variant, ...other } = props;
+    const Icon = variantIcon[variant];
+
+    return (
+        <SnackbarContent
+            className={classNames(classes[variant], className)}
+            aria-describedby="client-snackbar"
+            message={
+                <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+                    {message}
+        </span>
+            }
+            action={
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            }
+            {...other}
+        />
+    );
+}
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default withStyles(styles)(Checkout);
