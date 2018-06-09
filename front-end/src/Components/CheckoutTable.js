@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactTable from "react-table";
 import LoadingBar from './Loading';
-import Button from '@material-ui/core/Button';
-
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
@@ -46,9 +44,14 @@ class CheckoutTable extends React.Component {
 
         this.handleButtonPress = this.handleButtonPress.bind(this);
         this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+        this.handleCheckIn = this.handleCheckIn.bind(this);
     }
 
     handleButtonPress() {
+        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
+    }
+
+    handleCheckIn() {
         this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
     }
 
@@ -71,7 +74,7 @@ class CheckoutTable extends React.Component {
                         minRows={this.state.data.length}
                         SubComponent={row => {
                             return (
-                                <SubRowComponent handleButtonPress={this.handleButtonPress} row={row}/>
+                                <SubRowComponent handleCheckIn={this.handleCheckIn} handleButtonPress={this.handleButtonPress} row={row}/>
                             );
                         }}
 
