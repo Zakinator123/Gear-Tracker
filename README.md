@@ -6,7 +6,7 @@
 </p>
 
 
-<p align="center"><a href="http://gear-app.com"> gear-app.com </a> <br/><br />A gear inventory system for the Outdoors Club at UVA.</p><p align="center">Currently supported on Google Chrome only.</p>
+<p align="center"><a href="http://gear-app.com"> gear-app.com </a> <br/><br />A gear inventory system for the Outdoors Club at UVA.</p><p align="center">Currently supported on Google Chrome  and Safari only.</p>
 
 ## Purpose
 Gear-App is meant to serve as an improved gear inventory system for the [Outdoors Club at UVA](http://outdoorsatuva.org), which currently keeps track of all of its gear and gear-checkouts on a [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1srgTqgGdCj4B-MhF76eLqVhSWUn_IQ7ww_z1VFIGvAU/edit#gid=935307448) - an inefficient and suboptimal system. Gear-App is still being actively worked on.<br></br>
