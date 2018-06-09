@@ -1,7 +1,7 @@
 <h1 align="center"> Gear-App </h1> <br>
 <p align="center">
   <a href="http://gear-app.com">
-    <img title="GitPoint" src="./responsive_demonstration.jpeg" height=360 width=500 />
+    <img title="GitPoint" src="./responsive_demonstration.jpeg" />
   </a>
 </p>
 
