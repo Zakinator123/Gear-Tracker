@@ -1,7 +1,7 @@
 <h1 align="center"> Gear-App </h1> <br>
 <p align="center">
   <a href="http://gear-app.com">
-    <img title="GitPoint" src="./responsive_demonstration.jpeg" />
+    <img title="Gear-App" src="./responsive_demonstration.jpeg" />
   </a>
 </p>
 
@@ -13,7 +13,7 @@ Gear-App is meant to serve as an improved gear inventory system for the [Outdoor
 
 Outdoors at UVa has over 1000 different pieces of equipment that members regularly ‘check out’ and borrow for a week at a time. Members come to ‘Gear Rooms’ - times when club officers make our gear storage spaces accessible to all members so that they may check gear out. During gear rooms, members pick out what gear they would like to check out, and list the numbers written on the gear to an officer, who then ‘checks out’ that gear under that member’s name. This application aims to help not only our general members by improving how they view gear, but it also aims to help the officers and Gearmasters with the pressure-ridden task of quickly checking out, checking in, and accessioning large amounts of gear in addition to helping the officers manage our inventory. <br/><br/>This application is the first step in an effort to completely overhaul the Outdoors Club's current website, a complex piece of software that's critical to the functioning of UVA's largest student-run organization. To follow the current status of this effort, please visit [this repository](https://github.com/Zakinator123/Outdoors-At-UVa-Website-Spec).
 <br/>
-## Application Stack
+## Application Stack and Infrastructure
 * Database(s):
     - AWS Aurora instance contains the 'Gear' database, which was created by importing a CSV that was extracted from the current Gear Inventory Spreadsheet.
         * Contains a tables for gear, checkouts, and authenticator tokens (used for managing sessions/authentication).
