@@ -7,12 +7,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 
 export default class LoginDialog extends React.Component {
     constructor(props){
         super(props);
         this.state = {
             open: false,
+            tooltipOpen: false,
             email: '',
             password: '',
             error: false,
@@ -90,10 +92,17 @@ export default class LoginDialog extends React.Component {
             });
     };
 
+    componentDidMount() {
+        setTimeout(function() {this.setState({tooltipOpen: true});}.bind(this), 2000);
+        setTimeout(function() {this.setState({tooltipOpen: false});}.bind(this), 8000);
+    }
+
     render() {
         return (
             <div style={this.props.style}>
-                <Button color="primary"  variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>Login</Typography> </Button>
+                <Tooltip title="^^ Click Me!" open={this.state.tooltipOpen} placement="bottom">
+                    <Button color="primary" variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>Login</Typography> </Button>
+                </Tooltip>
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
