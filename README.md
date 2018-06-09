@@ -1,7 +1,7 @@
 <h1 align="center"> Gear-App </h1> <br>
 <p align="center">
   <a href="http://gear-app.com">
-    <img title="GitPoint" src="./front-end/src/Layouts/ODC-logo.png" height=110 width=140 />
+    <img title="GitPoint" src="./responsive_demonstration.jpeg" height=410 width=550 />
   </a>
 </p>
 
