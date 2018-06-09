@@ -93,7 +93,7 @@ export default class LoginDialog extends React.Component {
     render() {
         return (
             <div style={this.props.style}>
-                <Button color="primary"  variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>GearMaster Login</Typography> </Button>
+                <Button color="primary"  variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>Login</Typography> </Button>
                 <Dialog
                     open={this.state.open}
                     onClose={this.handleClose}
