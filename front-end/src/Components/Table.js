@@ -19,6 +19,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
+import OptionSelectorDialog from './OptionSelectorDialog'
 
 class InventoryTable extends React.Component {
 
@@ -26,10 +27,13 @@ class InventoryTable extends React.Component {
         super(props);
         this.state = {
             data: [],
+            currentCell: {},
             fetched: false,
             snackbarVisible: false,
             snackbarMessage: '',
-            variant: ''
+            variant: '',
+            dialogOpen: false,
+            selectedValue: '',
         };
         this.renderEditable = this.renderEditable.bind(this);
     }
@@ -38,28 +42,45 @@ class InventoryTable extends React.Component {
         this.setState({snackbarVisible : false})
     };
 
+    handleDialogClickOpen = (currentCell) => {
+        this.setState({
+            dialogOpen: true, currentCell: currentCell
+        });
+    };
+
+    handleDialogClose = value => {
+        this.setState({ selectedValue: value, dialogOpen: false });
+    };
+
     //TODO: Figure out if any risks should be mitigated here (by checking/cleaning input)
     renderEditable(cellInfo) {
 
         if (!this.props.loggedIn)
             return  this.state.data[cellInfo.index][cellInfo.column.id];
 
+        let editable = true;
+        let column = cellInfo.column.id;
+        if (column == 'item' || column == 'condition_level')
+            editable = false;
+
         return (
             <div
                 style={{ backgroundColor: "#fafafa" }}
-                contentEditable
+                contentEditable={editable}
+                onClick={e => {
+                    if (column == 'item' || column == 'condition_level')
+                    {
+                        this.handleDialogClickOpen(cellInfo)
+                    }
+
+                }}
                 ref={c => this.cell = c}
                 suppressContentEditableWarning
                 onKeyPress={e => {
-                    console.log(e.key);
                     if (e.key == "Enter")
-                    {
-                        console.log("this worked");
                         e.target.blur();
-                    }
                 }}
                 onBlur={e => {
-                    console.log("This really worked!!");
                     if (sessionStorage.getItem('token') == 0) {
                         this.setState({snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
                         e.target.innerHTML = this.state.data[cellInfo.index][cellInfo.column.id];
@@ -159,14 +180,27 @@ class InventoryTable extends React.Component {
 
         let divClassName;
         let explanationText;
+        let dialog;
 
         if (this.props.loggedIn) {
             divClassName = 'LoggedIn';
             explanationText = null;
+            if (this.state.dialogOpen) {
+            dialog = (
+                <OptionSelectorDialog
+                    currentCell={this.state.currentCell}
+                    selectedValue={this.state.selectedValue}
+                    open={this.state.dialogOpen}
+                    onClose={this.handleDialogClose}
+                />
+            );}
+            else
+                dialog = null;
         }
         else {
             divClassName = 'LoggedOut';
             explanationText = <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>;
+            dialog = null;
         }
 
         let jsx;
@@ -211,6 +245,7 @@ class InventoryTable extends React.Component {
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["item"] }),
                                             filterAll: true,
+                                            Cell: this.renderEditable,
                                         },
                                         {
                                             Header: "Description",
@@ -281,7 +316,12 @@ class InventoryTable extends React.Component {
                 </div>
             );
 
-        return <div>{jsx}</div>;
+        return (
+            <div>
+                {jsx}
+                {dialog}
+            </div>
+        );
     }
 }
 
