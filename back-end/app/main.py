@@ -251,6 +251,24 @@ def checkin_gear():
     rds_db.close()
     return jsonify({'status': 'Success!', 'count': count})
 
+@app.route("/gear/edit", methods=['POST'])
+@authenticated_required
+def edit_gear():
+    post_body = request.get_json()
+    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
+                             os.environ['AWS_DB_DATABASE'])
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    if (post_body['column'] == 'number'):
+        sql = "UPDATE gear SET %s = %d WHERE uid=%d" % (post_body['column'], int(post_body['input_data']), post_body['gear_uid'])
+    else:
+        sql = "UPDATE gear SET %s = '%s' WHERE uid=%d" % (post_body['column'], post_body['input_data'], post_body['gear_uid'])
+
+    cursor.execute(sql)
+    rds_db.commit()
+
+    return jsonify({'status': 'Success!'})
+
 
 @app.route("/get_active_members")
 def get_active_members():

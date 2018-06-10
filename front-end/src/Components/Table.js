@@ -6,7 +6,19 @@ import LoadingBar from './Loading';
 import 'react-table/react-table.css'
 import './Table.css';
 import Fade from '@material-ui/core/Fade';
-
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import InfoIcon from '@material-ui/icons/Info';
+import CloseIcon from '@material-ui/icons/Close';
+import green from '@material-ui/core/colors/green';
+import amber from '@material-ui/core/colors/amber';
+import blue from '@material-ui/core/colors/blue';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import WarningIcon from '@material-ui/icons/Warning';
+import IconButton from '@material-ui/core/IconButton';
+import classNames from 'classnames';
+import { withStyles } from '@material-ui/core/styles';
 
 class InventoryTable extends React.Component {
 
@@ -14,10 +26,82 @@ class InventoryTable extends React.Component {
         super(props);
         this.state = {
             data: [],
-            fetched: false
+            fetched: false,
+            snackbarVisible: false,
+            snackbarMessage: '',
+            variant: ''
         };
+        this.renderEditable = this.renderEditable.bind(this);
     }
 
+    handleSnackbarClose = () => {
+        this.setState({snackbarVisible : false})
+    };
+
+    //TODO: Figure out if any risks should be mitigated here (by checking/cleaning input)
+    renderEditable(cellInfo) {
+
+        if (!this.props.loggedIn)
+            return  this.state.data[cellInfo.index][cellInfo.column.id];
+
+        return (
+            <div
+                style={{ backgroundColor: "#fafafa" }}
+                contentEditable
+                ref={c => this.cell = c}
+                suppressContentEditableWarning
+                onKeyPress={e => {
+                    console.log(e.key);
+                    if (e.key == "Enter")
+                    {
+                        console.log("this worked");
+                        e.target.blur();
+                    }
+                }}
+                onBlur={e => {
+                    console.log("This really worked!!");
+                    if (sessionStorage.getItem('token') == 0) {
+                        this.setState({snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
+                        e.target.innerHTML = this.state.data[cellInfo.index][cellInfo.column.id];
+                        return;
+                    }
+                    console.log(cellInfo);
+
+                    let oldValue = this.state.data[cellInfo.index][cellInfo.column.id];
+                    let column = cellInfo.column.id;
+                    let header = cellInfo.column.Header;
+                    let inputData = e.target.innerHTML;
+                    let gear_uid = cellInfo.original.uid;
+
+                    if (oldValue == inputData)
+                        return;
+
+                    fetch(this.props.apiHost + '/gear/edit', {
+                        method: 'POST',
+                        body: JSON.stringify({authorization: sessionStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
+                        headers:{
+                            'Content-Type': 'application/json'
+                        },
+                        mode: 'cors'
+                    }).then(response => response.json())
+                        .catch(error => console.error('Error with HTTP request:', error))
+                        .then(response => {
+                            console.log(response);
+                            if (response['status'] == 'Success!') {
+                                const data = [...this.state.data];
+                                data[cellInfo.index][cellInfo.column.id] = inputData;
+                                let message = 'Gear #' + cellInfo.original.number + "'s '" +  header + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
+                                this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
+                            }
+                        })
+                        .catch(error => console.error(error));
+                }}
+                dangerouslySetInnerHTML={{
+                    __html: this.state.data[cellInfo.index][cellInfo.column.id]
+                }}
+            />
+        );
+    }
     componentDidMount() {
         fetch(this.props.apiHost + '/gear/all')
             .then((response) => {
@@ -75,13 +159,14 @@ class InventoryTable extends React.Component {
 
         let divClassName;
         let explanationText;
+
         if (this.props.loggedIn) {
             divClassName = 'LoggedIn';
             explanationText = null;
         }
         else {
             divClassName = 'LoggedOut';
-            explanationText = <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>
+            explanationText = <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>;
         }
 
         let jsx;
@@ -115,8 +200,9 @@ class InventoryTable extends React.Component {
                                             minWidth: 53,
                                             accessor: d => d.number,
                                             filterMethod: (filter, rows) =>
-                                                matchSorter(rows, filter.value, { keys: ["number"] }),
-                                            filterAll: true
+                                                matchSorter(rows, filter.value, {keys: ["number"]}),
+                                            filterAll: true,
+                                            Cell: this.renderEditable,
                                         },
                                         {
                                             Header: "Item Type",
@@ -124,7 +210,7 @@ class InventoryTable extends React.Component {
                                             /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["item"] }),
-                                            filterAll: true
+                                            filterAll: true,
                                         },
                                         {
                                             Header: "Description",
@@ -132,7 +218,8 @@ class InventoryTable extends React.Component {
                                             minWidth: 200,
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["description"] }),
-                                            filterAll: true
+                                            filterAll: true,
+                                            Cell: this.renderEditable,
                                         },
                                         {
                                             Header: "Condition",
@@ -140,7 +227,7 @@ class InventoryTable extends React.Component {
                                             accessor: "condition_level",
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["condition_level"] }),
-                                            filterAll: true
+                                            filterAll: true,
                                         },
                                         {
                                             Header: "Status",
@@ -148,15 +235,16 @@ class InventoryTable extends React.Component {
                                             minWidth: 78,
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["status_level"] }),
-                                            filterAll: true
+                                            filterAll: true,
                                         },
                                         {
-                                            Header: "Notes",
+                                            Header: "Gear Notes",
                                             accessor: "notes",
                                             minWidth: 150,
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["notes"] }),
-                                            filterAll: true
+                                            filterAll: true,
+                                            Cell: this.renderEditable,
                                         },
                                     ]
                                 }
@@ -164,6 +252,25 @@ class InventoryTable extends React.Component {
                             className="-striped -highlight"
                         />
                     </Fade>
+
+
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        style={{margin: '2vh'}}
+                        open={this.state.snackbarVisible}
+                        autoHideDuration={4500}
+                        onClose={this.handleSnackbarClose}
+                    >
+                        <MySnackbarContentWrapper
+                            onClose={this.handleSnackbarClose}
+                            variant={this.state.variant}
+                            message={this.state.snackbarMessage}
+                        />
+                    </Snackbar>
+
                 </div>
             );
         }
@@ -177,5 +284,73 @@ class InventoryTable extends React.Component {
         return <div>{jsx}</div>;
     }
 }
+
+
+const variantIcon = {
+    success: CheckCircleIcon,
+    warning: WarningIcon,
+    error: ErrorIcon,
+    info: InfoIcon,
+};
+
+
+const styles1 = theme => ({
+    success: {
+        backgroundColor: green[600],
+    },
+    error: {
+        backgroundColor: '#B71C1C',
+    },
+    info: {
+        backgroundColor: blue[900],
+    },
+    warning: {
+        backgroundColor: amber[700],
+    },
+    icon: {
+        fontSize: 20,
+    },
+    close:{marginTop: -20},
+    iconVariant: {
+        opacity: 0.9,
+        marginRight: theme.spacing.unit,
+    },
+    message: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+});
+
+function MySnackbarContent(props) {
+    const { classes, className, message, onClose, variant, ...other } = props;
+    const Icon = variantIcon[variant];
+
+    return (
+        <SnackbarContent
+            className={classNames(classes[variant], className)}
+            aria-describedby="client-snackbar"
+            message={
+                <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+                    {message}
+        </span>
+            }
+            action={
+                <IconButton
+                    key="close"
+                    aria-label="Close"
+                    color="inherit"
+                    className={classes.close}
+                    onClick={onClose}
+                >
+                    <CloseIcon className={classes.icon} />
+                </IconButton>
+            }
+            {...other}
+        />
+    );
+}
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default InventoryTable;
