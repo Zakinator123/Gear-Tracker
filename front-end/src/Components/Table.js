@@ -49,6 +49,7 @@ class InventoryTable extends React.Component {
     };
 
     handleDialogClose = value => {
+        console.log(value);
         this.setState({ selectedValue: value, dialogOpen: false });
     };
 
@@ -263,6 +264,7 @@ class InventoryTable extends React.Component {
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["condition_level"] }),
                                             filterAll: true,
+                                            Cell: this.renderEditable,
                                         },
                                         {
                                             Header: "Status",

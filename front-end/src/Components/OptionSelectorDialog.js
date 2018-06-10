@@ -2,19 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import Avatar from '@material-ui/core/Avatar';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
-import PersonIcon from '@material-ui/icons/Person';
-import AddIcon from '@material-ui/icons/Add';
-import Typography from '@material-ui/core/Typography';
 import blue from '@material-ui/core/colors/blue';
+import Typography from '@material-ui/core/Typography';
 
-const emails = ['username@gmail.com', 'user02@gmail.com'];
+
 const styles = {
     avatar: {
         backgroundColor: blue[100],
@@ -33,9 +29,6 @@ class OptionSelectorDialog extends React.Component {
 
     render() {
         const {classes, onClose, selectedValue, ...other} = this.props;
-
-        console.log("The current cell is: " + this.props.currentCell.toString());
-        console.log(this.props.currentCell);
 
         let listItems;
         let cellInfo = this.props.currentCell;
@@ -101,23 +94,23 @@ class OptionSelectorDialog extends React.Component {
             ]
         }
         else if (cellInfo.column.id == 'condition_level') {
-            dialogText = " a condition descriptor.";
-            listItems = [0,1,2,3];
+            dialogText = " a Condition Descriptor";
+            listItems = ["Brand New", "Good", "Fair", "Poor"];
         }
 
         return (
-            <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
-                <DialogTitle id="simple-dialog-title">Select{dialogText}</DialogTitle>
-                <div>
-                    <List>
-                        {listItems.map(item => (
-                            <ListItem button onClick={() => this.handleListItemClick(item)} key={item}>
-                                <ListItemText primary={item} />
-                            </ListItem>
-                        ))}
-                    </List>
-                </div>
-            </Dialog>
+                <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+                    <DialogTitle><Typography variant="title" style={{margin:'0.5vh'}} color="primary">Select{dialogText}</Typography></DialogTitle>
+                    <div>
+                        <List style={{marginTop: '-2vh'}} dense>
+                            {listItems.map(item => (
+                                <ListItem button onClick={() => this.handleListItemClick(item)} key={item}>
+                                    <ListItemText primary={item} />
+                                </ListItem>
+                            ))}
+                        </List>
+                    </div>
+                </Dialog>
         );
     }
 }
