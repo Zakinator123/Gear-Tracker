@@ -24,7 +24,7 @@ export default class LoginDialog extends React.Component {
     }
 
     handleClickOpen = () => {
-        this.setState({ open: true });
+        this.setState({open: true, tooltipOpen: false});
     };
 
     handleClose = () => {
