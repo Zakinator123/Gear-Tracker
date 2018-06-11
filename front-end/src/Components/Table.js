@@ -43,14 +43,72 @@ class InventoryTable extends React.Component {
     };
 
     handleDialogClickOpen = (currentCell) => {
-        this.setState({
-            dialogOpen: true, currentCell: currentCell
-        });
+        this.setState({dialogOpen: true, currentCell: currentCell});
     };
 
     handleDialogClose = value => {
         console.log(value);
-        this.setState({ selectedValue: value, dialogOpen: false });
+
+        if (value == '') {
+            this.setState({dialogOpen: false});
+            return;
+        }
+
+        if (sessionStorage.getItem('token') == 0) {
+            this.setState({dialogOpen: false, snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
+            return;
+        }
+
+        let cell = this.state.currentCell;
+        let oldValue = this.state.data[cell.index][cell.column.id];
+        let column = cell.column.id;
+        let header = cell.column.Header;
+        let inputData = value;
+        let gear_uid = cell.original.uid;
+
+        if (oldValue == inputData || inputData == null || inputData == undefined)
+            this.setState({dialogOpen: false});
+
+        if (column == "status_level")
+        {
+            switch(inputData) {
+                case "Brand New":
+                    inputData = 0;
+                    break;
+                case "Good":
+                    inputData = 1;
+                    break;
+                case "Fair":
+                    inputData = 2;
+                    break;
+                case "Poor":
+                    inputData = 3;
+                    break;
+                default:
+                    inputData = 1;
+            }}
+
+        fetch(this.props.apiHost + '/gear/edit', {
+            method: 'POST',
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => {
+                console.log(response);
+                if (response['status'] == 'Success!') {
+                    const data = [...this.state.data];
+                    data[cell.index][cell.column.id] = inputData;
+                    let message = 'Gear #' + cell.original.number + "'s '" +  header + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
+                    this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
+                }
+            })
+            .catch(error => console.error(error));
+
+        this.setState({dialogOpen: false });
     };
 
     //TODO: Figure out if any risks should be mitigated here (by checking/cleaning input)
@@ -68,14 +126,10 @@ class InventoryTable extends React.Component {
             <div
                 style={{ backgroundColor: "#fafafa" }}
                 contentEditable={editable}
-                onClick={e => {
+                onClick={() => {
                     if (column == 'item' || column == 'condition_level')
-                    {
                         this.handleDialogClickOpen(cellInfo)
-                    }
-
                 }}
-                ref={c => this.cell = c}
                 suppressContentEditableWarning
                 onKeyPress={e => {
                     if (e.key == "Enter")
@@ -87,7 +141,6 @@ class InventoryTable extends React.Component {
                         e.target.innerHTML = this.state.data[cellInfo.index][cellInfo.column.id];
                         return;
                     }
-                    console.log(cellInfo);
 
                     let oldValue = this.state.data[cellInfo.index][cellInfo.column.id];
                     let column = cellInfo.column.id;
@@ -187,14 +240,14 @@ class InventoryTable extends React.Component {
             divClassName = 'LoggedIn';
             explanationText = null;
             if (this.state.dialogOpen) {
-            dialog = (
-                <OptionSelectorDialog
-                    currentCell={this.state.currentCell}
-                    selectedValue={this.state.selectedValue}
-                    open={this.state.dialogOpen}
-                    onClose={this.handleDialogClose}
-                />
-            );}
+                dialog = (
+                    <OptionSelectorDialog
+                        currentCell={this.state.currentCell}
+                        selectedValue={this.state.selectedValue}
+                        open={this.state.dialogOpen}
+                        onClose={this.handleDialogClose}
+                    />
+                );}
             else
                 dialog = null;
         }

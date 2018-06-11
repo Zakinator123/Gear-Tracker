@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -35,7 +34,7 @@ class OptionSelectorDialog extends React.Component {
         let dialogText;
         if (cellInfo.column.id == 'item') {
             dialogText = " an Item Type";
-            listItems = ["Walkie Talkie",
+            listItems = (["Walkie Talkie",
                 "Sleeping Bag",
                 "Climbing Shoes",
                 "Cooking",
@@ -91,7 +90,7 @@ class OptionSelectorDialog extends React.Component {
                 "Work Gloves",
                 "Caving",
                 "Emergency Blanket",
-            ]
+            ].sort())
         }
         else if (cellInfo.column.id == 'condition_level') {
             dialogText = " a Condition Descriptor";
