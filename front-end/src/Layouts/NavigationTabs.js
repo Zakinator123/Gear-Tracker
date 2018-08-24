@@ -10,6 +10,7 @@ import Checkout from '../Components/Checkout'
 import CheckoutTable from '../Components/CheckoutTable.js'
 import CheckIn from '../Components/CheckIn';
 import Slide from '@material-ui/core/Slide';
+import Accession from '../Components/Accession'
 
 function TabContainer(props) {
     return (
@@ -54,12 +55,14 @@ class ScrollableTabsButtonAuto extends React.Component {
                             indicatorColor="primary"
                             textColor="primary"
                             scrollable
+                            scrollButtons="on"
                             className={classes.tabs}>
 
                             <Tab label="Check Out Gear" />
                             <Tab label="Checkouts" />
                             <Tab label="Check In Gear" />
                             <Tab label="Edit Inventory" />
+                            {/*<Tab label="Accession Gear" />*/}
                         </Tabs>
                     </Slide>
                 </AppBar>
@@ -67,6 +70,7 @@ class ScrollableTabsButtonAuto extends React.Component {
                 {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}
                 {value === 2 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
                 {value === 3 &&  <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
+                {/*{value === 4 &&  <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }*/}
             </div>
         );
     }
