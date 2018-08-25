@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import TopBar from './Layouts/TopBar';
 import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
-import LoadingBar from './Components/Loading';
 import FullWidthTabs from './Layouts/NavigationTabs'
 import "./index.css";
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
 
 const theme = createMuiTheme({
     palette: {
@@ -72,7 +72,7 @@ class App extends Component {
 
     render() {
         return (
-            <div className="App-Container">
+            <div>
                 <MuiThemeProvider theme={theme} >
                     <TopBar loggedIn={this.state.loggedIn} connected={this.state.connected} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
                     {(this.state.loggedIn) ?
