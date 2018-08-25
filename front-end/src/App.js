@@ -35,7 +35,7 @@ class App extends Component {
         };
 
         // this.apiHost = 'http://192.168.99.100:5000';
-        this.apiHost = 'https://api.gear-app.com';
+        this.apiHost = 'https://api.gear-tracker.com';
 
         this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
