@@ -18,13 +18,6 @@ import ListItem from '@material-ui/core/ListItem';
 import Grid from '@material-ui/core/Grid';
 import ListItemText from '@material-ui/core/ListItemText';
 
-
-const styles = theme => ({
-    title: {
-        margin: `${theme.spacing.unit * 4}px 0 ${theme.spacing.unit * 2}px`,
-    }
-});
-
 class CheckoutDialog extends React.Component {
 
     constructor(props) {
@@ -100,15 +93,9 @@ class CheckoutDialog extends React.Component {
         }
     };
 
-    render()
-    {
-
-        const { classes } = this.props;
-        console.log(this.props.rowData);
+    render() {
         return (
             <Dialog onClose={this.handleClose} scroll="body" open={this.props.dialogOpen} >
-                {/*{this.props.rowData.index}*/}
-
                 <DialogTitle id="form-dialog-title">Checkout Details</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={8}>
@@ -122,7 +109,6 @@ class CheckoutDialog extends React.Component {
                         </Grid>
                     </Grid>
 
-
                 </DialogContent>
                 <DialogActions style={{marginBottom: '1vh'}}>
                     <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin:'1vh'}}>
@@ -134,7 +120,7 @@ class CheckoutDialog extends React.Component {
                         </Grid>
 
                         <Grid item xs={12} sm={4} >
-                            <Button onClick={this.props.handleButtonPress} fullWidth size="small" variant="contained" color="secondary" >
+                            <Button onClick={this.props.handleRenew} fullWidth size="small" variant="contained" color="secondary" >
                                 Renew
                                 <RenewIcon style={{marginLeft: '1vh'}}/>
                             </Button>
@@ -148,4 +134,4 @@ class CheckoutDialog extends React.Component {
 
 }
 
-export default withStyles(styles)(CheckoutDialog);
+export default CheckoutDialog;

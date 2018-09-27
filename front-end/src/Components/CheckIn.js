@@ -165,7 +165,6 @@ class CheckIn extends React.Component{
 
                     <Grid md={6} lg={6} xl={6} item>
                         <Slide in={true}  style={{ transitionDelay: 100}} direction="up" mountOnEnter unmountOnExit>
-
                             <Paper className={classes.paper}>
                                 <CheckInCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
                             </Paper>
@@ -174,13 +173,15 @@ class CheckIn extends React.Component{
 
                     <Grid md={6} lg={6} xl={6} item>
                         <Grid container
-                              alignItems="center"
+                              justify="flex-end"
                               direction="column">
-                            <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
-                                <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                                    <Typography variant="button" onClick={this.checkInGear} style={{color:'white'}} align="left">Check In Gear</Typography>
-                                </Button>
-                            </Slide>
+                            <Grid item>
+                                <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
+                                    <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                                        <Typography variant="button" onClick={this.checkInGear} style={{color:'white'}} align="left">Check In Gear</Typography>
+                                    </Button>
+                                </Slide>
+                            </Grid>
                         </Grid>
                     </Grid>
 

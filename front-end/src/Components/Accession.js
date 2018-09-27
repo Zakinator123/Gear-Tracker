@@ -22,6 +22,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import OptionSelectorDialog from "./OptionSelectorDialog";
 
 const options = [
     'Show some love to Material-UI',
@@ -44,7 +45,7 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing.unit*2,
         margin: theme.spacing.unit,
         height: '100%',
         color: theme.palette.text.secondary,
@@ -61,6 +62,13 @@ class Accession extends React.Component {
             number: 0,
             anchorEl: null,
             selectedIndex: 1,
+            dialogOpen: false,
+            selectedValue: '',
+            dialogType: '',
+            itemTypeValue: '',
+            itemConditionValueNumber: '',
+            itemConditionValueText: '',
+            itemDescription: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -72,6 +80,44 @@ class Accession extends React.Component {
         });
     };
 
+    handleDialogClickOpen = (value) => {
+        this.setState({dialogOpen: true, dialogType: value});
+    };
+
+    handleDialogClose = (value) => {
+
+        if (value == '') {
+            this.setState({dialogOpen: false});
+            return;
+        }
+
+        let inputData = value;
+
+        if (this.state.dialogType == 'status_level')
+        {
+            switch(inputData) {
+                case "Brand New":
+                    inputData = 0;
+                    break;
+                case "Good":
+                    inputData = 1;
+                    break;
+                case "Fair":
+                    inputData = 2;
+                    break;
+                case "Poor":
+                    inputData = 3;
+                    break;
+                default:
+                    inputData = 1;
+            }
+            this.setState({dialogOpen: false, itemConditionValueText: value, itemConditionValueNumber: inputData });
+        }
+        else {
+            this.setState({dialogOpen: false, itemTypeValue: value})
+        }
+
+    };
 
     handleClickListItem = event => {
         this.setState({anchorEl: event.currentTarget});
@@ -87,77 +133,76 @@ class Accession extends React.Component {
 
     render() {
 
+        let dialog;
+        let itemTypeProp = {column : {id: 'item'}};
+        let conditionProp = {column : {id: 'condition_level'}};
+
+        if (this.state.dialogOpen) {
+            dialog = (
+                <OptionSelectorDialog
+                    currentCell={ (this.state.dialogType=="item" ? itemTypeProp : conditionProp) }
+                    selectedValue={this.state.selectedValue}
+                    open={this.state.dialogOpen}
+                    onClose={this.handleDialogClose}
+                />
+            );}
+
         const {classes} = this.props;
         const { anchorEl } = this.state;
 
         return (
             <div style={{marginBottom: '12vh'}}>
+                {dialog}
                 <Grid container
                       alignItems='center'
                       direction="column"
                       alignContent="stretch">
-                    <Grid md={6} lg={6} xl={6} item>
+                    <Grid xs={12} md={6} lg={6} xl={6} item>
                         <Paper className={classes.paper}>
                             <Typography variant="title"> Gear Number: </Typography>
 
                             {/* Make this a red error if it is not valid, otherwise make it green. */}
                             <TextField
-                                label="Enter a Number"
+                                placeholder="Enter a Number"
                                 value={this.state.gearNumber}
                                 onChange={this.handleChange('number')}
                             />
                         </Paper>
                     </Grid>
 
-                    <Grid md={6} lg={6} xl={6} item>
+                    <Grid xs={12} sm={12} md={6} lg={6} xl={6} item>
                         <Paper className={classes.paper}>
-                                                        <Typography variant="title"> Item Type: </Typography>
+                            <Typography variant="title"> Item Type: </Typography>
 
-                            <div className={classes.menu}>
-                                <List dense component="nav">
-                                    <ListItem
-                                        button
-                                        aria-haspopup="true"
-                                        aria-controls="lock-menu"
-                                        aria-label="When device is locked"
-                                        onClick={this.handleClickListItem}
-                                    >
-                                        <ListItemText
-                                            primary="When device is locked"
-                                            secondary={options[this.state.selectedIndex]}
-                                        />
-                                    </ListItem>
-                                </List>
-                                <Menu
-                                    id="lock-menu"
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={this.handleClose}
-                                >
-                                    {options.map((option, index) => (
-                                        <MenuItem
-                                            key={option}
-                                            disabled={index === 0}
-                                            selected={index === this.state.selectedIndex}
-                                            onClick={event => this.handleMenuItemClick(event, index)}
-                                        >
-                                            {option}
-                                        </MenuItem>
-                                    ))}
-                                </Menu>
-                            </div>
+                            <TextField
+                                placeholder="Choose an Item Type"
+                                onClick={() => this.handleDialogClickOpen('item')}
+                                value={this.state.itemTypeValue}
+                            />
                         </Paper>
                     </Grid>
 
-                    <Grid md={6} lg={6} xl={6} item>
+                    <Grid xs={12} md={6} lg={6} xl={6} item>
                         <Paper className={classes.paper}>
+                            <Typography variant="title"> Condition: </Typography>
 
+                            <TextField
+                                placeholder="Choose an a Condition Level"
+                                onClick={() => this.handleDialogClickOpen('status_level')}
+                                value={this.state.itemConditionValueText}
+                            />
                         </Paper>
                     </Grid>
 
-                    <Grid md={6} lg={6} xl={6} item>
+                    <Grid xs={12} md={6} lg={6} xl={6} item>
                         <Paper className={classes.paper}>
-
+                            <Typography variant="title"> Description: </Typography>
+                            <TextField
+                                multiline
+                                placeholder="Enter a Description"
+                                value={this.state.itemDescription}
+                                onChange={(event) => this.setState({itemDescription: event.target.value})}
+                            />
                         </Paper>
                     </Grid>
 

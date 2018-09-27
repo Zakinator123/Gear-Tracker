@@ -160,7 +160,7 @@ class Checkout extends React.Component{
 
         return(
             <div style={{marginBottom: '12vh'}}>
-                <Paper >
+                <Paper>
                     <Grid container
                           alignItems='center'
                           alignContent="stretch"
@@ -170,37 +170,17 @@ class Checkout extends React.Component{
                             <Typography variant="title">Member: </Typography>
                             <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
                         </Grid>
-                        {/*<Grid md={6} lg={6} xl={6}  item>*/}
-                        {/*<Paper className={classes.paper}>*/}
-                        {/*<Typography variant="title">Member: </Typography>*/}
-                        {/*<IntegrationReactSelect setMember={this.setMember} apiHost={this.props.apiHost}/>*/}
-                        {/*</Paper>*/}
-                        {/*</Grid>*/}
-
-
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
                             <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
                                 <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
                             </Slide>
                         </Grid>
-
-                        {/*TODO: Finish issue of checkout notes for items and checkout groups.*/}
-                        {/*<Grid item>*/}
-                        {/*<Paper className={classes.paper}>*/}
-                        {/*<Typography variant="title">Cart Checkout Notes: </Typography>*/}
-                        {/*<TextField*/}
-                        {/*multiline*/}
-                        {/*label="(Optional)"/>*/}
-                        {/*</Paper>*/}
-                        {/*</Grid>*/}
-
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
                             <Slide in={true}  style={{ transitionDelay: 300}} direction="up" mountOnEnter unmountOnExit>
                                 <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
                             </Slide>
                         </Grid>
                         <br/>
-
                     </Grid>
                 </Paper>
                 <Grid xs={12}

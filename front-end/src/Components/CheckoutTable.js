@@ -32,7 +32,19 @@ class CheckoutTable extends React.Component {
             dialogData: {},
         };
 
-        fetch(props.apiHost + '/checkout/all')
+
+        this.handleButtonPress = this.handleButtonPress.bind(this);
+        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
+        this.handleCheckIn = this.handleCheckIn.bind(this);
+        this.fetchCheckouts = this.fetchCheckouts.bind(this);
+    }
+
+    componentDidMount() {
+        this.fetchCheckouts();
+    }
+
+    fetchCheckouts() {
+        fetch(this.props.apiHost + '/checkout/all')
             .then((response) => {
                 return response.json();
             })
@@ -42,23 +54,68 @@ class CheckoutTable extends React.Component {
                     fetched: true
                 });
             });
-
-        this.handleButtonPress = this.handleButtonPress.bind(this);
-        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
-        this.handleCheckIn = this.handleCheckIn.bind(this);
     }
 
     handleButtonPress() {
-        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
+        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - This feature has not been implemented yet.", variant: 'error'})
     }
 
     dialogClose = () => {
-        this.setState({dialogOpen: false})
+        this.setState({dialogOpen: false, dialogData: {} });
     };
 
     handleCheckIn() {
-        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
+        if (sessionStorage.getItem('token') == 0) {
+                this.setState({snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
+                return;
+        }
+
+        let today = new Date(Date.now() + 1);
+        let date;
+        if (today.getDate().toString().length > 1)
+            date = today.getDate().toString();
+        else
+            date = "0" + today.getDate();
+
+        let month;
+        if ((today.getMonth() + 1).toString().length > 1)
+            month = (today.getMonth() + 1).toString();
+        else
+            month = "0" + (today.getMonth() + 1);
+
+        let datetime = today.getFullYear() + "-"
+            + month + "-"
+            + date + "T"
+            + "23:59";
+
+        fetch(this.props.apiHost + '/gear/checkin', {
+            method: 'POST',
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: [{uid: this.state.dialogData.original.gear_uid}], date_checked_in: datetime}),
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => {
+                console.log(response);
+                if (response['status'] == 'Success!') {
+
+                    this.fetchCheckouts();
+
+                    this.setState({
+                        snackbarVisible: true,
+                        snackbarMessage: response['count'].toString() + ' piece(s) of gear were successfully checked in.',
+                        variant: 'success',
+                        dialogOpen: false,
+                        dialogData: {},
+                        list: [],
+                    })
+                }
+            })
+            .catch(error => console.error(error));
     }
+
 
     handleSnackbarClose = () => {
         this.setState({snackbarVisible : false})
@@ -97,7 +154,6 @@ class CheckoutTable extends React.Component {
                                 }
                             };
                         }}
-
                         columns={[
                             {
                                 columns: [
@@ -109,7 +165,7 @@ class CheckoutTable extends React.Component {
                                         ),
                                         /*Need to find out what 'id' does - look in react-table documentatinon*/
                                         id: "number",
-                                        minWidth: 50,
+                                        minWidth: 60,
                                         accessor: d => d.number,
                                     },
                                     {
@@ -119,7 +175,7 @@ class CheckoutTable extends React.Component {
                                             </div>
                                         ),
                                         accessor: "item",
-                                        minWidth: 70,
+                                        minWidth: 85,
 
                                         /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
                                     },
@@ -130,7 +186,7 @@ class CheckoutTable extends React.Component {
                                             </div>
                                         ),
                                         accessor: "member_name",
-                                        minWidth: 100,
+                                        minWidth: 130,
 
                                     },
                                     {
@@ -139,7 +195,7 @@ class CheckoutTable extends React.Component {
                                                  Checkout Date
                                             </div>
                                         ),
-                                        minWidth: 100,
+                                        minWidth: 120,
                                         accessor: "date_checked_out",
                                     },
                                     {
@@ -158,7 +214,7 @@ class CheckoutTable extends React.Component {
                                             </div>
                                         ),
                                         accessor: "officer_out",
-                                        minWidth: 70,
+                                        minWidth: 100,
                                     },
                                 ]
                             }
@@ -176,7 +232,14 @@ class CheckoutTable extends React.Component {
                 {jsx}
 
 
-                <CheckoutDialog apiHost={this.props.apiHost} onClose={this.dialogClose} dialogOpen={this.state.dialogOpen} rowData={this.state.dialogData}/>
+                <CheckoutDialog
+                    apiHost={this.props.apiHost}
+                    onClose={this.dialogClose}
+                    dialogOpen={this.state.dialogOpen}
+                    rowData={this.state.dialogData}
+                    handleCheckIn={this.handleCheckIn}
+                    handleRenew={this.handleButtonPress}
+                />
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'bottom',
