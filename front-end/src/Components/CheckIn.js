@@ -111,9 +111,27 @@ class CheckIn extends React.Component{
             return;
         }
 
+        let today = new Date(Date.now() + 1);
+        let date;
+        if (today.getDate().toString().length > 1)
+            date = today.getDate().toString();
+        else
+            date = "0" + today.getDate();
+
+        let month;
+        if ((today.getMonth() + 1).toString().length > 1)
+            month = (today.getMonth() + 1).toString();
+        else
+            month = "0" + (today.getMonth() + 1);
+
+        let datetime = today.getFullYear() + "-"
+            + month + "-"
+            + date + "T"
+            + "23:59";
+
         fetch(this.props.apiHost + '/gear/checkin', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list}),
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list, date_checked_in: datetime}),
             headers:{
                 'Content-Type': 'application/json'
             },

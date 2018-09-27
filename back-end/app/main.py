@@ -257,23 +257,39 @@ def get_user_contact_information_by_uid(uid):
 def check_in_gear():
     post_body = request.get_json()
 
-    db = _setup_database_connection('AWS')
-    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    aws_db = _setup_database_connection('AWS')
+    aws_cursor = aws_db.cursor(MySQLdb.cursors.DictCursor)
+
+    old_datetime = (post_body['date_checked_in'] + ':00')
+    sql_datetime = old_datetime.replace('T', ' ')
+
+    # Get officer name
+    token = post_body['authorization']
+    sql = "SELECT userid FROM authenticator WHERE token='%s'" % (token)
+    aws_cursor.execute(sql)
+    officer_uid = aws_cursor.fetchone()['userid']
+
+    odc_db = _setup_database_connection('ODC')
+    odc_cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
+    sql = "SELECT * FROM m_member WHERE c_uid=%d" % (officer_uid)
+    odc_cursor.execute(sql)
+    officer_name = odc_cursor.fetchone()['c_full_name']
+    odc_db.close()
 
     count = 0
     for gear in post_body['gear']:
         sql = "SELECT * FROM gear WHERE uid=%d" % (gear['uid'])
-        cursor.execute(sql)
-        if cursor.fetchone()['status_level'] == 1:
+        aws_cursor.execute(sql)
+        if aws_cursor.fetchone()['status_level'] == 1:
             sql = "UPDATE gear SET status_level = 0 WHERE uid=%d" % (gear['uid'])
-            cursor.execute(sql)
-            db.commit()
-            sql = "UPDATE checkout SET checkout_status=0 WHERE gear_uid=%d" % (gear['uid'])
-            cursor.execute(sql)
-            db.commit()
+            aws_cursor.execute(sql)
+            aws_db.commit()
+            sql = "UPDATE checkout SET checkout_status=0, date_checked_in='%s', officer_in='%s' WHERE gear_uid=%d" % (sql_datetime, officer_name, gear['uid'])
+            aws_cursor.execute(sql)
+            aws_db.commit()
             count = count + 1
 
-    db.close()
+    aws_db.close()
     return jsonify({'status': 'Success!', 'count': count})
 
 @app.route("/gear/edit", methods=['POST'])

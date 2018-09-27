@@ -23,7 +23,6 @@ class DateTimePicker extends React.Component {
 
         // Get initial date to populate picker: By default this is 7 days from now.
         let weekFromTodayMilliseconds = new Date(Date.now() + 604800000);
-        console.log(weekFromTodayMilliseconds.getMilliseconds());
         let weekFromToday = new Date(weekFromTodayMilliseconds);
 
         let date;

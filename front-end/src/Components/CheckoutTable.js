@@ -37,11 +37,10 @@ class CheckoutTable extends React.Component {
                 return response.json();
             })
             .then((myJson) => {
-                this.setState({data: myJson,
-                    fetched: true});
-                console.log(myJson[0]['date_due'].substring(0, 10));
-                let date1 = new Date(myJson['date_due']);
-                console.log(date1);
+                this.setState({
+                    data: myJson,
+                    fetched: true
+                });
             });
 
         this.handleButtonPress = this.handleButtonPress.bind(this);
