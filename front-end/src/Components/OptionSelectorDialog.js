@@ -26,6 +26,7 @@ class OptionSelectorDialog extends React.Component {
         this.props.onClose(value);
     };
 
+    // TODO: Make the item type list pull from the API
     render() {
         const {classes, onClose, selectedValue, ...other} = this.props;
 
@@ -34,7 +35,8 @@ class OptionSelectorDialog extends React.Component {
         let dialogText;
         if (cellInfo.column.id == 'item') {
             dialogText = " an Item Type";
-            listItems = (["Walkie Talkie",
+            listItems = ([
+                "Walkie Talkie",
                 "Sleeping Bag",
                 "Climbing Shoes",
                 "Cooking",

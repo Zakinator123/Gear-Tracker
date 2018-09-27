@@ -14,9 +14,9 @@ import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
-import SubRowComponent from './CheckoutTableExpansionRow'
-
+import CheckoutDialog from './CheckoutDialog'
 
 class CheckoutTable extends React.Component {
     constructor(props) {
@@ -27,7 +27,9 @@ class CheckoutTable extends React.Component {
             fetched : false,
             snackbarVisible: true,
             snackbarMessage: 'To check in, renew, or send a late reminder email for any piece of gear, press the row expansion arrows to the left!',
-            variant: 'info'
+            variant: 'info',
+            dialogOpen: false,
+            dialogData: {},
         };
 
         fetch(props.apiHost + '/checkout/all')
@@ -51,12 +53,25 @@ class CheckoutTable extends React.Component {
         this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
     }
 
+    dialogClose = () => {
+        this.setState({dialogOpen: false})
+    };
+
     handleCheckIn() {
         this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - you are in view-only mode. Please log back in as an officer.", variant: 'error'})
     }
 
     handleSnackbarClose = () => {
         this.setState({snackbarVisible : false})
+    };
+
+    getOverdueSeverityColor(date_due) {
+        var date1 = new Date(date_due);
+        var date2 = new Date();
+        var timeDiff = Math.abs(date1.getTime() - date2.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        // if (diffDays < 0)
+
     };
 
     render() {
@@ -72,47 +87,77 @@ class CheckoutTable extends React.Component {
                         showPaginationBottom={false}
                         defaultPageSize={this.state.data.length}
                         minRows={this.state.data.length}
-                        SubComponent={row => {
-                            return (
-                                <SubRowComponent handleCheckIn={this.handleCheckIn} handleButtonPress={this.handleButtonPress} row={row}/>
-                            );
+                        getTrProps={(state, rowInfo, column) => {
+                            return {
+                                onClick: () => {
+                                    this.setState({dialogOpen: true, dialogData: rowInfo})
+                                },
+                                style: {
+                                    background: 'white', //getOverDueSeverityColor(rowInfo.row.date_due)
+                                    cursor: 'pointer',
+                                }
+                            };
                         }}
 
                         columns={[
                             {
                                 columns: [
                                     {
-                                        Header: "Gear #",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Gear #
+                                            </div>
+                                        ),
                                         /*Need to find out what 'id' does - look in react-table documentatinon*/
                                         id: "number",
                                         minWidth: 50,
                                         accessor: d => d.number,
                                     },
                                     {
-                                        Header: "Item Type",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Item Type
+                                            </div>
+                                        ),
                                         accessor: "item",
                                         minWidth: 70,
 
                                         /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
                                     },
                                     {
-                                        Header: "Checked Out To",
-                                        accessor: "member",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Checked Out To
+                                            </div>
+                                        ),
+                                        accessor: "member_name",
                                         minWidth: 100,
 
                                     },
                                     {
-                                        Header: "Checkout Date",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Checkout Date
+                                            </div>
+                                        ),
                                         minWidth: 100,
                                         accessor: "date_checked_out",
                                     },
                                     {
-                                        Header: "Due Date",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Date Due
+                                            </div>
+                                        ),
                                         accessor: "date_due",
                                         minWidth: 80,
                                     },
                                     {
-                                        Header: "Officer Out",
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Officer Out
+                                            </div>
+                                        ),
                                         accessor: "officer_out",
                                         minWidth: 70,
                                     },
@@ -131,6 +176,8 @@ class CheckoutTable extends React.Component {
 
                 {jsx}
 
+
+                <CheckoutDialog apiHost={this.props.apiHost} onClose={this.dialogClose} dialogOpen={this.state.dialogOpen} rowData={this.state.dialogData}/>
                 <Snackbar
                     anchorOrigin={{
                         vertical: 'bottom',

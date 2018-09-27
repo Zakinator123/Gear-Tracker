@@ -33,6 +33,7 @@ const styles = theme => ({
 
 class MemberSearch extends React.Component {
 
+    //TODO: Should suggestions be in state?
     constructor(props) {
         super(props);
         this.suggestions = "Loading suggestions, please wait";
@@ -117,8 +118,9 @@ class MemberSearch extends React.Component {
         else
             jsx = (<Downshift
                 onChange={selection => {
-                    {/*console.log(selection);*/}
-                    this.props.setMember(selection);
+                    let memberEmail = selection.split(" - ")[1];
+                    let memberInfo = this.suggestions.find(member => member.c_email === memberEmail);
+                    this.props.setMember(memberInfo);
                 }}
                 >
                     {({getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex}) => (
@@ -137,7 +139,7 @@ class MemberSearch extends React.Component {
                                         this.renderSuggestion({
                                             suggestion,
                                             index,
-                                            itemProps: getItemProps({item: suggestion.c_full_name}),
+                                            itemProps: getItemProps({item: (suggestion.c_full_name + " - " + suggestion.c_email)}),
                                             highlightedIndex,
                                             selectedItem,
                                         }),

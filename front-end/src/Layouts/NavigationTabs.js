@@ -59,18 +59,20 @@ class ScrollableTabsButtonAuto extends React.Component {
                             className={classes.tabs}>
 
                             <Tab label="Check Out Gear" />
-                            <Tab label="Checkouts" />
+                            <Tab label="Current Checkouts" />
                             <Tab label="Check In Gear" />
                             <Tab label="Edit Inventory" />
                             {/*<Tab label="Accession Gear" />*/}
+                            {/*<Tab label="Past Checkouts" />*/}
                         </Tabs>
                     </Slide>
                 </AppBar>
                 {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} /> </TabContainer>}
                 {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}
                 {value === 2 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
-                {value === 3 &&  <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
-                {/*{value === 4 &&  <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }*/}
+                {value === 3 && <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
+                {/*{value === 4 && <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }*/}
+                {/*{value === 5 && <CheckoutTable apiHost={this.props.apiHost}/>}*/}
             </div>
         );
     }

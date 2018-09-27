@@ -27,8 +27,7 @@ def login():
 
     # Validate login info
     try:
-        odc_db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'],
-                                 os.environ['ODC_DB_DATABASE'])
+        odc_db = _setup_database_connection('ODC')
         cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
         sql = "SELECT * FROM m_member WHERE c_email='%s' AND c_password='%s'" % (
             post_body['email'], post_body['password'])
@@ -42,11 +41,10 @@ def login():
 
     member = cursor.fetchone()
     # Check to see if user is an officer:
-    if (member['c_group_memberships'] & 2 != 2):
+    if member['c_group_memberships'] & 2 != 2:
         return jsonify({'status': 'Error', 'message': 'Login rejected: User is not an officer'})
 
-    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                             os.environ['AWS_DB_DATABASE'])
+    rds_db = _setup_database_connection('AWS')
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
 
     member_id = member['c_uid']
@@ -87,8 +85,7 @@ def logout():
         return jsonify({'status': 'Success', 'message': "Successfully logged out of readonly user"})
 
     try:
-        db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                             os.environ['AWS_DB_DATABASE'])
+        db = _setup_database_connection('AWS')
         cursor = db.cursor(MySQLdb.cursors.DictCursor)
         sql = "DELETE FROM authenticator WHERE token='%s'" % (token)
         cursor.execute(sql)
@@ -107,15 +104,14 @@ def authenticated_required(f):
         # if not post_body['authorization']:
         #     return {'Status': 'Error', 'message': 'No authentication token in API request'}
 
-        rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                                 os.environ['AWS_DB_DATABASE'])
-        cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+        db = _setup_database_connection('AWS')
+        cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
         # Check if user is already logged in:
         sql = "SELECT * FROM authenticator WHERE token='%s'" % (post_body['authorization'])
         cursor.execute(sql)
 
-        rds_db.close()
+        db.close()
         if cursor.rowcount > 0:     
             authenticator_data = cursor.fetchone()
             # TODO: Check to make sure token isn't too old.
@@ -127,44 +123,69 @@ def authenticated_required(f):
 
 @app.route("/gear/<number>")
 def get_gear_by_number(number):
-    db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                         os.environ['AWS_DB_DATABASE'])
+    db = _setup_database_connection('AWS')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM gear WHERE number=" + number)
     data = cursor.fetchall()
     db.close()
+
+    for gear in data:
+        if gear['number'] == -1:
+            gear['number'] = "Numberless"
+
+    return jsonify(data)
+
+@app.route("/gear/uid/<uid>")
+def get_gear_by_uid(uid):
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute("SELECT * FROM gear WHERE uid=" + uid)
+    data = cursor.fetchall()
+    db.close()
+
+    for gear in data:
+        if gear['number'] == -1:
+            gear['number'] = "Numberless"
 
     return jsonify(data)
 
 
 @app.route("/gear/all")
 def get_gear():
-    db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                         os.environ['AWS_DB_DATABASE'])
+    db = _setup_database_connection('AWS')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute("SELECT * FROM gear;")
     data = cursor.fetchall()
     db.close()
 
+    for gear in data:
+        if gear['number'] == -1:
+            gear['number'] = "Numberless"
+
     return jsonify(data)
 
 @app.route("/checkout/all")
-def get_checkouts():
-    db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                         os.environ['AWS_DB_DATABASE'])
+def get_current_checkouts():
+    db = _setup_database_connection('AWS')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute("SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.gear_uid, checkout.officer_out, checkout.member, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0")
+
+    cursor.execute(
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0")
     data = cursor.fetchall()
     db.close()
     return jsonify(data)
+
+#TODO: Get Old Checkouts
+
 
 @app.route("/gear/checkout", methods=['POST'])
 @authenticated_required
 def checkout_gear():
     post_body = request.get_json()
 
-    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                             os.environ['AWS_DB_DATABASE'])
+    print(post_body)
+
+    rds_db = _setup_database_connection('AWS')
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
 
     # Get officer name
@@ -173,13 +194,17 @@ def checkout_gear():
     cursor.execute(sql)
     officer_uid = cursor.fetchone()['userid']
 
-    odc_db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'],
-                             os.environ['ODC_DB_DATABASE'])
+    odc_db = _setup_database_connection('ODC')
     cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
     sql = "SELECT * FROM m_member WHERE c_uid=%d" % (officer_uid)
     cursor.execute(sql)
     officer_name = cursor.fetchone()['c_full_name']
+
+    sql = "SELECT * FROM m_member WHERE c_email='%s'" % (post_body['memberEmail'])
+    cursor.execute(sql)
+    member_uid = cursor.fetchone()['c_uid']
     odc_db.close()
+
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
     print(officer_name)
 
@@ -192,7 +217,7 @@ def checkout_gear():
         sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear['uid'], 1)
         cursor.execute(sql)
         if cursor.rowcount > 0:
-            sql = "UPDATE checkout SET member='%s', date_due='%s' officer_out='%s' WHERE gear_uid=%d" % (post_body['member'], sql_datetime, officer_name, gear['uid'])
+            sql = "UPDATE checkout SET member_name='%s', member_uid=%d, date_due='%s' officer_out='%s' WHERE gear_uid=%d" % (post_body['member'], member_uid, sql_datetime, officer_name, gear['uid'])
             cursor.execute(sql)
             rds_db.commit()
             already_checked_out.append(gear)
@@ -201,7 +226,7 @@ def checkout_gear():
 
 
     for gear in not_checked_out:
-        sql = "INSERT INTO checkout (gear_uid, checkout_status, member, date_due, officer_out) VALUES (%d, %d, '%s', '%s', '%s');" % (gear['uid'], 1, post_body['member'], sql_datetime, officer_name)
+        sql = "INSERT INTO checkout (gear_uid, checkout_status, member_name, member_uid, date_due, officer_out) VALUES (%d, %d, '%s', %d, '%s', '%s');" % (gear['uid'], 1, post_body['member'], member_uid, sql_datetime, officer_name)
         cursor.execute(sql)
         sql = "UPDATE gear SET status_level = 1 WHERE uid=%d" % (gear['uid'])
         cursor.execute(sql)
@@ -215,25 +240,25 @@ def checkout_gear():
     post_body['already_checked_out'] = already_checked_out
     return jsonify(post_body)
 
-### Commented out until a credential system is put into place to prevent user information
-### and passwords being read by malicious users (Non-Hashed Passwords are returned by the database)
-# @app.route("/user/<id>")
-# def get_user_by_id(id):
-#     db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'], os.environ['ODC_DB_DATABASE'])
-#     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-#     cursor.execute("SELECT * FROM m_member WHERE c_uid=" + id)
-#     data=cursor.fetchone()
-#
-#     return jsonify(data)
+
+@app.route("/user/<uid>")
+# @authenticated_required
+def get_user_contact_information_by_uid(uid):
+    db = _setup_database_connection('ODC')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+    sql = "SELECT m_member.c_full_name, m_member.c_email, m_phone_number.c_phone_number FROM m_member LEFT JOIN m_phone_number ON m_member.c_uid = m_phone_number.c_uid WHERE m_phone_number.c_uid='%s'" % uid
+    cursor.execute(sql)
+    data = cursor.fetchone()
+
+    return jsonify(data)
 
 @app.route("/gear/checkin", methods=['POST'])
 @authenticated_required
-def checkin_gear():
+def check_in_gear():
     post_body = request.get_json()
 
-    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                             os.environ['AWS_DB_DATABASE'])
-    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
     count = 0
     for gear in post_body['gear']:
@@ -242,22 +267,21 @@ def checkin_gear():
         if cursor.fetchone()['status_level'] == 1:
             sql = "UPDATE gear SET status_level = 0 WHERE uid=%d" % (gear['uid'])
             cursor.execute(sql)
-            rds_db.commit()
+            db.commit()
             sql = "UPDATE checkout SET checkout_status=0 WHERE gear_uid=%d" % (gear['uid'])
             cursor.execute(sql)
-            rds_db.commit()
+            db.commit()
             count = count + 1
 
-    rds_db.close()
+    db.close()
     return jsonify({'status': 'Success!', 'count': count})
 
 @app.route("/gear/edit", methods=['POST'])
 @authenticated_required
 def edit_gear():
     post_body = request.get_json()
-    rds_db = MySQLdb.connect(os.environ['AWS_DB_HOST'], os.environ['AWS_DB_USER'], os.environ['AWS_DB_PASS'],
-                             os.environ['AWS_DB_DATABASE'])
-    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
     if (post_body['column'] == 'number'):
         sql = "UPDATE gear SET %s = %d WHERE uid=%d" % (post_body['column'], int(post_body['input_data']), post_body['gear_uid'])
@@ -265,22 +289,28 @@ def edit_gear():
         sql = "UPDATE gear SET %s = '%s' WHERE uid=%d" % (post_body['column'], post_body['input_data'], post_body['gear_uid'])
 
     cursor.execute(sql)
-    rds_db.commit()
+    db.commit()
 
     return jsonify({'status': 'Success!'})
 
 
 @app.route("/get_active_members")
 def get_active_members():
-    db = MySQLdb.connect(os.environ['ODC_DB_HOST'], os.environ['ODC_DB_USER'], os.environ['ODC_DB_PASS'],
-                         os.environ['ODC_DB_DATABASE'])
+    db = _setup_database_connection('ODC')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        "select m_member.c_uid, c_full_name, c_email from m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_expiration_date != '2020-12-31' and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;")
+        'SELECT m_member.c_uid, c_full_name, c_email FROM m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_expiration_date != \'2020-12-31\' and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;')
     data = cursor.fetchall()
     db.close()
 
     return jsonify(data)
+
+
+def _setup_database_connection(database):
+    db = MySQLdb.connect(os.environ[database + '_DB_HOST'], os.environ[database + '_DB_USER'], os.environ[database + '_DB_PASS'],
+                         os.environ[database + '_DB_DATABASE'])
+    return db
+
 
 if __name__ == "__main__":
     # Only for debugging while developing

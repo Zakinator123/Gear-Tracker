@@ -38,9 +38,9 @@ def lambda_handler(event, context):
                 # React front-end deployment
                 'sudo docker stop react-front-end',
                 'sudo docker rm react-front-end',
-                'sudo docker rmi zakinator123/gear-app-react:latest',
-                'sudo docker pull zakinator123/gear-app-react',
-                'sudo docker run -d --name react-front-end -p 8080:80 zakinator123/gear-app-react',
+                'sudo docker rmi zakinator123/gear-tracker-frontend:latest',
+                'sudo docker pull zakinator123/gear-tracker-frontend',
+                'sudo docker run -d --name react-front-end -p 8080:80 zakinator123/gear-tracker-frontend',
                 'sudo service haproxy restart',
                 ]
 
@@ -61,9 +61,9 @@ def lambda_handler(event, context):
         # Flask back-end deployment
         "sudo docker stop odc",
         "sudo docker rm odc",
-        "sudo docker rmi zakinator123/gear-app:latest",
-        'sudo docker pull zakinator123/gear-app',
-        "sudo docker run -d --name odc -p 8080:80 --env-file ./env_vars zakinator123/gear-app",
+        "sudo docker rmi zakinator123/gear-tracker-backend:latest",
+        'sudo docker pull zakinator123/gear-tracker-backend',
+        "sudo docker run -d --name odc --link mysql -p 8080:80 --env-file ./env_vars zakinator123/gear-tracker-backend",
         "sudo service haproxy restart",
     ]
 

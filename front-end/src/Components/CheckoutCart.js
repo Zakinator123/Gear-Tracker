@@ -131,7 +131,7 @@ class CheckoutCart extends React.Component {
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;
-        if (gearNumber == '')
+        if (gearNumber == '' || gearNumber < 0)
             return this.setState({open: true});
 
         for (let i = 0; i < this.props.list.length; i++) {
