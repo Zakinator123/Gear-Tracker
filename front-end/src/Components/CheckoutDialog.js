@@ -1,16 +1,14 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import EmailIcon from '@material-ui/icons/Email';
 import RenewIcon from '@material-ui/icons/Autorenew';
 import ReturnIcon from '@material-ui/icons/AssignmentReturned'
 import { withStyles } from '@material-ui/core/styles';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+import Tooltip from '@material-ui/core/Tooltip';
 
 
 import List from '@material-ui/core/List';
@@ -26,12 +24,28 @@ class CheckoutDialog extends React.Component {
             gearData: {number: 'Loading', item: 'Loading', description: 'Loading'},
             memberData: {c_email: 'Loading', c_full_name: 'Loading', c_phone_number: 'Loading'},
             fetched : false,
+            tooltipOpenEmail: false,
+            tooltipOpenPhoneNumber: false,
         };
     }
+
+    handleTooltipClose = () => {
+        this.setState({ tooltipOpen: false });
+    };
 
     handleClose = () => {
         this.props.onClose();
         this.setState({fetched: false, gearData: {number: 'Loading', item: 'Loading', description: 'Loading'}});
+    };
+
+    copyToClipboard = (key) => {
+        navigator.clipboard.writeText("wowowow");
+        if (key === "Member Email")
+            this.setState({ tooltipOpenEmail: true });
+        else if (key === "Member Phone Number")
+            this.setState({tooltipOpenPhoneNumber: true});
+
+        setTimeout(() => this.setState({tooltipOpenEmail: false, tooltipOpenPhoneNumber: false}), 2000)
     };
 
     getCheckoutDetails = () => {
@@ -70,26 +84,50 @@ class CheckoutDialog extends React.Component {
 
 
             let formattedCheckoutDetails = {
-            "Gear Number": this.state.gearData.number,
-            "Checked Out To": this.state.memberData.c_full_name,
-            "Member Email": this.state.memberData.c_email,
-            "Member Phone Number": this.state.memberData.c_phone_number,
-            "Gear Type": this.state.gearData.item,
-            "Gear Description": this.state.gearData.description ,
-            "Checkout Date": checkoutData.date_checked_out,
-            "Due Date": checkoutData.date_due,
-            "Officer Out": checkoutData.officer_out,
+                "Gear Number": this.state.gearData.number,
+                "Checked Out To": this.state.memberData.c_full_name,
+                "Member Email": this.state.memberData.c_email,
+                "Member Phone Number": this.state.memberData.c_phone_number,
+                "Gear Type": this.state.gearData.item,
+                "Gear Description": this.state.gearData.description ,
+                "Checkout Date": checkoutData.date_checked_out,
+                "Due Date": checkoutData.date_due,
+                "Officer Out": checkoutData.officer_out,
             };
 
-            return Object.keys(formattedCheckoutDetails).map((key) => (
-                <ListItem>
-                    <ListItemText
-                        key={key} //needs to be an id
-                        primary={key}
-                        secondary={formattedCheckoutDetails[key]}
-                    />
-                </ListItem>
-            ));
+            return Object.keys(formattedCheckoutDetails).map((key) => {
+                let tooltipOpener;
+                if (key === "Member Email")
+                    tooltipOpener = this.state.tooltipOpenEmail;
+                else if (key === "Member Phone Number")
+                    tooltipOpener = this.state.tooltipOpenPhoneNumber;
+
+                return (<ListItem>
+                    <Grid container>
+                        <Grid item>
+                            <ListItemText
+                                key={key} //needs to be an id
+                                primary={key}
+                                secondary={formattedCheckoutDetails[key]}
+                            />
+                        </Grid>
+                        {(key === "Member Email" || key === "Member Phone Number") &&
+                        <Grid item>
+                            <Tooltip
+                                placement="right"
+                                onClose={this.handleTooltipClose}
+                                open={tooltipOpener}
+                                disableFocusListener
+                                disableHoverListener
+                                disableTouchListener
+                                title="Copied"
+                            >
+                                <Button onClick={() => this.copyToClipboard(key)} color="primary"> Copy </Button>
+                            </Tooltip>
+                        </Grid>}
+                    </Grid>
+                </ListItem>);
+            })
         }
     };
 
