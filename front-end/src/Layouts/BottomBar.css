@@ -1,32 +1,75 @@
 .App-footer {
-  text-align: center;
-  background-color: #222;
-  height: 12vh;
-  color: white;
-  bottom: 0;
-  position: fixed;
-  width: 100%;
+    text-align: center;
+    background-color: #222;
+    height: 12vh;
+    color: white;
+    bottom: 0;
+    position: fixed;
+    width: 100%;
 }
 
-.Github {
-  height: 35%;
-  margin: 0;
+@media (max-height: 749px) {
+    .ODC_Logo {
+        display: none;
+    }
+}
+
+@media (min-height: 750px) {
+    .ODC_Logo {
+        height: 19%;
+        margin-top: 2vh;
+    }
 }
 
 @media (max-height: 375px) {
-    .Author-text{
-        font-size: 9px;
+    .geartracker{
+        font-size: 15px;
         color: white;
-          margin-top: 2vh;
+        margin-top: 2vh;
     }
 }
 
 @media (min-height: 376px) {
-    .Author-text{
-        font-size: 14px;
+    .geartracker{
+        font-size: 24px;
         color: white;
-          margin-top: 3vh;
+        margin-top: 2vh;
+    }
+}
 
+@media (min-height: 750px) {
+    .geartracker{
+        font-size: 30px;
+        color: white;
+        margin-top: 0vh;
+    }
+}
+
+@media (max-height: 375px) {
+    .Beta{
+        font-size: 6px;
+        color: white;
+        padding-Left: 28vh;
+        margin-top: -0.5vh;
+    }
+
+}
+
+@media (min-height: 376px) {
+    .Beta{
+        font-size: 12px;
+        color: white;
+        padding-left: 24vh;
+        margin-top: -0.5vh;
+    }
+}
+
+@media (min-height: 750px) {
+    .Beta{
+        font-size: 12px;
+        color: white;
+        padding-left: 24vh;
+        margin-top: -0.5vh;
     }
 }
 
@@ -35,18 +78,18 @@ a, a:active, a:visited, a:focus {
 }
 
 a:hover{
-  text-decoration: underline;
-  text-decoration-color: white;
+    text-decoration: underline;
+    text-decoration-color: white;
 }
 
 /*.App-logo {*/
-  /*animation: App-logo-spin infinite 20s linear;*/
-  /*height: 40%;*/
-  /*margin-top: 1vh;*/
-  /*position: relative;*/
+/*animation: App-logo-spin infinite 20s linear;*/
+/*height: 40%;*/
+/*margin-top: 1vh;*/
+/*position: relative;*/
 /*}*/
 
 /*@keyframes App-logo-spin {*/
-  /*from { transform: rotate(0deg); }*/
-  /*to { transform: rotate(360deg); }*/
+/*from { transform: rotate(0deg); }*/
+/*to { transform: rotate(360deg); }*/
 /*}*/

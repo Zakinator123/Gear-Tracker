@@ -8,12 +8,21 @@ import LoginDialog from '../Components/LoginDialog'
 import Button from '@material-ui/core/Button';
 import Slide from '@material-ui/core/Slide';
 import ClubLogo from './ClubLogo'
+import MenuIcon from '@material-ui/icons/Menu';
+import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import Divider from '@material-ui/core/Divider';
+
+
+
 
 const styles = theme => ({
     root: {
         flexGrow: 1,
     },
-    flex: {},
     logo: {
         [theme.breakpoints.only('xs')]: {
             marginRight: 'auto',
@@ -39,50 +48,98 @@ const styles = theme => ({
 });
 
 
-function TopBar(props) {
-    const {classes} = props;
+class TopBar extends React.Component {
+    constructor(props) {
+        super (props);
 
-    let loginLogoutButton;
+        this.state = {
+            drawerOpen: false,
+        }
+    }
 
-    if (props.connected == false)
-        loginLogoutButton = <Button style={{visibility: 'hidden' }} color="primary" variant="contained" ><Typography variant="button" style={{visibility: 'hidden'}}>Login</Typography> </Button>;
-    else if (props.loggedIn === false)
-        loginLogoutButton = (
-            <Slide in={true} style={{transitionDelay: 300}} mountOnEnter unmountOnExit>
-                <LoginDialog logIn={props.logIn} apiHost={props.apiHost}/>
-            </Slide>
-        );
-    else
-        loginLogoutButton = (
-            <Button color="primary" variant="contained" onClick={props.logOut}>
-                <Typography variant="button" style={{color: "#FFFFFF"}}>Logout</Typography>
-            </Button>
-        );
+    //TODO: Refactor
+    toggleDrawerOpen = () => {
+        this.setState({drawerOpen: true})
+    };
 
-    let titleVariant;
-    if (window.matchMedia("(min-width: 800px)").matches)
-        titleVariant = "title";
-    else
-        titleVariant = "body2";
+    toggleDrawerClose = () => {
+        this.setState({drawerOpen: false})
+    };
 
-    let logo = <ClubLogo classes={classes}/>;
+    render() {
+        const {classes} = this.props;
+
+        let loginLogoutButton;
+
+        if (this.props.connected == false)
+            loginLogoutButton =
+                <Button style={{visibility: 'hidden'}} color="primary" variant="contained"><Typography variant="button"
+                                                                                                       style={{visibility: 'hidden'}}>Login</Typography>
+                </Button>;
+        else if (this.props.loggedIn === false)
+            loginLogoutButton = (
+                <Slide in={true} style={{transitionDelay: 300}} mountOnEnter unmountOnExit>
+                    <LoginDialog logIn={this.props.logIn} apiHost={this.props.apiHost}/>
+                </Slide>
+            );
+        else
+            loginLogoutButton = (
+                <Button color="primary" variant="contained" onClick={this.props.logOut}>
+                    <Typography variant="button" style={{color: "#FFFFFF"}}>Logout</Typography>
+                </Button>
+            );
+
+        // let titleVariant;
+        // if (window.matchMedia("(min-width: 800px)").matches)
+        //     titleVariant = "title";
+        // else
+        //     titleVariant = "body2";
+
+        let logo = <ClubLogo classes={classes}/>;
 
 
-    return (
-        <div className="TopBar">
-            <div className={classes.root}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <Typography variant={titleVariant} color="inherit" align="left" className={classes.flex}>
-                            Outdoors at UVA <br/>Gear Inventory
-                        </Typography>
-                        {logo}
-                        {loginLogoutButton}
-                    </Toolbar>
-                </AppBar>
+        return (
+            <div className="TopBar">
+                <div className={classes.root}>
+                    <AppBar position="static">
+                        <Toolbar>
+                            {/*<Typography variant={titleVariant} color="inherit" align="left" className={classes.flex}>*/}
+                            {/*Outdoors at UVA <br/>Gear Inventory*/}
+                            {/*</Typography>*/}
+                            <IconButton
+                                className={classes.menuButton}
+                                color="inherit"
+                                aria-label="Menu"
+                                style={{marginRight: '5vh'}}
+                                onClick={this.toggleDrawerOpen}
+                            >
+                                <MenuIcon/>
+                            </IconButton>
+                            {logo}
+                            {loginLogoutButton}
+                        </Toolbar>
+                        {/*<Drawer open={this.state.drawerOpen} onClose={() => null}>*/}
+                            {/*<div*/}
+                                {/*tabIndex={0}*/}
+                                {/*role="button"*/}
+                                {/*onClick={this.toggleDrawerClose}*/}
+                                {/*onMouseLeave={this.toggleDrawerClose}*/}
+                            {/*>*/}
+                                {/*<div>*/}
+                                    {/*<List>*/}
+                                        {/*<ListItem button>*/}
+                                          {/*<ListItemText primary="Trash" />*/}
+                                        {/*</ListItem>*/}
+                                    {/*</List>*/}
+                                    {/*<Divider />*/}
+                                {/*</div>*/}
+                            {/*</div>*/}
+                        {/*</Drawer>*/}
+                    </AppBar>
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
 }
 
 TopBar.propTypes = {

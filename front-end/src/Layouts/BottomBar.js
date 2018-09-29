@@ -1,24 +1,45 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-// import { Typography } from 'material-ui/core';
-import GitHubLogo from './GitHub_Logo_White.png';
+import { Typography } from '@material-ui/core';
+import ODC from './ODC-Bottom-Bar.png';
 import './BottomBar.css';
 
 const styles = {
-  root: {
-    flexGrow: 1,
-  },
-  flex: {
-    flex: 1,
-  }
+    root: {
+        flexGrow: 1,
+    },
+    flex: {
+        flex: 1,
+    }
 };
 
 export const BottomBar = () => {
     return (
-            <div className="App-footer">
-                <a href="https://github.com/Zakinator123/Gear-Tracker/" ><div className="Author-text">Gear Tracker by Zakey Faieq</div></a>
-                <a href="https://github.com/Zakinator123/Gear-Tracker/"> <img className="Github" src={GitHubLogo} alt="Github"/></a>
+        <div className="App-footer">
+            {/*<a href="https://github.com/Zakinator123/Gear-Tracker/" ><div className="Author-text">Gear Tracker by Zakey Faieq</div></a>*/}
+            <a href="http://outdoorsatuva.org"> <img className="ODC_Logo" src={ODC} alt="Github"/></a>
+
+
+            <style>
+                @import url('https://fonts.googleapis.com/css?family=Permanent+Marker');
+            </style>
+
+
+            <div
+                style={{fontFamily: 'Permanent Marker'}}
+                className="geartracker"
+            >
+                Gear Tracker
             </div>
+
+
+            <div
+                style={{fontFamily: 'Permanent Marker'}}
+                className="Beta"
+            >
+                Beta
+            </div>
+        </div>
     )
 };
 
