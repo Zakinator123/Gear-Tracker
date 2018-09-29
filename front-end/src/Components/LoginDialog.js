@@ -96,13 +96,14 @@ export default class LoginDialog extends React.Component {
                 <Button color="primary" variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>Login</Typography> </Button>
                 <Dialog
                     open={this.state.open}
+                    scroll="body"
                     onClose={this.handleClose}
                     aria-labelledby="form-dialog-title"
                 >
                     <DialogTitle id="form-dialog-title">Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>. Alternatively, you can login as a read-only user using the button below (no credentials required).</Typography>
+                            <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>. </Typography>
                         </DialogContentText>
                         <div style={{visibility:this.state.errorMessageVisibility}}><br/><Typography variant="caption" style={{color:'red'}}>{this.state.errorMessage}</Typography></div>
                         <TextField
@@ -130,7 +131,7 @@ export default class LoginDialog extends React.Component {
                             <Typography variant="button" style={{color:'red'}} align="left">Cancel</Typography>
                         </Button>
                         <Button style={{align: 'left', backgroundColor: '#0000FF'}} onClick={this.handleSubmitReadOnly} color="primary">
-                            <Typography variant="button" style={{color:'white'}} align="left">View-Only Login</Typography>
+                            <Typography variant="button" style={{color:'white'}} align="left">Dev Login</Typography>
                         </Button>
                         <Button style={{backgroundColor: '#43A047'}} onClick={this.handleSubmit} color="primary">
                             <Typography variant="button" style={{color:'white'}} align="left">Login</Typography>

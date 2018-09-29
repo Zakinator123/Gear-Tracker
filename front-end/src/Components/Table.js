@@ -177,6 +177,7 @@ class InventoryTable extends React.Component {
             />
         );
     }
+
     componentDidMount() {
         fetch(this.props.apiHost + '/gear/all')
             .then((response) => {

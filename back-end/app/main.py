@@ -246,7 +246,7 @@ def checkout_gear():
 def get_user_contact_information_by_uid(uid):
     db = _setup_database_connection('ODC')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
-    sql = "SELECT m_member.c_full_name, m_member.c_email, m_phone_number.c_phone_number FROM m_member LEFT JOIN m_phone_number ON m_member.c_uid = m_phone_number.c_uid WHERE m_phone_number.c_uid='%s'" % uid
+    sql = "SELECT m_member.c_full_name, m_member.c_email, m_phone_number.c_phone_number FROM m_member LEFT JOIN m_phone_number ON m_member.c_uid = m_phone_number.c_owner WHERE m_phone_number.c_owner='%s'" % uid
     cursor.execute(sql)
     data = cursor.fetchone()
 

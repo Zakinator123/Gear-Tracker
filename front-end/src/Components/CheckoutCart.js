@@ -294,7 +294,16 @@ class CheckoutCart extends React.Component {
                     <Divider/>
 
                     <ListItem>
-                        <TextField label="Add Gear to Cart" type="number" placeholder="Enter a Gear Number" onChange={this.handleChange} value={this.state.textFieldValue}/>
+                        <TextField
+                            label="Add Gear to Cart"
+                            min="0"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            type="number"
+                            placeholder="Enter a Gear Number"
+                            onChange={this.handleChange}
+                            value={this.state.textFieldValue}
+                        />
                         <Tooltip id="tooltip-fab" title="Add to Gear Cart">
                             <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
                                 <AddIcon />

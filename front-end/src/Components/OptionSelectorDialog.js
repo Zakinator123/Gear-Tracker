@@ -100,7 +100,12 @@ class OptionSelectorDialog extends React.Component {
         }
 
         return (
-                <Dialog onClose={this.handleClose} aria-labelledby="simple-dialog-title" {...other}>
+                <Dialog
+                    onClose={this.handleClose}
+                    aria-labelledby="simple-dialog-title"
+                    scroll="body"
+                    {...other}
+                >
                     <DialogTitle><Typography variant="title" style={{margin:'0.5vh'}} color="primary">Select{dialogText}</Typography></DialogTitle>
                     <div>
                         <List style={{marginTop: '-2vh'}} dense>

@@ -38,8 +38,8 @@ class CheckoutDialog extends React.Component {
         this.setState({fetched: false, gearData: {number: 'Loading', item: 'Loading', description: 'Loading'}});
     };
 
-    copyToClipboard = (key) => {
-        navigator.clipboard.writeText("wowowow");
+    copyToClipboard = (key, formattedCheckoutDetails) => {
+        navigator.clipboard.writeText(formattedCheckoutDetails[key]);
         if (key === "Member Email")
             this.setState({ tooltipOpenEmail: true });
         else if (key === "Member Phone Number")
@@ -122,7 +122,7 @@ class CheckoutDialog extends React.Component {
                                 disableTouchListener
                                 title="Copied"
                             >
-                                <Button onClick={() => this.copyToClipboard(key)} color="primary"> Copy </Button>
+                                <Button onClick={() => this.copyToClipboard(key, formattedCheckoutDetails)} color="primary"> Copy </Button>
                             </Tooltip>
                         </Grid>}
                     </Grid>
