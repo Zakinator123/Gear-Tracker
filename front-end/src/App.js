@@ -128,10 +128,36 @@ class App extends Component {
                     onClose={this.handleSnackbarClose}
                     style={{margin: '2vh'}}
                 >
-                    <MySnackbarContentWrapper
-                        onClose={this.handleSnackbarClose}
-                        message="Add to home screen?"
-                        variant="success"
+                    <SnackbarContent
+                        style={{backgroundColor: green[600]}}
+                        aria-describedby="client-snackbar"
+                        message={
+                            <span
+                                id="client-snackbar"
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center'}}
+                            >
+                                <InfoIcon
+                                    style={ {
+                                        opacity: 0.9,
+                                        marginRight: theme.spacing.unit,
+                                    }}
+                                />
+                                <Button onClick={this.addToHomeScreen}> Add to home screen? </Button>
+                            </span>
+                        }
+                        action={
+                            <IconButton
+                                key="close"
+                                aria-label="Close"
+                                color="inherit"
+                                style={{marginTop: '-20'}}
+                                onClick={this.handleSnackbarClose}
+                            >
+                                <CloseIcon style={{marginTop: '-20'}} />
+                            </IconButton>
+                        }
                     />
                 </Snackbar>
 
@@ -139,72 +165,5 @@ class App extends Component {
         );
     }
 }
-
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const snackbarStyles = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close:{marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-                <Icon className={classNames(classes.icon, classes.iconVariant)} />
-                    <Button onClick={this.addToHomeScreen}> {message} </Button>
-                </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(snackbarStyles)(MySnackbarContent);
 
 export default App;
