@@ -100,7 +100,7 @@ export default class LoginDialog extends React.Component {
                     onClose={this.handleClose}
                     aria-labelledby="form-dialog-title"
                 >
-                    <DialogTitle id="form-dialog-title">Login</DialogTitle>
+                    <DialogTitle id="form-dialog-title">Officer Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>. </Typography>
