@@ -118,23 +118,31 @@ class TopBar extends React.Component {
                             {logo}
                             {loginLogoutButton}
                         </Toolbar>
-                        {/*<Drawer open={this.state.drawerOpen} onClose={() => null}>*/}
-                            {/*<div*/}
-                                {/*tabIndex={0}*/}
-                                {/*role="button"*/}
-                                {/*onClick={this.toggleDrawerClose}*/}
-                                {/*onMouseLeave={this.toggleDrawerClose}*/}
-                            {/*>*/}
-                                {/*<div>*/}
-                                    {/*<List>*/}
-                                        {/*<ListItem button>*/}
-                                          {/*<ListItemText primary="Trash" />*/}
-                                        {/*</ListItem>*/}
-                                    {/*</List>*/}
-                                    {/*<Divider />*/}
-                                {/*</div>*/}
-                            {/*</div>*/}
-                        {/*</Drawer>*/}
+                        <Drawer open={this.state.drawerOpen} onClose={this.toggleDrawerClose}>
+                            <div
+                                tabIndex={0}
+                                role="button"
+                                onClick={this.toggleDrawerClose}
+                            >
+                                <div>
+                                    <List>
+                                        <ListItem button style={{width: '200px'}}>
+                                            <ListItemText primary="About" />
+                                        </ListItem>
+                                        <a
+                                            href="https://gear-tracker.com/Gear-Handbook.pdf"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <ListItem button style={{width: '200px'}}>
+                                                <ListItemText primary="Gear Handbook" />
+                                            </ListItem>
+                                        </a>
+                                        <Divider />
+                                    </List>
+                                </div>
+                            </div>
+                        </Drawer>
                     </AppBar>
                 </div>
             </div>

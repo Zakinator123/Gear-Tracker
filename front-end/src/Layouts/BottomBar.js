@@ -19,12 +19,6 @@ export const BottomBar = () => {
             {/*<a href="https://github.com/Zakinator123/Gear-Tracker/" ><div className="Author-text">Gear Tracker by Zakey Faieq</div></a>*/}
             <a href="http://outdoorsatuva.org"> <img className="ODC_Logo" src={ODC} alt="Github"/></a>
 
-
-            <style>
-                @import url('https://fonts.googleapis.com/css?family=Permanent+Marker');
-            </style>
-
-
             <div
                 style={{fontFamily: 'Permanent Marker'}}
                 className="geartracker"

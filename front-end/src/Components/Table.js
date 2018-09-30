@@ -254,7 +254,7 @@ class InventoryTable extends React.Component {
         }
         else {
             divClassName = 'LoggedOut';
-            explanationText = <Typography variant="body2" color="inherit" align="center"> Scroll, sort, and search through the table below to view Outdoors at UVA's Gear Inventory!</Typography>;
+            explanationText = null;
             dialog = null;
         }
 
@@ -270,9 +270,9 @@ class InventoryTable extends React.Component {
                         <ReactTable
                             style={{height:'100%'}}
                             data={this.state.data}
-                            filterable
-                            defaultFilterMethod={(filter, row) =>
-                            String(row[filter.id]) === filter.value}
+                            // filterable
+                            // defaultFilterMethod={(filter, row) =>
+                            // String(row[filter.id]) === filter.value}
                             showPaginationBottom={false}
                             defaultPageSize={this.state.data.length}
                             minRows={this.state.data.length}
@@ -283,18 +283,25 @@ class InventoryTable extends React.Component {
                                     style: {fontColor:'green'},
                                     columns: [
                                         {
-                                            Header: "Number",
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Gear #
+                                            </div>
+                                        ),
                                             /*Need to find out what 'id' does - look in react-table documentatinon*/
                                             id: "number",
-                                            minWidth: 53,
+                                            minWidth: 60,
                                             accessor: d => d.number,
-                                            filterMethod: (filter, rows) =>
-                                                matchSorter(rows, filter.value, {keys: ["number"]}),
+                                            filterMethod: (filter, row) => row[filter.id] !== undefined ? String(row[filter.id]).contains(filter.value) : true,
                                             filterAll: true,
                                             Cell: this.renderEditable,
                                         },
                                         {
-                                            Header: "Item Type",
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Item Type
+                                            </div>
+                                        ),
                                             accessor: "item",
                                             /*Eventually needs to be a dropdown menu based on a list of ItemTypes.*/
                                             filterMethod: (filter, rows) =>
@@ -303,7 +310,11 @@ class InventoryTable extends React.Component {
                                             Cell: this.renderEditable,
                                         },
                                         {
-                                            Header: "Description",
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Description
+                                            </div>
+                                        ),
                                             accessor: "description",
                                             minWidth: 200,
                                             filterMethod: (filter, rows) =>
@@ -312,8 +323,12 @@ class InventoryTable extends React.Component {
                                             Cell: this.renderEditable,
                                         },
                                         {
-                                            Header: "Condition",
-                                            minWidth: 60,
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Condition
+                                            </div>
+                                        ),
+                                            minWidth: 80,
                                             accessor: "condition_level",
                                             filterMethod: (filter, rows) =>
                                                 matchSorter(rows, filter.value, { keys: ["condition_level"] }),
@@ -321,7 +336,11 @@ class InventoryTable extends React.Component {
                                             Cell: this.renderEditable,
                                         },
                                         {
-                                            Header: "Status",
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Status
+                                            </div>
+                                        ),
                                             accessor: "status_level",
                                             minWidth: 78,
                                             filterMethod: (filter, rows) =>
@@ -329,7 +348,11 @@ class InventoryTable extends React.Component {
                                             filterAll: true,
                                         },
                                         {
-                                            Header: "Gear Notes",
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Notes
+                                            </div>
+                                        ),
                                             accessor: "notes",
                                             minWidth: 150,
                                             filterMethod: (filter, rows) =>

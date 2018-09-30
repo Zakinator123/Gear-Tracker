@@ -1,9 +1,9 @@
 {
   "short_name": "Gear Tracker",
-  "name": "",
+  "name": "Gear Tracker",
   "icons": [
     {
-      "src": "splash-screen.png",
+      "src": "android-splash-screen.png",
       "sizes": "512x512",
       "type": "image/png"
     }
