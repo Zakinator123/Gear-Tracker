@@ -156,8 +156,6 @@ class Checkout extends React.Component{
 
 
     render() {
-        const { classes } = this.props;
-
         return(
             <div style={{marginBottom: '12vh'}}>
                 <Paper>

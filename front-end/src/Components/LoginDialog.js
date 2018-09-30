@@ -113,6 +113,7 @@ export default class LoginDialog extends React.Component {
                             onChange={this.handleChangeEmail}
                             label="Email Address"
                             type="email"
+                            autoComplete="email"
                             fullWidth
                         />
                         <TextField
@@ -122,6 +123,7 @@ export default class LoginDialog extends React.Component {
                             label="Password"
                             onChange={this.handleChangePassword}
                             type="password"
+                            autoComplete="current-password"
                             fullWidth
                         />
 
