@@ -25,14 +25,6 @@ export const BottomBar = () => {
             >
                 Gear Tracker
             </div>
-
-
-            <div
-                style={{fontFamily: 'Permanent Marker'}}
-                className="Beta"
-            >
-                Beta
-            </div>
         </div>
     )
 };

@@ -62,14 +62,13 @@ class InventoryTable extends React.Component {
         let cell = this.state.currentCell;
         let oldValue = this.state.data[cell.index][cell.column.id];
         let column = cell.column.id;
-        let header = cell.column.Header;
         let inputData = value;
         let gear_uid = cell.original.uid;
 
         if (oldValue == inputData || inputData == null || inputData == undefined)
             this.setState({dialogOpen: false});
 
-        if (column == "status_level")
+        if (column == "condition_level")
         {
             switch(inputData) {
                 case "Brand New":
@@ -101,8 +100,8 @@ class InventoryTable extends React.Component {
                 console.log(response);
                 if (response['status'] == 'Success!') {
                     const data = [...this.state.data];
-                    data[cell.index][cell.column.id] = inputData;
-                    let message = 'Gear #' + cell.original.number + "'s '" +  header + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
+                    data[cell.index][cell.column.id] = value;
+                    let message = 'Gear #' + cell.original.number + "'s '" +  column + "' value changed from '" + oldValue + "' to '" + value + "'.";
                     this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
                 }
             })
@@ -142,9 +141,10 @@ class InventoryTable extends React.Component {
                         return;
                     }
 
+                    debugger;
                     let oldValue = this.state.data[cellInfo.index][cellInfo.column.id];
                     let column = cellInfo.column.id;
-                    let header = cellInfo.column.Header;
+                    // let header = cellInfo.column.header;
                     let inputData = e.target.innerHTML;
                     let gear_uid = cellInfo.original.uid;
 
@@ -165,7 +165,7 @@ class InventoryTable extends React.Component {
                             if (response['status'] == 'Success!') {
                                 const data = [...this.state.data];
                                 data[cellInfo.index][cellInfo.column.id] = inputData;
-                                let message = 'Gear #' + cellInfo.original.number + "'s '" +  header + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
+                                let message = 'Gear #' + cellInfo.original.number + "'s '" +  column + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
                                 this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
                             }
                         })

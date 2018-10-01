@@ -31,7 +31,7 @@
 
 @media (min-height: 376px) {
     .geartracker{
-        font-size: 24px;
+        font-size: 27px;
         color: white;
         margin-top: 2vh;
     }
@@ -45,34 +45,6 @@
     }
 }
 
-@media (max-height: 375px) {
-    .Beta{
-        font-size: 6px;
-        color: white;
-        padding-Left: 28vh;
-        margin-top: -0.5vh;
-    }
-
-}
-
-@media (min-height: 376px) {
-    .Beta{
-        font-size: 12px;
-        color: white;
-        padding-left: 24vh;
-        margin-top: -0.5vh;
-    }
-}
-
-@media (min-height: 750px) {
-    .Beta{
-        font-size: 12px;
-        color: white;
-        padding-left: 24vh;
-        margin-top: -0.5vh;
-    }
-}
-
 a, a:active, a:visited, a:focus {
     text-decoration:none;
 }
@@ -81,15 +53,3 @@ a:hover{
     text-decoration: underline;
     text-decoration-color: white;
 }
-
-/*.App-logo {*/
-/*animation: App-logo-spin infinite 20s linear;*/
-/*height: 40%;*/
-/*margin-top: 1vh;*/
-/*position: relative;*/
-/*}*/
-
-/*@keyframes App-logo-spin {*/
-/*from { transform: rotate(0deg); }*/
-/*to { transform: rotate(360deg); }*/
-/*}*/
