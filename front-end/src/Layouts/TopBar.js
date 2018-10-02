@@ -15,9 +15,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-
-
-
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
 
 const styles = theme => ({
     root: {
@@ -54,6 +55,8 @@ class TopBar extends React.Component {
 
         this.state = {
             drawerOpen: false,
+            aboutDialog: false,
+            handbookDialog: false,
         }
     }
 
@@ -64,6 +67,14 @@ class TopBar extends React.Component {
 
     toggleDrawerClose = () => {
         this.setState({drawerOpen: false})
+    };
+
+    openDialog = (dialog) => {
+        this.setState({[dialog]: true})
+    };
+
+    closeDialog = (dialog) => {
+        this.setState({[dialog]: false})
     };
 
     render() {
@@ -88,12 +99,6 @@ class TopBar extends React.Component {
                     <Typography variant="button" style={{color: "#FFFFFF"}}>Logout</Typography>
                 </Button>
             );
-
-        // let titleVariant;
-        // if (window.matchMedia("(min-width: 800px)").matches)
-        //     titleVariant = "title";
-        // else
-        //     titleVariant = "body2";
 
         let logo = <ClubLogo classes={classes}/>;
 
@@ -126,18 +131,21 @@ class TopBar extends React.Component {
                             >
                                 <div>
                                     <List>
-                                        <ListItem button style={{width: '200px'}}>
+                                        <ListItem
+                                            button
+                                            style={{width: '200px'}}
+                                            onClick={() => this.openDialog('aboutDialog')}
+                                        >
                                             <ListItemText primary="About" />
                                         </ListItem>
-                                        <a
-                                            href="https://gear-tracker.com/Gear-Handbook.pdf"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                        <Divider />
+                                        <ListItem
+                                            button
+                                            onClick={() => this.openDialog('handbookDialog')}
+                                            style={{width: '200px'}}
                                         >
-                                            <ListItem button style={{width: '200px'}}>
-                                                <ListItemText primary="Gear Handbook" />
-                                            </ListItem>
-                                        </a>
+                                            <ListItemText primary="Gear Handbook" />
+                                        </ListItem>
                                         <Divider />
                                     </List>
                                 </div>
@@ -145,6 +153,48 @@ class TopBar extends React.Component {
                         </Drawer>
                     </AppBar>
                 </div>
+
+
+                <Dialog onClose={() => this.closeDialog('aboutDialog')} scroll="body" open={this.state.aboutDialog} >
+                    <DialogTitle id="form-dialog-title"> About Gear Tracker</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            Gear Tracker is an application created to help the Outdoors Club at UVA manage its gear inventory. It is currently in Beta and is being actively worked on.
+                            Please report any errors or bugs to the author by sending an email with screenshots to <a href="mailto:zakey.faieq@willowtreeapps.com">zakey.faieq@willowtreeapps.com</a>.
+                        </Typography>
+
+                        {/*<Typography variant='caption'>Github:</Typography>*/}
+                        {/*<a href="https://github.com/Zakinator123/Gear-Tracker">*/}
+                            {/*<img src="./GitHub_Logo.png"/>*/}
+                        {/*</a>*/}
+
+                    </DialogContent>
+                    <DialogActions style={{marginBottom: '1vh'}}>
+
+                        <Button onClick={() => this.closeDialog('aboutDialog')} color="primary">
+                            <Typography variant="button" style={{color:'grey'}} align="left">Close</Typography>
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                <Dialog onClose={() => this.closeDialog('handbookDialog')} scroll="body" open={this.state.handbookDialog} >
+                    <DialogTitle id="form-dialog-title"> The Outdoors at UVA Gear Handbook</DialogTitle>
+                    <DialogContent>
+                        <Typography>The Gear Handbook contains everything you need to know about our gear inventory, including information on where and how to check out gear, our gear treatment guidelines, and our gear policies. Below is the download link for the gear handbook PDF.</Typography>
+
+                        <a
+                            href="https://gear-tracker.com/Gear-Handbook.pdf"
+                            download
+                        >Download Link</a>
+
+                    </DialogContent>
+                    <DialogActions style={{marginBottom: '1vh'}}>
+                        <Button onClick={() => this.closeDialog('handbookDialog')} color="primary">
+                            <Typography variant="button" style={{color:'grey'}} align="left">Close</Typography>
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
             </div>
         );
     }
