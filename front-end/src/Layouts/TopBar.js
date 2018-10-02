@@ -19,6 +19,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
+import Paper from '@material-ui/core/Paper';
+import DownloadIcon from '@material-ui/icons/Archive'
 
 const styles = theme => ({
     root: {
@@ -29,7 +31,7 @@ const styles = theme => ({
             marginRight: 'auto',
             marginLeft: 'auto',
             paddingRight: '4vw',
-            width: '8vh'
+            width: '7.5vh'
         },
         [theme.breakpoints.only('sm')]: {
             marginRight: 'auto',
@@ -159,13 +161,31 @@ class TopBar extends React.Component {
                     <DialogTitle id="form-dialog-title"> About Gear Tracker</DialogTitle>
                     <DialogContent>
                         <Typography>
-                            Gear Tracker is an application created to help the Outdoors Club at UVA manage its gear inventory. It is currently in Beta and is being actively worked on.
-                            Please report any errors or bugs to the author by sending an email with screenshots to <a href="mailto:zakey.faieq@willowtreeapps.com">zakey.faieq@willowtreeapps.com</a>.
+                            Gear Tracker is an application created to help the Outdoors Club at UVA manage its gear inventory. It is currently in active development.
+                            Please report any questions, errors, or bugs to the author by sending an email with screenshots to <strong>zakey.faieq@willowtreeapps.com</strong>.
                         </Typography>
 
-                        {/*<Typography variant='caption'>Github:</Typography>*/}
+                        <Paper elevation={5} style={{marginTop: '3vh'}}>
+                            <List dense>
+                                <ListItem>
+                                    <ListItemText>
+                                        <Typography/>Source Code: <a href="https://github.com/Zakinator123/Gear-Tracker">Github</a>
+                                    </ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText>
+                                        <Typography/>Author: Zakey Faieq
+                                    </ListItemText>
+                                </ListItem>
+                                <ListItem>
+                                    <ListItemText>
+                                        <Typography/>Version: 1.0.0-beta
+                                    </ListItemText>
+                                </ListItem>
+                            </List>
+                        </Paper>{/*<Typography variant='caption'>Github:</Typography>*/}
                         {/*<a href="https://github.com/Zakinator123/Gear-Tracker">*/}
-                            {/*<img src="./GitHub_Logo.png"/>*/}
+                        {/*<img src="./GitHub_Logo.png"/>*/}
                         {/*</a>*/}
 
                     </DialogContent>
@@ -180,12 +200,19 @@ class TopBar extends React.Component {
                 <Dialog onClose={() => this.closeDialog('handbookDialog')} scroll="body" open={this.state.handbookDialog} >
                     <DialogTitle id="form-dialog-title"> The Outdoors at UVA Gear Handbook</DialogTitle>
                     <DialogContent>
-                        <Typography>The Gear Handbook contains everything you need to know about our gear inventory, including information on where and how to check out gear, our gear treatment guidelines, and our gear policies. Below is the download link for the gear handbook PDF.</Typography>
+                        <Typography>The Gear Handbook contains everything a member needs to know about our gear inventory, including information on where and how to check out gear, gear treatment guidelines, and gear policies. Below is the download link for The Gear Handbook PDF.</Typography>
 
+                        <div style={{marginTop: '3vh'}}>
                         <a
                             href="https://gear-tracker.com/Gear-Handbook.pdf"
                             download
-                        >Download Link</a>
+                        >
+                            <Button variant="contained" color="primary">
+                                Download
+                                <DownloadIcon style={{marginLeft: '1vh'}}/>
+                            </Button>
+                        </a>
+                        </div>
 
                     </DialogContent>
                     <DialogActions style={{marginBottom: '1vh'}}>

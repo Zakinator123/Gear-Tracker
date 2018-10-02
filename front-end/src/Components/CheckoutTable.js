@@ -24,8 +24,8 @@ class CheckoutTable extends React.Component {
         this.state = {
             data : [],
             fetched : false,
-            snackbarVisible: true,
-            snackbarMessage: 'To check in, renew, or send a late reminder email for any piece of gear, press the row expansion arrows to the left!',
+            snackbarVisible: false,
+            snackbarMessage: '',
             variant: 'info',
             dialogOpen: false,
             dialogData: {},

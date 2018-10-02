@@ -168,14 +168,14 @@ class Checkout extends React.Component{
                             <MemberSearch setMember={this.setMember} apiHost={this.props.apiHost}/>
                         </Grid>
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
-                            <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
+                            {/*<Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>*/}
                                 <CheckoutCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
-                            </Slide>
+                            {/*</Slide>*/}
                         </Grid>
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
-                            <Slide in={true}  style={{ transitionDelay: 300}} direction="up" mountOnEnter unmountOnExit>
+                            {/*<Slide in={true}  style={{ transitionDelay: 300}} direction="up" mountOnEnter unmountOnExit>*/}
                                 <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
-                            </Slide>
+                            {/*</Slide>*/}
                         </Grid>
                         <br/>
                     </Grid>
@@ -185,11 +185,11 @@ class Checkout extends React.Component{
                       justify='flex-end'
                 >
                     <Grid item style={{margin:'3vh'}}>
-                        <Slide in={true}  style={{ transitionDelay: 400}} direction="up" mountOnEnter unmountOnExit>
+                        {/*<Slide in={true}  style={{ transitionDelay: 400}} direction="up" mountOnEnter unmountOnExit>*/}
                             <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
                                 <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Checkout Gear</Typography>
                             </Button>
-                        </Slide>
+                        {/*</Slide>*/}
                     </Grid>
                 </Grid>
                 <Snackbar

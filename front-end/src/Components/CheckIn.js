@@ -17,7 +17,6 @@ import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import CheckInCart from './CheckInCart'
-import Slide from '@material-ui/core/Slide';
 
 
 const styles = theme => ({
@@ -164,11 +163,9 @@ class CheckIn extends React.Component{
                       alignContent="stretch">
 
                     <Grid md={6} lg={6} xl={6} item>
-                        <Slide in={true}  style={{ transitionDelay: 100}} direction="up" mountOnEnter unmountOnExit>
-                            <Paper className={classes.paper}>
-                                <CheckInCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
-                            </Paper>
-                        </Slide>
+                        <Paper className={classes.paper}>
+                            <CheckInCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
+                        </Paper>
                     </Grid>
 
                     <Grid md={6} lg={6} xl={6} item>
@@ -176,11 +173,9 @@ class CheckIn extends React.Component{
                               justify="flex-end"
                               direction="column">
                             <Grid item>
-                                <Slide in={true}  style={{ transitionDelay: 200}} direction="up" mountOnEnter unmountOnExit>
-                                    <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                                        <Typography variant="button" onClick={this.checkInGear} style={{color:'white'}} align="left">Check In Gear</Typography>
-                                    </Button>
-                                </Slide>
+                                <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                                    <Typography variant="button" onClick={this.checkInGear} style={{color:'white'}} align="left">Check In Gear</Typography>
+                                </Button>
                             </Grid>
                         </Grid>
                     </Grid>
