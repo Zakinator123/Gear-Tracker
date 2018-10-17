@@ -64,7 +64,7 @@ class CheckoutTable extends React.Component {
     };
 
     handleCheckIn() {
-        if (sessionStorage.getItem('token') == 0) {
+        if (localStorage.getItem('token') == 0) {
                 this.setState({snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
                 return;
         }
@@ -89,7 +89,7 @@ class CheckoutTable extends React.Component {
 
         fetch(this.props.apiHost + '/gear/checkin', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: [{uid: this.state.dialogData.original.gear_uid}], date_checked_in: datetime}),
+            body: JSON.stringify({authorization: localStorage.getItem('token'), gear: [{uid: this.state.dialogData.original.gear_uid}], date_checked_in: datetime}),
             headers:{
                 'Content-Type': 'application/json'
             },

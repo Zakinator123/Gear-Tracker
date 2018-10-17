@@ -63,6 +63,20 @@ class App extends Component {
             // Stash the event so it can be triggered later.
             this.setState({deferredPrompt: e, addToHomeScreenSnackbar: true});
         });
+
+        // // Detects if device is on iOS
+        // const isIos = () => {
+        //     const userAgent = window.navigator.userAgent.toLowerCase();
+        //     return /iphone|ipad|ipod/.test( userAgent );
+        // };
+        //
+        // // Detects if device is in standalone mode
+        // const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+        //
+        // // Checks if should display install popup notification:
+        // if (isIos() && !isInStandaloneMode()) {
+        //     this.setState({ showInstallMessage: true });
+        // }
     }
 
     addToHomeScreen = () => {
@@ -95,7 +109,7 @@ class App extends Component {
 //Event handler called upon logout
     gearmasterLoggedOut() {
         this.setState({loggedIn: false});
-        let storedToken = sessionStorage.getItem('token');
+        let storedToken = localStorage.getItem('token');
         fetch(this.apiHost + '/logout', {
             method: 'POST',
             body: JSON.stringify({token: storedToken}),
@@ -108,7 +122,7 @@ class App extends Component {
             .then(response => console.log(response));
 
         // Remove token from local storage.
-        sessionStorage.removeItem('token');
+        localStorage.removeItem('token');
     }
 
     render() {

@@ -47,7 +47,7 @@ class Checkout extends React.Component{
 
         let message = '';
         let visible = false;
-        if (sessionStorage.getItem('token') == 0) {
+        if (localStorage.getItem('token') == 0) {
             message = 'You are in view-only mode. This means that none of your actions will be saved to the database.';
             visible = false;
         }
@@ -72,7 +72,7 @@ class Checkout extends React.Component{
 
 
     componentDidMount() {
-        setTimeout(function() {if (sessionStorage.getItem('token') == 0) {this.setState({snackbarVisible: true});}}.bind(this), 2000);
+        setTimeout(function() {if (localStorage.getItem('token') == 0) {this.setState({snackbarVisible: true});}}.bind(this), 2000);
     }
 
     removeGear(uid) {
@@ -114,7 +114,7 @@ class Checkout extends React.Component{
 
     checkoutGear() {
 
-        if (sessionStorage.getItem('token') == 0) {
+        if (localStorage.getItem('token') == 0) {
             this.setState({snackbarMessage: 'Checkout unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
             return;
         }
@@ -127,7 +127,7 @@ class Checkout extends React.Component{
 
         fetch(this.props.apiHost + '/gear/checkout', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list, member: this.state.member, memberEmail: this.state.memberEmail, dueDate: this.state.datetime}),
+            body: JSON.stringify({authorization: localStorage.getItem('token'), gear: this.state.list, member: this.state.member, memberEmail: this.state.memberEmail, dueDate: this.state.datetime}),
             headers:{
                 'Content-Type': 'application/json'
             },

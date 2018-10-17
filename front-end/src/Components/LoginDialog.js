@@ -55,7 +55,7 @@ export default class LoginDialog extends React.Component {
                 if (response['status'] !== 'Success')
                     this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
                 else {
-                    sessionStorage.setItem('token', response['token']);
+                    localStorage.setItem('token', response['token']);
                     this.handleClose();
                     this.props.logIn();
                 }
@@ -83,7 +83,7 @@ export default class LoginDialog extends React.Component {
                 if (response['status'] !== 'Success')
                     this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
                 else {
-                    sessionStorage.setItem('token', response['token']);
+                    localStorage.setItem('token', response['token']);
                     this.handleClose();
                     this.props.logIn();
                 }

@@ -56,7 +56,7 @@ class InventoryTable extends React.Component {
             return;
         }
 
-        if (sessionStorage.getItem('token') == 0) {
+        if (localStorage.getItem('token') == 0) {
             this.setState({dialogOpen: false, snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
             return;
         }
@@ -91,7 +91,7 @@ class InventoryTable extends React.Component {
 
         fetch(this.props.apiHost + '/gear/edit', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
+            body: JSON.stringify({authorization: localStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
             headers:{
                 'Content-Type': 'application/json'
             },
@@ -137,7 +137,7 @@ class InventoryTable extends React.Component {
                         e.target.blur();
                 }}
                 onBlur={e => {
-                    if (sessionStorage.getItem('token') == 0) {
+                    if (localStorage.getItem('token') == 0) {
                         this.setState({snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
                         e.target.innerHTML = this.state.data[cellInfo.index][cellInfo.column.id];
                         return;
@@ -155,7 +155,7 @@ class InventoryTable extends React.Component {
 
                     fetch(this.props.apiHost + '/gear/edit', {
                         method: 'POST',
-                        body: JSON.stringify({authorization: sessionStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
+                        body: JSON.stringify({authorization: localStorage.getItem('token'), column: column, input_data: inputData, gear_uid: gear_uid}),
                         headers:{
                             'Content-Type': 'application/json'
                         },
