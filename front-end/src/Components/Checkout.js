@@ -208,8 +208,6 @@ class Checkout extends React.Component{
                         message={this.state.snackbarMessage}
                     />
                 </Snackbar>
-
-
             </div>
         );
     }

@@ -20,6 +20,8 @@ import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
 import OptionSelectorDialog from './OptionSelectorDialog'
+import DeleteIcon from '@material-ui/icons/Delete';
+
 
 class InventoryTable extends React.Component {
 
@@ -359,6 +361,16 @@ class InventoryTable extends React.Component {
                                                 matchSorter(rows, filter.value, { keys: ["notes"] }),
                                             filterAll: true,
                                             Cell: this.renderEditable,
+                                        },
+                                        this.props.loggedIn &&
+                                            {
+                                            Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Delete Item
+                                            </div>
+                                        ),
+                                            minWidth: 120,
+                                                Cell: <IconButton size="small"><DeleteIcon fontSize='small'/></IconButton>
                                         },
                                     ]
                                 }
