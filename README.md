@@ -1,4 +1,4 @@
-<h1 align="center"> Gear Tracker </h1> <br>
+<img src="./front-end/src/Layouts/Gear-Tracker.png" align="middle"/><br>
 <p align="center">
   <a href="http://gear-tracker.com">
     <img title="Gear Tracker" src="./responsive_demonstration.jpeg" />
@@ -31,41 +31,6 @@ Outdoors at UVa has over 1000 different pieces of equipment that members regular
 
 To expedite the development/deployment cycle, a customized automated deployment system has been set up. Upon any pushes to GitHub, two automated image builds are triggered in their respective DockerHub repositories - these images are for the [Flask back-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) and [React front-end](https://hub.docker.com/r/zakinator123/gear-app-react/~/dockerfile/) containers. Upon successful image build(s), an [AWS Lambda function](https://github.com/Zakinator123/Gear-App/blob/master/lambda_function.py) is triggered that programmatically SSH's into the EC2 instances containing the Flask and React apps. The programmatic SSH commands take down, update, and redeploy the back-end and front-end containers.
 <br/>
-
-## Database Tables
-
-<br/>
-<strong>Gear Item</strong> (In AWS Aurora)
-
-    Fields:
-    - Number
-    - ItemType (Can be a Foreign Key) - currently a Text Field.
-    - Details
-    - Condition
-    - Status
-    - Notes (Can be Foreign Key)
-
-<strong>Gear Checkout</strong> (In AWS Aurora)
-
-    Fields:
-    - Checkout ID
-    - Gear Item (Foreign Key)
-    - Item Checkout Status (Can be foreign key to the status columb in Gear Item?)
-    - User/Member (Foreign Key)
-    - Date Checked Out
-    - Date Due
-    - Check Out Note
-    - Check In Note
-
-<strong>Member</strong> (In Outdoors at UVa's MySQL database)
-
-    Fields:
-    - ID
-    - Email
-    - First Name
-    - Last Name
-    - Phone Number
-    - Gender
 
 
 ## Functional Specifications

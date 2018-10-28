@@ -206,7 +206,6 @@ def checkout_gear():
     odc_db.close()
 
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
-    print(officer_name)
 
     old_datetime = (post_body['dueDate'] + ':00')
     sql_datetime = old_datetime.replace('T', ' ')
@@ -217,7 +216,7 @@ def checkout_gear():
         sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear['uid'], 1)
         cursor.execute(sql)
         if cursor.rowcount > 0:
-            sql = "UPDATE checkout SET member_name='%s', member_uid=%d, date_due='%s' officer_out='%s' WHERE gear_uid=%d" % (post_body['member'], member_uid, sql_datetime, officer_name, gear['uid'])
+            sql = "UPDATE checkout SET member_name='%s', member_uid=%d, date_due='%s', officer_out='%s' WHERE gear_uid=%d;" % (post_body['member'], member_uid, sql_datetime, officer_name, gear['uid'])
             cursor.execute(sql)
             rds_db.commit()
             already_checked_out.append(gear)

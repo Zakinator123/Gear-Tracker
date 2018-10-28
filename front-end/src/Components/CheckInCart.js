@@ -82,28 +82,30 @@ class CheckInCart extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
-                let count = this.props.addGearToList(response);
+
+                let checked_out_gear = response.filter(gear => gear['status_level'] !== 0);
+
+                let count = this.props.addGearToList(checked_out_gear);
 
                 let checkedInList = [];
                 for (let i = 0; i < response.length; i++)
                     if (response[i]['status_level'] == 0)
                         checkedInList.push(response[i]);
 
-                if (checkedInList.length == 1)
-                    this.setState({
-                        variant: 'warning', snackbarVisible: true, snackbarMessage: 'Gear Item #' +
-                        checkedInList[0]['number'] + ' is already checked in. Checking it in again will cause no changes to be made.'
-                    });
-                else if (checkedInList.length > 1)
-                {
-                    let messageList = checkedInList[0]['number'].toString();
-                    for (let i=1; i < checkedInList.length; i++)
-                        messageList = messageList + ', ' + checkedInList[i]['number'];
-
-                    this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked in: ' + messageList +
-                    'Checking them in again will cause no changes to be made.'});
-                }
+                // if (checkedInList.length == 1)
+                //     this.setState({
+                //         variant: 'warning', snackbarVisible: true, snackbarMessage: 'Gear Item #' +
+                //         checkedInList[0]['number'] + ' is already checked in. Checking it in again will cause no changes to be made.'
+                //     });
+                // else if (checkedInList.length > 1)
+                // {
+                //     let messageList = checkedInList[0]['number'].toString();
+                //     for (let i=1; i < checkedInList.length; i++)
+                //         messageList = messageList + ', ' + checkedInList[i]['number'];
+                //
+                //     this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked in: ' + messageList +
+                //     'Checking them in again will cause no changes to be made.'});
+                // }
 
                 if (count == 0)
                     this.setState({open: true});
@@ -135,10 +137,10 @@ class CheckInCart extends React.Component {
             dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
             dialogTitle = "Duplicate Gear Entry";}
         else if (this.state.multiple == false){
-            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database). Please accession the gear to check it out.</Typography>;
+            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database) or all pieces of gear is already checked in. Please accession the gear to check it out.</Typography>;
             dialogTitle = "Invalid Gear Entry";}
         else if (this.state.multiple){
-            dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database. All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
+            dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database (that are checked out). All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
             dialogTitle = "Multiple Gear Items Added";}
 
         // List of gear values:
