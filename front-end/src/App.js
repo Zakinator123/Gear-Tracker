@@ -57,6 +57,11 @@ class App extends Component {
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
         this.connectionEstablished = this.connectionEstablished.bind(this);
 
+        // if (localStorage.getItem('token') !== '')
+        // {
+        //     this.gearmasterLoggedIn();
+        // }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
