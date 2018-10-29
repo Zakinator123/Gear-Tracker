@@ -42,7 +42,7 @@ class MemberSearch extends React.Component {
         fetch(url, {
             method: 'GET',
             headers:{
-                'Authorization': localStorage.getItem('token')
+                'Authorization': sessionStorage.getItem('token')
             },
             mode: 'cors'
         }).then(response => response.json())

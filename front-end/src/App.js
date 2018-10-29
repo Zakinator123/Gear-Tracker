@@ -57,7 +57,7 @@ class App extends Component {
         this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
         this.connectionEstablished = this.connectionEstablished.bind(this);
 
-        // if (localStorage.getItem('token') !== '')
+        // if (sessionStorage.getItem('token') !== '')
         // {
         //     this.gearmasterLoggedIn();
         // }
@@ -114,7 +114,7 @@ class App extends Component {
 //Event handler called upon logout
     gearmasterLoggedOut() {
         this.setState({loggedIn: false});
-        let storedToken = localStorage.getItem('token');
+        let storedToken = sessionStorage.getItem('token');
         fetch(this.apiHost + '/logout', {
             method: 'POST',
             body: JSON.stringify({token: storedToken}),
@@ -127,7 +127,7 @@ class App extends Component {
             .then(response => console.log(response));
 
         // Remove token from local storage.
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
     }
 
     render() {
