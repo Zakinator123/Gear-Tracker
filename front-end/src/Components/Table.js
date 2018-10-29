@@ -362,16 +362,16 @@ class InventoryTable extends React.Component {
                                             filterAll: true,
                                             Cell: this.renderEditable,
                                         },
-                                        this.props.loggedIn &&
-                                            {
-                                            Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Delete Item
-                                            </div>
-                                        ),
-                                            minWidth: 120,
-                                                Cell: <IconButton size="small"><DeleteIcon fontSize='small'/></IconButton>
-                                        },
+                                        // this.props.loggedIn &&
+                                        //     {
+                                        //     Header: () => (
+                                        //     <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                        //          Delete Item
+                                        //     </div>
+                                        // ),
+                                        //     minWidth: 120,
+                                        //         Cell: <IconButton size="small"><DeleteIcon fontSize='small'/></IconButton>
+                                        // },
                                     ]
                                 }
                             ]}

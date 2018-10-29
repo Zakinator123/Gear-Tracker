@@ -314,7 +314,7 @@ def get_active_members():
     db = _setup_database_connection('ODC')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
-        'SELECT m_member.c_uid, c_full_name, c_email FROM m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_expiration_date != \'2020-12-31\' and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;')
+        'SELECT m_member.c_uid, c_full_name, c_email FROM m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;')
     data = cursor.fetchall()
     db.close()
 
