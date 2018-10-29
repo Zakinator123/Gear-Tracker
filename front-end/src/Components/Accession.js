@@ -23,7 +23,10 @@ import ListItemText from '@material-ui/core/ListItemText';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import OptionSelectorDialog from "./OptionSelectorDialog";
-
+import MemberSearch from "./MemberAutocomplete";
+import CheckoutCart from "./CheckoutCart";
+import DateTimePicker from "./DatePicker";
+import Button from '@material-ui/core/Button';
 const options = [
     'Show some love to Material-UI',
     'Show all notification content',
@@ -59,16 +62,17 @@ class Accession extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            number: 0,
             anchorEl: null,
             selectedIndex: 1,
             dialogOpen: false,
             selectedValue: '',
             dialogType: '',
+            itemNumber: 0,
             itemTypeValue: '',
             itemConditionValueNumber: '',
             itemConditionValueText: '',
             itemDescription: '',
+            itemNotes: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -152,62 +156,82 @@ class Accession extends React.Component {
 
         return (
             <div style={{marginBottom: '12vh'}}>
-                {dialog}
-                <Grid container
-                      alignItems='center'
-                      direction="column"
-                      alignContent="stretch">
-                    <Grid xs={12} md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <Typography variant="title"> Gear Number: </Typography>
-
-                            {/* Make this a red error if it is not valid, otherwise make it green. */}
-                            <TextField
-                                placeholder="Enter a Number"
-                                value={this.state.gearNumber}
-                                onChange={this.handleChange('number')}
+                <Paper>
+                    <Grid container
+                          alignItems='center'
+                          alignContent="stretch"
+                          spacing={16}
+                    >
+                        <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'3vh'}}>
+                            <Typography variant="title">Gear Number: </Typography>
+                                                        <TextField
+                                multiline
+                                placeholder="Enter a Number for this Piece of Gear"
+                                value={this.state.itemNumber}
+                                onChange={(event) => this.setState({itemNumber: event.target.value})}
                             />
-                        </Paper>
-                    </Grid>
-
-                    <Grid xs={12} sm={12} md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <Typography variant="title"> Item Type: </Typography>
-
+                        </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                            <Typography variant="title">Item Type: </Typography>
                             <TextField
                                 placeholder="Choose an Item Type"
                                 onClick={() => this.handleDialogClickOpen('item')}
                                 value={this.state.itemTypeValue}
-                            />
-                        </Paper>
-                    </Grid>
-
-                    <Grid xs={12} md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <Typography variant="title"> Condition: </Typography>
-
-                            <TextField
-                                placeholder="Choose an a Condition Level"
-                                onClick={() => this.handleDialogClickOpen('status_level')}
-                                value={this.state.itemConditionValueText}
-                            />
-                        </Paper>
-                    </Grid>
-
-                    <Grid xs={12} md={6} lg={6} xl={6} item>
-                        <Paper className={classes.paper}>
-                            <Typography variant="title"> Description: </Typography>
+                            />                        </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                            <Typography variant="title">Description: </Typography>
                             <TextField
                                 multiline
                                 placeholder="Enter a Description"
                                 value={this.state.itemDescription}
                                 onChange={(event) => this.setState({itemDescription: event.target.value})}
                             />
-                        </Paper>
+                        </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                            <Typography variant="title">Item Condition: </Typography>
+                            <TextField
+                                placeholder="Choose an a Condition Level"
+                                onClick={() => this.handleDialogClickOpen('status_level')}
+                                value={this.state.itemConditionValueText}
+                            />                           </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                            <Typography variant="title">Item Notes: </Typography>
+                            <TextField
+                                multiline
+                                placeholder="Enter any Notes"
+                                value={this.state.itemNotes}
+                                onChange={(event) => this.setState({itemNotes: event.target.value})}
+                            />
+                        </Grid>
+                        <br/>
                     </Grid>
-
-
+                </Paper>
+                <Grid xs={12}
+                      container
+                      justify='flex-end'
+                >
+                    <Grid item style={{margin:'3vh'}}>
+                        <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                            <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Accession Gear</Typography>
+                        </Button>
+                    </Grid>
                 </Grid>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    style={{margin: '2vh'}}
+                    open={this.state.snackbarVisible}
+                    autoHideDuration={7000}
+                    onClose={this.handleSnackbarClose}
+                >
+                    <MySnackbarContentWrapper
+                        onClose={this.handleSnackbarClose}
+                        variant={this.state.variant}
+                        message={this.state.snackbarMessage}
+                    />
+                </Snackbar>
             </div>
         );
     }
