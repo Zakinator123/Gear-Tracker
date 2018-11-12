@@ -60,19 +60,19 @@ class ScrollableTabsButtonAuto extends React.Component {
 
                             <Tab label="Check Out Gear" />
                             <Tab label="Current Checkouts" />
+                            <Tab label="Past Checkouts" />
                             <Tab label="Check In Gear" />
                             <Tab label="Edit Inventory" />
                             {/*<Tab label="Accession Gear" />*/}
-                            {/*<Tab label="Past Checkouts" />*/}
                         </Tabs>
                     </Slide>
                 </AppBar>
                 {value === 0 && <TabContainer> <Checkout apiHost={this.props.apiHost} /> </TabContainer>}
-                {value === 1 && <CheckoutTable apiHost={this.props.apiHost}/>}
-                {value === 2 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
-                {value === 3 && <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
-                {/*{value === 4 && <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }*/}
-                {/*{value === 5 && <CheckoutTable apiHost={this.props.apiHost}/>}*/}
+                {value === 1 && <CheckoutTable apiHost={this.props.apiHost} checkoutURL="/checkout/current" pastCheckouts={false}/>}
+                {value === 2 && <CheckoutTable apiHost={this.props.apiHost} checkoutURL="/checkout/past" pastCheckouts={true}/>}
+                {value === 3 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
+                {value === 4 && <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
+                {/*{value === 5 && <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }*/}
             </div>
         );
     }

@@ -43,7 +43,7 @@ class CheckoutTable extends React.Component {
     }
 
     fetchCheckouts() {
-        fetch(this.props.apiHost + '/checkout/all')
+        fetch(this.props.apiHost + this.props.checkoutURL)
             .then((response) => {
                 return response.json();
             })
@@ -238,6 +238,7 @@ class CheckoutTable extends React.Component {
                     rowData={this.state.dialogData}
                     handleCheckIn={this.handleCheckIn}
                     handleRenew={this.handleButtonPress}
+                    pastCheckouts={this.props.pastCheckouts}
                 />
                 <Snackbar
                     anchorOrigin={{

@@ -164,18 +164,28 @@ def get_gear():
 
     return jsonify(data)
 
-@app.route("/checkout/all")
+@app.route("/checkout/current")
 def get_current_checkouts():
     db = _setup_database_connection('AWS')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
     cursor.execute(
-        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0 AND checkout.checkout_status!=0")
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0 AND checkout.checkout_status=1")
     data = cursor.fetchall()
     db.close()
     return jsonify(data)
 
 #TODO: Get Old Checkouts
+@app.route("/checkout/past")
+def get_past_checkouts():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, DATE_FORMAT(checkout.date_checked_in,'%m/%d/%Y') AS date_checked_in, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.officer_in, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE checkout.checkout_status=0")
+    data = cursor.fetchall()
+    db.close()
+    return jsonify(data)
 
 
 @app.route("/gear/checkout", methods=['POST'])

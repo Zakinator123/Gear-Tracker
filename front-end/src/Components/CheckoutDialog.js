@@ -178,7 +178,9 @@ class CheckoutDialog extends React.Component {
 
                 </DialogContent>
                 <DialogActions>
-                    <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
+                    <Grid container spacing={8} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
+
+                        {!this.props.pastCheckouts &&
                         <Grid item xs={12} sm={4}>
                             <Button onClick={this.props.handleCheckIn} fullWidth size="small" color="primary"
                                     variant="contained">
@@ -186,6 +188,7 @@ class CheckoutDialog extends React.Component {
                                 <ReturnIcon style={{marginLeft: '1vh'}}/>
                             </Button>
                         </Grid>
+                        }
 
                         <Grid item xs={12} sm={4}>
                             <Button onClick={this.handleClose} fullWidth size="small" variant="contained">
