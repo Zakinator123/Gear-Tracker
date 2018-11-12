@@ -28,6 +28,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
+import Typography from '@material-ui/core/Typography'
 
 class CheckoutDialog extends React.Component {
 
@@ -36,7 +37,7 @@ class CheckoutDialog extends React.Component {
         this.state = {
             gearData: {number: 'Loading', item: 'Loading', description: 'Loading'},
             memberData: {c_email: 'Loading', c_full_name: 'Loading', c_phone_number: 'Loading'},
-            fetched : false,
+            fetched: false,
             tooltipOpenEmail: false,
             tooltipOpenPhoneNumber: false,
             datetime: '',
@@ -44,7 +45,7 @@ class CheckoutDialog extends React.Component {
         };
     }
 
-    setDateTime (newDateTime) {
+    setDateTime(newDateTime) {
         this.setState({datetime: newDateTime})
     }
 
@@ -57,7 +58,7 @@ class CheckoutDialog extends React.Component {
     };
 
     handleTooltipClose = () => {
-        this.setState({ tooltipOpen: false });
+        this.setState({tooltipOpen: false});
     };
 
     handleClose = () => {
@@ -68,7 +69,7 @@ class CheckoutDialog extends React.Component {
     copyToClipboard = (key, formattedCheckoutDetails) => {
         navigator.clipboard.writeText(formattedCheckoutDetails[key]);
         if (key === "Member Email")
-            this.setState({ tooltipOpenEmail: true });
+            this.setState({tooltipOpenEmail: true});
         else if (key === "Member Phone Number")
             this.setState({tooltipOpenPhoneNumber: true});
 
@@ -116,7 +117,7 @@ class CheckoutDialog extends React.Component {
                 "Member Email": this.state.memberData.c_email,
                 "Member Phone Number": this.state.memberData.c_phone_number,
                 "Gear Type": this.state.gearData.item,
-                "Gear Description": this.state.gearData.description ,
+                "Gear Description": this.state.gearData.description,
                 "Checkout Date": checkoutData.date_checked_out,
                 "Due Date": checkoutData.date_due,
                 "Officer Out": checkoutData.officer_out,
@@ -149,7 +150,8 @@ class CheckoutDialog extends React.Component {
                                 disableTouchListener
                                 title="Copied"
                             >
-                                <Button onClick={() => this.copyToClipboard(key, formattedCheckoutDetails)} color="primary"> Copy </Button>
+                                <Button onClick={() => this.copyToClipboard(key, formattedCheckoutDetails)}
+                                        color="primary"> Copy </Button>
                             </Tooltip>
                         </Grid>}
                     </Grid>
@@ -160,7 +162,7 @@ class CheckoutDialog extends React.Component {
 
     render() {
         return (
-            <Dialog onClose={this.handleClose} scroll="body" open={this.props.dialogOpen} >
+            <Dialog onClose={this.handleClose} scroll="body" open={this.props.dialogOpen}>
                 <DialogTitle id="form-dialog-title">Checkout Details</DialogTitle>
                 <DialogContent>
                     <Grid container spacing={8}>
@@ -175,23 +177,35 @@ class CheckoutDialog extends React.Component {
                     </Grid>
 
                 </DialogContent>
-                <DialogActions style={{marginBottom: '1vh'}}>
-                    <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin:'1vh'}}>
+                <DialogActions>
+                    <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
                         <Grid item xs={12} sm={4}>
-                            <Button onClick={this.props.handleCheckIn} fullWidth size="small" color="primary" variant="contained">
+                            <Button onClick={this.props.handleCheckIn} fullWidth size="small" color="primary"
+                                    variant="contained">
                                 Check In
                                 <ReturnIcon style={{marginLeft: '1vh'}}/>
                             </Button>
                         </Grid>
 
+                        <Grid item xs={12} sm={4}>
+                            <Button onClick={this.handleClose} fullWidth size="small" variant="contained">
+                                <Typography variant="button">Close</Typography>
+                            </Button>
+                        </Grid>
                         {/*<Grid item xs={12} sm={4} >*/}
-                            {/*<Button onClick={this.props.handleRenewDialogOpen} fullWidth size="small" variant="contained" color="secondary" >*/}
-                                {/*Renew*/}
-                                {/*<RenewIcon style={{marginLeft: '1vh'}}/>*/}
-                            {/*</Button>*/}
+                        {/*<Button onClick={this.props.handleRenewDialogOpen} fullWidth size="small" variant="contained" color="secondary" >*/}
+                        {/*Renew*/}
+                        {/*<RenewIcon style={{marginLeft: '1vh'}}/>*/}
+                        {/*</Button>*/}
                         {/*</Grid>*/}
                     </Grid>
                 </DialogActions>
+
+                {/*<DialogActions style={{marginBottom: '1vh'}}>*/}
+                {/*<Grid container alignItems='stretch' justify='center'>*/}
+                {/**/}
+                {/*</Grid>*/}
+                {/*</DialogActions>*/}
 
                 <Dialog open={this.state.renewDialogOpen} onClose={this.handleRenewDialogClose}>
                     <DialogTitle id="form-dialog-title">Checkout Details</DialogTitle>
@@ -199,15 +213,17 @@ class CheckoutDialog extends React.Component {
                         <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
                     </DialogContent>
                     <DialogActions style={{marginBottom: '1vh'}}>
-                        <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin:'1vh'}}>
+                        <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
                             <Grid item xs={12} sm={4}>
-                                <Button onClick={this.props.handleRenewDialogClose} fullWidth size="small" color="red" variant="contained">
+                                <Button onClick={this.props.handleRenewDialogClose} fullWidth size="small" color="red"
+                                        variant="contained">
                                     Cancel
                                 </Button>
                             </Grid>
 
-                            <Grid item xs={12} sm={4} >
-                                <Button onClick={this.props.handleRenew} fullWidth size="small" variant="contained" color="secondary" >
+                            <Grid item xs={12} sm={4}>
+                                <Button onClick={this.props.handleRenew} fullWidth size="small" variant="contained"
+                                        color="secondary">
                                     Renew
                                     <RenewIcon style={{marginLeft: '1vh'}}/>
                                 </Button>
@@ -237,6 +253,7 @@ class CheckoutDialog extends React.Component {
         )
     }
 }
+
 const variantIcon = {
     success: CheckCircleIcon,
     warning: WarningIcon,
@@ -261,7 +278,7 @@ const styles1 = theme => ({
     icon: {
         fontSize: 20,
     },
-    close:{marginTop: -20},
+    close: {marginTop: -20},
     iconVariant: {
         opacity: 0.9,
         marginRight: theme.spacing.unit,
@@ -273,7 +290,7 @@ const styles1 = theme => ({
 });
 
 function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
+    const {classes, className, message, onClose, variant, ...other} = props;
     const Icon = variantIcon[variant];
 
     return (
@@ -282,7 +299,7 @@ function MySnackbarContent(props) {
             aria-describedby="client-snackbar"
             message={
                 <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
                     {message}
         </span>
             }
@@ -294,7 +311,7 @@ function MySnackbarContent(props) {
                     className={classes.close}
                     onClick={onClose}
                 >
-                    <CloseIcon className={classes.icon} />
+                    <CloseIcon className={classes.icon}/>
                 </IconButton>
             }
             {...other}
