@@ -202,13 +202,24 @@ class TopBar extends React.Component {
                     <DialogContent>
                         <Typography>The Gear Handbook contains everything a member needs to know about our gear inventory, including information on where and how to check out gear, gear treatment guidelines, and gear policies. Below is the download link for The Gear Handbook PDF.</Typography>
 
-                        <div style={{marginTop: '3vh'}}>
+                        <div style={{marginTop: '2vh'}}>
                         <a
                             href="https://gear-tracker.com/Gear-Handbook.pdf"
                             download
                         >
                             <Button variant="contained" color="primary">
                                 Download
+                                <DownloadIcon style={{marginLeft: '1vh'}}/>
+                            </Button>
+                        </a>
+                        </div>
+
+                        <div style={{marginTop: '1vh'}}>
+                        <a
+                        href="https://docs.google.com/document/d/1DglEsx2yKP5OyjhtaeEJ6T1PqSxMJOsarl8tZHjnTtU/edit"
+                        >
+                            <Button variant="contained" color="primary">
+                                Link for iOS Devices
                                 <DownloadIcon style={{marginLeft: '1vh'}}/>
                             </Button>
                         </a>

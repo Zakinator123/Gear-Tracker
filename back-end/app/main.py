@@ -170,7 +170,7 @@ def get_current_checkouts():
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
 
     cursor.execute(
-        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level!=0 AND checkout.checkout_status=1")
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level=1 AND checkout.checkout_status=1")
     data = cursor.fetchall()
     db.close()
     return jsonify(data)
@@ -223,10 +223,10 @@ def checkout_gear():
     not_checked_out = []
     already_checked_out = []
     for gear in post_body['gear']:
-        sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=%d" % (gear['uid'], 1)
+        sql = "SELECT * FROM checkout WHERE gear_uid=%d AND checkout_status=1" % (gear['uid'])
         cursor.execute(sql)
         if cursor.rowcount > 0:
-            sql = "UPDATE checkout SET member_name='%s', member_uid=%d, date_due='%s', officer_out='%s' WHERE gear_uid=%d;" % (post_body['member'], member_uid, sql_datetime, officer_name, gear['uid'])
+            sql = "UPDATE checkout SET member_name='%s', member_uid=%d, date_due='%s', officer_out='%s' WHERE gear_uid=%d AND checkout_status=1;" % (post_body['member'], member_uid, sql_datetime, officer_name, gear['uid'])
             cursor.execute(sql)
             rds_db.commit()
             already_checked_out.append(gear)
@@ -293,7 +293,7 @@ def check_in_gear():
             sql = "UPDATE gear SET status_level = 0 WHERE uid=%d" % (gear['uid'])
             aws_cursor.execute(sql)
             aws_db.commit()
-            sql = "UPDATE checkout SET checkout_status=0, date_checked_in='%s', officer_in='%s' WHERE gear_uid=%d" % (sql_datetime, officer_name, gear['uid'])
+            sql = "UPDATE checkout SET checkout_status=0, date_checked_in='%s', officer_in='%s' WHERE gear_uid=%d AND checkout_status=1" % (sql_datetime, officer_name, gear['uid'])
             aws_cursor.execute(sql)
             aws_db.commit()
             count = count + 1

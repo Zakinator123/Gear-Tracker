@@ -162,12 +162,16 @@ class Accession extends React.Component {
                           alignContent="stretch"
                           spacing={16}
                     >
+                        <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'2vh'}}>
+                            <Typography variant="body2"> Accession Functionality coming soon!</Typography>
+                        </Grid>
                         <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'3vh'}}>
                             <Typography variant="title">Gear Number: </Typography>
-                                                        <TextField
+                            <TextField
                                 multiline
+                                readonly
                                 placeholder="Enter a Number for this Piece of Gear"
-                                value={this.state.itemNumber}
+                                // value={this.state.itemNumber}
                                 onChange={(event) => this.setState({itemNumber: event.target.value})}
                             />
                         </Grid>
@@ -175,15 +179,17 @@ class Accession extends React.Component {
                             <Typography variant="title">Item Type: </Typography>
                             <TextField
                                 placeholder="Choose an Item Type"
+                                readonly
                                 onClick={() => this.handleDialogClickOpen('item')}
-                                value={this.state.itemTypeValue}
+                                // value={this.state.itemTypeValue}
                             />                        </Grid>
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
                             <Typography variant="title">Description: </Typography>
                             <TextField
                                 multiline
+                                readonly
                                 placeholder="Enter a Description"
-                                value={this.state.itemDescription}
+                                // value={this.state.itemDescription}
                                 onChange={(event) => this.setState({itemDescription: event.target.value})}
                             />
                         </Grid>
@@ -191,15 +197,17 @@ class Accession extends React.Component {
                             <Typography variant="title">Item Condition: </Typography>
                             <TextField
                                 placeholder="Choose an a Condition Level"
+                                readonly
                                 onClick={() => this.handleDialogClickOpen('status_level')}
-                                value={this.state.itemConditionValueText}
+                                // value={this.state.itemConditionValueText}
                             />                           </Grid>
                         <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
                             <Typography variant="title">Item Notes: </Typography>
                             <TextField
                                 multiline
+                                readonly
                                 placeholder="Enter any Notes"
-                                value={this.state.itemNotes}
+                                // value={this.state.itemNotes}
                                 onChange={(event) => this.setState({itemNotes: event.target.value})}
                             />
                         </Grid>
@@ -212,7 +220,7 @@ class Accession extends React.Component {
                 >
                     <Grid item style={{margin:'3vh'}}>
                         <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                            <Typography variant="button" onClick={this.checkoutGear} style={{color:'white'}} align="left">Accession Gear</Typography>
+                            <Typography variant="button" style={{color:'white'}} align="left">Accession Gear</Typography>
                         </Button>
                     </Grid>
                 </Grid>

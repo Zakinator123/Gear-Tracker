@@ -206,6 +206,21 @@ class CheckoutTable extends React.Component {
                                         accessor: "date_due",
                                         minWidth: 80,
                                     },
+                                    this.props.pastCheckouts &&
+                                    {
+                                        Header: () => (
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Check-in Date
+                                            </div>
+                                        ),
+                                        accessor: "date_checked_in",
+                                        minWidth: 100,
+                                    },
                                     {
                                         Header: () => (
                                             <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
@@ -215,6 +230,17 @@ class CheckoutTable extends React.Component {
                                         accessor: "officer_out",
                                         minWidth: 100,
                                     },
+                                    this.props.pastCheckouts &&
+                                        {
+                                        Header: () => (
+                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
+                                                 Officer In
+                                            </div>
+                                        ),
+                                        accessor: "officer_in",
+                                        minWidth: 100,
+                                    },
+
                                 ]
                             }
                         ]}

@@ -171,7 +171,7 @@ class CheckoutCart extends React.Component {
                         messageList = messageList + ', ' + checkedOutList[i]['number'];
 
                     this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked out: ' + messageList +
-                    'Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
+                    '. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
                 }
 
 

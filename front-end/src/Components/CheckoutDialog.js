@@ -123,6 +123,12 @@ class CheckoutDialog extends React.Component {
                 "Officer Out": checkoutData.officer_out,
             };
 
+            if (this.props.pastCheckouts) {
+                formattedCheckoutDetails["Officer In"] = checkoutData.officer_in;
+                formattedCheckoutDetails["Check-In Date"] = checkoutData.date_checked_in;
+                formattedCheckoutDetails[""]
+            }
+
             return Object.keys(formattedCheckoutDetails).map((key) => {
                 let tooltipOpener;
                 if (key === "Member Email")
