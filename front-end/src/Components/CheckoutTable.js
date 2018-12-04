@@ -13,7 +13,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import CheckoutDialog from './CheckoutDialog'
 
@@ -22,8 +22,8 @@ class CheckoutTable extends React.Component {
         super(props);
 
         this.state = {
-            data : [],
-            fetched : false,
+            data: [],
+            fetched: false,
             snackbarVisible: false,
             snackbarMessage: '',
             variant: 'info',
@@ -56,17 +56,25 @@ class CheckoutTable extends React.Component {
     }
 
     handleButtonPress() {
-        this.setState({snackbarVisible: true, snackbarMessage: "Action unsuccessful - This feature has not been implemented yet.", variant: 'error'})
+        this.setState({
+            snackbarVisible: true,
+            snackbarMessage: "Action unsuccessful - This feature has not been implemented yet.",
+            variant: 'error'
+        })
     }
 
     dialogClose = () => {
-        this.setState({dialogOpen: false, dialogData: {} });
+        this.setState({dialogOpen: false, dialogData: {}});
     };
 
     handleCheckIn() {
         if (sessionStorage.getItem('token') == 0) {
-                this.setState({snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
-                return;
+            this.setState({
+                snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.',
+                snackbarVisible: true,
+                variant: 'error'
+            });
+            return;
         }
 
         let today = new Date(Date.now() + 1);
@@ -89,8 +97,12 @@ class CheckoutTable extends React.Component {
 
         fetch(this.props.apiHost + '/gear/checkin', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: [{uid: this.state.dialogData.original.gear_uid}], date_checked_in: datetime}),
-            headers:{
+            body: JSON.stringify({
+                authorization: sessionStorage.getItem('token'),
+                gear: [{uid: this.state.dialogData.original.gear_uid}],
+                date_checked_in: datetime
+            }),
+            headers: {
                 'Content-Type': 'application/json'
             },
             mode: 'cors'
@@ -117,27 +129,46 @@ class CheckoutTable extends React.Component {
 
 
     handleSnackbarClose = () => {
-        this.setState({snackbarVisible : false})
+        this.setState({snackbarVisible: false})
     };
 
-    getOverdueSeverityColor(date_due) {
+    getOverdueSeverityColor = (date_due) => {
         var date1 = new Date(date_due);
         var date2 = new Date();
-        var timeDiff = Math.abs(date1.getTime() - date2.getTime());
+        var timeDiff = date2.getTime() - date1.getTime();
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        // if (diffDays < 0)
 
+        let color;
+        if (diffDays > 0) {
+            if (diffDays > 30) {
+                diffDays = 30;
+            }
+            color = this.shadeColor2("#FF0000", 1 - ((Math.abs(diffDays)) / 45));
+        }
+        else if (diffDays < 0)
+            color = "#E2FEE2";
+        else
+            color = "#FFFFFF";
+
+        console.log(diffDays);
+        console.log(color);
+        return color;
+    };
+
+    shadeColor2 = (color, percent) => {
+        var f = parseInt(color.slice(1), 16), t = percent < 0 ? 0 : 255, p = percent < 0 ? percent * -1 : percent,
+            R = f >> 16, G = f >> 8 & 0x00FF, B = f & 0x0000FF;
+        return "#" + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 + (Math.round((t - G) * p) + G) * 0x100 + (Math.round((t - B) * p) + B)).toString(16).slice(1);
     };
 
     render() {
-
         let jsx;
         if (this.state.fetched)
             jsx = (
                 <Fade in={true} mountOnEnter unmountOnExit>
 
                     <ReactTable
-                        style={{height:'100%', fontSize:'11px'}}
+                        style={{height: '100%', fontSize: '11px'}}
                         data={this.state.data}
                         showPaginationBottom={false}
                         defaultPageSize={this.state.data.length}
@@ -148,7 +179,7 @@ class CheckoutTable extends React.Component {
                                     this.setState({dialogOpen: true, dialogData: rowInfo})
                                 },
                                 style: {
-                                    background: 'white', //getOverDueSeverityColor(rowInfo.row.date_due)
+                                    backgroundColor: (!this.props.pastCheckouts ? this.getOverdueSeverityColor(rowInfo.row.date_due) : 'white'),
                                     cursor: 'pointer',
                                 }
                             };
@@ -158,8 +189,13 @@ class CheckoutTable extends React.Component {
                                 columns: [
                                     {
                                         Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Gear #
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Gear #
                                             </div>
                                         ),
                                         /*Need to find out what 'id' does - look in react-table documentatinon*/
@@ -169,8 +205,13 @@ class CheckoutTable extends React.Component {
                                     },
                                     {
                                         Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Item Type
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Item Type
                                             </div>
                                         ),
                                         accessor: "item",
@@ -180,8 +221,13 @@ class CheckoutTable extends React.Component {
                                     },
                                     {
                                         Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Checked Out To
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Checked Out To
                                             </div>
                                         ),
                                         accessor: "member_name",
@@ -190,23 +236,18 @@ class CheckoutTable extends React.Component {
                                     },
                                     {
                                         Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Checkout Date
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Checkout Date
                                             </div>
                                         ),
                                         minWidth: 120,
                                         accessor: "date_checked_out",
                                     },
-                                    {
-                                        Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Date Due
-                                            </div>
-                                        ),
-                                        accessor: "date_due",
-                                        minWidth: 80,
-                                    },
-                                    this.props.pastCheckouts &&
                                     {
                                         Header: () => (
                                             <div style={{
@@ -215,16 +256,21 @@ class CheckoutTable extends React.Component {
                                                 fontWeight: 'bold',
                                                 fontSize: '15px'
                                             }}>
-                                                Check-in Date
+                                                Date Due
                                             </div>
                                         ),
-                                        accessor: "date_checked_in",
-                                        minWidth: 100,
+                                        accessor: "date_due",
+                                        minWidth: 80,
                                     },
                                     {
                                         Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Officer Out
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Officer Out
                                             </div>
                                         ),
                                         accessor: "officer_out",
@@ -232,15 +278,34 @@ class CheckoutTable extends React.Component {
                                     },
                                     this.props.pastCheckouts &&
                                         {
-                                        Header: () => (
-                                            <div style={{width: '100%', textAlign: 'left', fontWeight: 'bold', fontSize: '15px'}}>
-                                                 Officer In
-                                            </div>
-                                        ),
-                                        accessor: "officer_in",
-                                        minWidth: 100,
-                                    },
-
+                                            Header: () => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '15px'
+                                                }}>
+                                                    Check-in Date
+                                                </div>
+                                            ),
+                                            accessor: "date_checked_in",
+                                            minWidth: 100,
+                                        },
+                                    this.props.pastCheckouts &&
+                                        {
+                                            Header: () => (
+                                                <div style={{
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '15px'
+                                                }}>
+                                                    Officer In
+                                                </div>
+                                            ),
+                                            accessor: "officer_in",
+                                            minWidth: 100,
+                                        }
                                 ]
                             }
                         ]}
@@ -249,10 +314,10 @@ class CheckoutTable extends React.Component {
                 </Fade>
             );
         else
-            jsx = <LoadingBar />;
+            jsx = <LoadingBar/>;
 
         return (
-            <div style={{marginBottom: '12vh', height: '100%', }}>
+            <div style={{marginBottom: '12vh', height: '100%',}}>
 
                 {jsx}
 
@@ -312,7 +377,7 @@ const styles1 = theme => ({
     icon: {
         fontSize: 20,
     },
-    close:{marginTop: -20},
+    close: {marginTop: -20},
     iconVariant: {
         opacity: 0.9,
         marginRight: theme.spacing.unit,
@@ -324,7 +389,7 @@ const styles1 = theme => ({
 });
 
 function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
+    const {classes, className, message, onClose, variant, ...other} = props;
     const Icon = variantIcon[variant];
 
     return (
@@ -333,7 +398,7 @@ function MySnackbarContent(props) {
             aria-describedby="client-snackbar"
             message={
                 <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
                     {message}
         </span>
             }
@@ -345,7 +410,7 @@ function MySnackbarContent(props) {
                     className={classes.close}
                     onClick={onClose}
                 >
-                    <CloseIcon className={classes.icon} />
+                    <CloseIcon className={classes.icon}/>
                 </IconButton>
             }
             {...other}

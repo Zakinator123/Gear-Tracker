@@ -65,8 +65,8 @@ class ScrollableTabsButtonAuto extends React.Component {
                             <Tab label="Check In Gear" />
                             <Tab label="Edit Inventory" />
                             <Tab label="Accession Gear" />
-                            <Tab label="Note Pad"/>
-                            <Tab label="Log"/>
+                            <Tab label="Notes"/>
+                            {/*<Tab label="Log"/>*/}
                         </Tabs>
                     </Slide>
                 </AppBar>

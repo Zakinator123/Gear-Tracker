@@ -137,7 +137,7 @@ class CheckInCart extends React.Component {
             dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
             dialogTitle = "Duplicate Gear Entry";}
         else if (this.state.multiple == false){
-            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database) or all pieces of gear is already checked in. Please accession the gear to check it out.</Typography>;
+            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database) or all pieces of gear with this number are already checked in. Please accession the gear to check it out.</Typography>;
             dialogTitle = "Invalid Gear Entry";}
         else if (this.state.multiple){
             dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database (that are checked out). All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
