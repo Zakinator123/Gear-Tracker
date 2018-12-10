@@ -5,7 +5,15 @@
   "dependencies": {
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "match-sorter": "",
+    "@material-ui/core": "latest",
+    "@material-ui/icons": "latest",
+    "react-table": "latest",
+    "match-sorter": "latest",
+    "downshift": "latest",
+    "react-copy-to-clipboard": "latest",
+    "serve": "latest"
   },
   "scripts": {
     "start": "react-scripts start",
