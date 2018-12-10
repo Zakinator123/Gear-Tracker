@@ -187,6 +187,33 @@ def get_past_checkouts():
     db.close()
     return jsonify(data)
 
+@app.route("/item_type/all")
+def get_item_types():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor()
+
+    cursor.execute("SELECT DISTINCT item FROM gear")
+    data = cursor.fetchall()
+
+    list = []
+    for row in data:
+        list.append(row[0])
+    db.close()
+    return jsonify(list)
+
+@app.route("/condition/all")
+def get_condition_types():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor()
+
+    cursor.execute("SELECT DISTINCT condition_level FROM gear")
+    data = cursor.fetchall()
+    list = []
+    for row in data:
+        list.append(row[0])
+    db.close()
+    return jsonify(list)
+
 
 @app.route("/gear/checkout", methods=['POST'])
 @authenticated_required

@@ -249,6 +249,7 @@ class InventoryTable extends React.Component {
                         selectedValue={this.state.selectedValue}
                         open={this.state.dialogOpen}
                         onClose={this.handleDialogClose}
+                        apiHost={this.props.apiHost}
                     />
                 );}
             else

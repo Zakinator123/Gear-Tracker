@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -18,15 +18,62 @@ const styles = {
 };
 
 class OptionSelectorDialog extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            itemTypes: [],
+            conditionLevels: []
+        };
+    }
+
     handleClose = () => {
         this.props.onClose(this.props.selectedValue);
     };
 
     handleListItemClick = value => {
+        console.log(value);
         this.props.onClose(value);
     };
 
-    // TODO: Make the item type list pull from the API
+    componentDidMount() {
+        fetch(this.props.apiHost + '/item_type/all')
+            .then((response) => {
+                console.log(response);
+                return response.json();
+            })
+            .then((myJson) => {
+                this.setState({itemTypes: myJson.sort()});
+            });
+
+        fetch(this.props.apiHost + '/condition/all')
+            .then((response) => {
+                console.log(response);
+                return response.json();
+            })
+            .then((myJson) => {
+                for (let i = 0; i < myJson.length; i++) {
+                    switch (parseInt(myJson[i])) {
+                        case 0:
+                            myJson[i] = "Brand New";
+                            break;
+                        case 1:
+                            myJson[i] = "Good";
+                            break;
+                        case 2:
+                            myJson[i] = "Fair";
+                            break;
+                        case 3:
+                            myJson[i] = "Poor";
+                            break;
+                        default:
+                            myJson[i] = "Unknown condition level";
+                            break;
+                    }
+                }
+                this.setState({conditionLevels: myJson});
+            });
+    }
+
     render() {
         const {classes, onClose, selectedValue, ...other} = this.props;
 
@@ -35,88 +82,39 @@ class OptionSelectorDialog extends React.Component {
         let dialogText;
         if (cellInfo.column.id == 'item') {
             dialogText = " an Item Type";
-            listItems = ([
-                "Walkie Talkie",
-                "Sleeping Bag",
-                "Climbing Shoes",
-                "Cooking",
-                "Harness",
-                "Belay Device",
-                "Webbing",
-                "Guide Book",
-                "Climbing Protection",
-                "Sleeping Pad",
-                "Backpack",
-                "X-Country Ski Poles",
-                "Caving Helmet",
-                "Helmet",
-                "Backpack Rain Cover",
-                "Tools",
-                "Snowshoes",
-                "Gaiters",
-                "Stove",
-                "X-Country Skis",
-                "Ski Shoes",
-                "Water Bladder",
-                "Snowshoe Tails",
-                "Ground Tarp",
-                "Tent",
-                "Pillow",
-                "Rope Bag",
-                "First Aid Kit",
-                "Water Filter",
-                "Compass",
-                "Reel Bag",
-                "Tackle Box",
-                "Stuff Sack",
-                "DVD",
-                "Stoves",
-                "Headlamp",
-                "Locking Carabiner",
-                "Crash Pad",
-                "Slacklining Tree Pad",
-                "Hammock",
-                "Chalkbag",
-                "GoPro",
-                "Disk Golf",
-                "Gloves",
-                "Water Pouch",
-                "Chalk Bag",
-                "Trekking Poles",
-                "Bear Container",
-                "REI travel sack",
-                "Candles",
-                "Haul Bag",
-                "Tripod",
-                "Stick Clip",
-                "Work Gloves",
-                "Caving",
-                "Emergency Blanket",
-            ].sort())
+            listItems=this.state.itemTypes;
         }
         else if (cellInfo.column.id == 'condition_level') {
             dialogText = " a Condition Descriptor";
-            listItems = ["Brand New", "Good", "Fair", "Poor"];
+            listItems = this.state.conditionLevels;
         }
 
         return (
-                <Dialog
-                    onClose={this.handleClose}
-                    aria-labelledby="simple-dialog-title"
-                    scroll="body"
-                    {...other}
-                >
-                    <DialogTitle><Typography variant="title" style={{margin:'0.5vh'}} color="primary">Select{dialogText}</Typography></DialogTitle>
-                    <div>
-                        <List style={{marginTop: '-2vh'}} dense>
-                            {listItems.map(item => (
-                                <ListItem button onClick={() => this.handleListItemClick(item)} key={item}>
-                                    <ListItemText primary={item} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </div>
-                </Dialog>
+            <Dialog
+                onClose={this.handleClose}
+                aria-labelledby="simple-dialog-title"
+                scroll="body"
+                {...other}
+            >
+                <DialogTitle>
+                    <Typography
+                        variant="title"
+                        style={{margin: '0.5vh'}}
+                        color="primary"
+                    >
+                        Select{dialogText}
+                    </Typography>
+                </DialogTitle>
+                <div>
+                    <List style={{marginTop: '-2vh'}} dense>
+                        {listItems.map(item => (
+                            <ListItem button onClick={() => this.handleListItemClick(item)} key={item}>
+                                <ListItemText primary={item}/>
+                            </ListItem>
+                        ))}
+                    </List>
+                </div>
+            </Dialog>
         );
     }
 }
