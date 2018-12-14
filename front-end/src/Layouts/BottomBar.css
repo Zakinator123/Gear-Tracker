@@ -23,25 +23,26 @@
 
 @media (max-height: 375px) {
     .geartracker{
-        font-size: 15px;
+        font-size: 17px;
         color: white;
-        margin-top: 2vh;
+        margin-top: 0.5vh;
+        /*padding-bottom: 3vh;*/
     }
 }
 
 @media (min-height: 376px) {
     .geartracker{
-        font-size: 27px;
+        font-size: 22px;
         color: white;
-        margin-top: 2vh;
+        margin-top: 0.5vh;
     }
 }
 
 @media (min-height: 750px) {
     .geartracker{
-        font-size: 30px;
+        font-size: 27px;
         color: white;
-        margin-top: 0vh;
+        margin-top: 2vh;
     }
 }
 
