@@ -354,7 +354,15 @@ def get_active_members():
         'SELECT m_member.c_uid, c_full_name, c_email FROM m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;')
     data = cursor.fetchall()
     db.close()
+    return jsonify(data)
 
+@app.route("/get_unused_number")
+def get_unused_gear_number():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor()
+    cursor.execute("SELECT FLOOR(RAND()*9999) AS random_num FROM gear WHERE 'random_num' NOT IN (SELECT number FROM gear) LIMIT 1;")
+    data = cursor.fetchone()
+    db.close()
     return jsonify(data)
 
 

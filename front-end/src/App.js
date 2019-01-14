@@ -1,24 +1,18 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import TopBar from './Layouts/TopBar';
 import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
 import FullWidthTabs from './Layouts/NavigationTabs'
 import "./index.css";
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
 
 import {withStyles} from '@material-ui/core/styles';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
-import classNames from 'classnames';
 import Button from '@material-ui/core/Button';
 
 const theme = createMuiTheme({
@@ -40,8 +34,7 @@ const theme = createMuiTheme({
 
 class App extends Component {
 
-    constructor(props)
-    {
+    constructor(props) {
         super(props);
         this.state = {
             loggedIn: false,
@@ -128,21 +121,29 @@ class App extends Component {
 
         // Remove token from local storage.
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('access_token')
+
     }
 
     render() {
         return (
             <div>
-                <MuiThemeProvider theme={theme} >
-                    <TopBar loggedIn={this.state.loggedIn} connected={this.state.connected} apiHost={this.apiHost} logIn={this.gearmasterLoggedIn} logOut={this.gearmasterLoggedOut}/>
+                <MuiThemeProvider theme={theme}>
+                    <TopBar loggedIn={this.state.loggedIn}
+                            connected={this.state.connected}
+                            apiHost={this.apiHost}
+                            logIn={this.gearmasterLoggedIn}
+                            logOut={this.gearmasterLoggedOut}
+                    />
                     {(this.state.loggedIn) ?
                         <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/> :
-                        <InventoryTable  connectionEstablished={this.connectionEstablished} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
-                    <BottomBar />
+                        <InventoryTable connectionEstablished={this.connectionEstablished}
+                                        loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
+                    <BottomBar/>
                 </MuiThemeProvider>
 
                 <Snackbar
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                    anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
                     open={this.state.addToHomeScreenSnackbar}
                     onClose={this.handleSnackbarClose}
                     style={{margin: '2vh'}}
@@ -155,10 +156,11 @@ class App extends Component {
                                 id="client-snackbar"
                                 style={{
                                     display: 'flex',
-                                    alignItems: 'center'}}
+                                    alignItems: 'center'
+                                }}
                             >
                                 <InfoIcon
-                                    style={ {
+                                    style={{
                                         opacity: 0.9,
                                         marginRight: theme.spacing.unit,
                                     }}
@@ -174,7 +176,7 @@ class App extends Component {
                                 style={{marginTop: '-20'}}
                                 onClick={this.handleSnackbarClose}
                             >
-                                <CloseIcon style={{marginTop: '-20'}} />
+                                <CloseIcon style={{marginTop: '-20'}}/>
                             </IconButton>
                         }
                     />

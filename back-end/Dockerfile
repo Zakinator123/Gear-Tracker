@@ -12,6 +12,8 @@ RUN apk update && \
 
 RUN pip install --upgrade pip \
 	&& pip install "mysqlclient" \
-	&& pip install -U "flask-cors"
+	&& pip install -U "flask-cors" \
+	&& pip install python-dotenv \
+    && pip install python-jose-cryptodome
 
 COPY ./app /app

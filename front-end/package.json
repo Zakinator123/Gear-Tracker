@@ -13,7 +13,8 @@
     "match-sorter": "latest",
     "downshift": "latest",
     "react-copy-to-clipboard": "latest",
-    "serve": "latest"
+    "serve": "latest",
+    "auth0-js": "latest"
   },
   "scripts": {
     "start": "react-scripts start",

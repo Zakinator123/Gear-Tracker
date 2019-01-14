@@ -14,18 +14,9 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import WarningIcon from '@material-ui/icons/Warning';
 import IconButton from '@material-ui/core/IconButton';
 import classNames from 'classnames';
-import Slide from '@material-ui/core/Slide'
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 import OptionSelectorDialog from "./OptionSelectorDialog";
-import MemberSearch from "./MemberAutocomplete";
-import CheckoutCart from "./CheckoutCart";
-import DateTimePicker from "./DatePicker";
 import Button from '@material-ui/core/Button';
 const options = [
     'Show some love to Material-UI',
@@ -162,15 +153,10 @@ class Accession extends React.Component {
                           alignContent="stretch"
                           spacing={16}
                     >
-                        <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'2vh'}}>
-                            <Typography variant="body2"> Accession Functionality coming soon!</Typography>
-                        </Grid>
                         <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'3vh'}}>
                             <Typography variant="title">Gear Number: </Typography>
                             <TextField
-                                multiline
-                                readonly
-                                placeholder="Enter a Number for this Piece of Gear"
+                                placeholder="Enter a Number"
                                 // value={this.state.itemNumber}
                                 onChange={(event) => this.setState({itemNumber: event.target.value})}
                             />

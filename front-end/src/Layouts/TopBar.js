@@ -86,8 +86,17 @@ class TopBar extends React.Component {
 
         if (this.props.connected == false)
             loginLogoutButton =
-                <Button style={{visibility: 'hidden'}} color="primary" variant="contained"><Typography variant="button"
-                                                                                                       style={{visibility: 'hidden'}}>Login</Typography>
+                <Button
+                    style={{visibility: 'hidden'}}
+                    color="primary"
+                    variant="contained"
+                >
+                    <Typography
+                        variant="button"
+                        style={{visibility: 'hidden'}}
+                    >
+                        Login
+                    </Typography>
                 </Button>;
         else if (this.props.loggedIn === false)
             loginLogoutButton = (
