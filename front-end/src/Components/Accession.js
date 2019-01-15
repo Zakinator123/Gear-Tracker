@@ -1,7 +1,7 @@
 import React from 'react';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
@@ -18,12 +18,6 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import OptionSelectorDialog from "./OptionSelectorDialog";
 import Button from '@material-ui/core/Button';
-const options = [
-    'Show some love to Material-UI',
-    'Show all notification content',
-    'Hide sensitive notification content',
-    'Hide all notification content',
-];
 
 const styles = theme => ({
     root: {
@@ -39,7 +33,7 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit*2,
+        padding: theme.spacing.unit * 2,
         margin: theme.spacing.unit,
         height: '100%',
         color: theme.palette.text.secondary,
@@ -53,12 +47,12 @@ class Accession extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            anchorEl: null,
+            // anchorEl: null,
             selectedIndex: 1,
             dialogOpen: false,
             selectedValue: '',
             dialogType: '',
-            itemNumber: 0,
+            itemNumber: '',
             itemTypeValue: '',
             itemConditionValueNumber: '',
             itemConditionValueText: '',
@@ -88,9 +82,8 @@ class Accession extends React.Component {
 
         let inputData = value;
 
-        if (this.state.dialogType == 'status_level')
-        {
-            switch(inputData) {
+        if (this.state.dialogType == 'status_level') {
+            switch (inputData) {
                 case "Brand New":
                     inputData = 0;
                     break;
@@ -106,7 +99,7 @@ class Accession extends React.Component {
                 default:
                     inputData = 1;
             }
-            this.setState({dialogOpen: false, itemConditionValueText: value, itemConditionValueNumber: inputData });
+            this.setState({dialogOpen: false, itemConditionValueText: value, itemConditionValueNumber: inputData});
         }
         else {
             this.setState({dialogOpen: false, itemTypeValue: value})
@@ -114,86 +107,119 @@ class Accession extends React.Component {
 
     };
 
-    handleClickListItem = event => {
-        this.setState({anchorEl: event.currentTarget});
+    handleAutoGenerateNumber = () => {
+        fetch(this.props.apiHost + '/get_unused_number')
+            .then((response) => {
+                console.log(response);
+                return response.json();
+            })
+            .then((myJson) => {
+                this.setState({itemNumber: myJson[0]});
+            });
     };
 
-    handleMenuItemClick = (event, index) => {
-        this.setState({selectedIndex: index, anchorEl: null});
-    };
-
-    handleClose = () => {
-        this.setState({anchorEl: null});
-    };
+    // handleClickListItem = event => {
+    //     this.setState({anchorEl: event.currentTarget});
+    // };
+    //
+    // handleMenuItemClick = (event, index) => {
+    //     this.setState({selectedIndex: index, anchorEl: null});
+    // };
+    //
+    // handleClose = () => {
+    //     this.setState({anchorEl: null});
+    // };
 
     render() {
 
         let dialog;
-        let itemTypeProp = {column : {id: 'item'}};
-        let conditionProp = {column : {id: 'condition_level'}};
+        let itemTypeProp = {column: {id: 'item'}};
+        let conditionProp = {column: {id: 'condition_level'}};
 
         if (this.state.dialogOpen) {
             dialog = (
                 <OptionSelectorDialog
-                    currentCell={ (this.state.dialogType=="item" ? itemTypeProp : conditionProp) }
+                    currentCell={(this.state.dialogType == "item" ? itemTypeProp : conditionProp)}
                     selectedValue={this.state.selectedValue}
                     open={this.state.dialogOpen}
                     onClose={this.handleDialogClose}
+                    apiHost={this.props.apiHost}
                 />
-            );}
+            );
+        }
 
         const {classes} = this.props;
-        const { anchorEl } = this.state;
+        // const { anchorEl } = this.state;
 
         return (
             <div style={{marginBottom: '12vh'}}>
+                {dialog}
                 <Paper>
                     <Grid container
                           alignItems='center'
                           alignContent="stretch"
-                          spacing={16}
+                          spacing={4}
                     >
-                        <Grid sm={12} lg={3} md={5} xs={12}  item style={{margin:'3vh'}}>
+                        <Grid xs={12} sm={12} md={5} lg={3} item style={{marginTop: '3vh', marginLeft: '3vh', marginBottom: '1vh', marginRight:'1vh'}}>
                             <Typography variant="title">Gear Number: </Typography>
                             <TextField
                                 placeholder="Enter a Number"
-                                // value={this.state.itemNumber}
+                                variant='outlined'
+                                value={this.state.itemNumber}
                                 onChange={(event) => this.setState({itemNumber: event.target.value})}
                             />
+                            <br/>
+                            <div style={{margin: '1vh'}}>
+                            <Typography variant="title">Or</Typography>
+                            </div>
+                            <Button
+                                variant="raised"
+                                style={{backgroundColor: '#43A047'}}
+                                color="primary"
+                                onClick={this.handleAutoGenerateNumber}>
+                                Auto-Generate an Unused Number
+                            </Button>
                         </Grid>
-                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin: '3vh'}}>
                             <Typography variant="title">Item Type: </Typography>
                             <TextField
                                 placeholder="Choose an Item Type"
-                                readonly
+                                variant='outlined'
                                 onClick={() => this.handleDialogClickOpen('item')}
-                                // value={this.state.itemTypeValue}
-                            />                        </Grid>
-                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                                value={this.state.itemTypeValue}
+                            />
+                        </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin: '3vh'}}>
+                            <Typography variant="title">Item Condition: </Typography>
+                            <TextField
+                                placeholder="Choose A Condition"
+                                variant='outlined'
+                                readonly
+                                onClick={() => this.handleDialogClickOpen('status_level')}
+                                value={this.state.itemConditionValueText}
+                            />
+                        </Grid>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin: '3vh'}}>
                             <Typography variant="title">Description: </Typography>
                             <TextField
                                 multiline
-                                readonly
+                                variant="outlined"
                                 placeholder="Enter a Description"
-                                // value={this.state.itemDescription}
+                                rows="2"
+                                helperText="Enter a qualitative description that ideally includes color and brand information."
+                                value={this.state.itemDescription}
                                 onChange={(event) => this.setState({itemDescription: event.target.value})}
                             />
                         </Grid>
-                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
-                            <Typography variant="title">Item Condition: </Typography>
-                            <TextField
-                                placeholder="Choose an a Condition Level"
-                                readonly
-                                onClick={() => this.handleDialogClickOpen('status_level')}
-                                // value={this.state.itemConditionValueText}
-                            />                           </Grid>
-                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin:'3vh'}}>
+                        <Grid sm={12} xs={12} md={5} lg={3} item style={{margin: '3vh'}}>
                             <Typography variant="title">Item Notes: </Typography>
                             <TextField
                                 multiline
-                                readonly
-                                placeholder="Enter any Notes"
-                                // value={this.state.itemNotes}
+                                variant="outlined"
+                                rows="2"
+                                placeholder="Enter Notes"
+                                helperText="Notes should include any other information not in the item's description e.g. `This sleeping bag must be kept with its liner` for example"
+                                value={this.state.itemNotes}
                                 onChange={(event) => this.setState({itemNotes: event.target.value})}
                             />
                         </Grid>
@@ -204,9 +230,10 @@ class Accession extends React.Component {
                       container
                       justify='flex-end'
                 >
-                    <Grid item style={{margin:'3vh'}}>
+                    <Grid item style={{margin: '3vh'}}>
                         <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                            <Typography variant="button" style={{color:'white'}} align="left">Accession Gear</Typography>
+                            <Typography variant="button" style={{color: 'white'}} align="left">Accession
+                                Gear</Typography>
                         </Button>
                     </Grid>
                 </Grid>
@@ -256,7 +283,7 @@ const styles1 = theme => ({
     icon: {
         fontSize: 20,
     },
-    close:{marginTop: -20},
+    close: {marginTop: -20},
     iconVariant: {
         opacity: 0.9,
         marginRight: theme.spacing.unit,
@@ -268,7 +295,7 @@ const styles1 = theme => ({
 });
 
 function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
+    const {classes, className, message, onClose, variant, ...other} = props;
     const Icon = variantIcon[variant];
 
     return (
@@ -277,7 +304,7 @@ function MySnackbarContent(props) {
             aria-describedby="client-snackbar"
             message={
                 <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
                     {message}
         </span>
             }
@@ -289,7 +316,7 @@ function MySnackbarContent(props) {
                     className={classes.close}
                     onClick={onClose}
                 >
-                    <CloseIcon className={classes.icon} />
+                    <CloseIcon className={classes.icon}/>
                 </IconButton>
             }
             {...other}
