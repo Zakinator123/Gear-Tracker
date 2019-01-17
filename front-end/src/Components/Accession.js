@@ -47,7 +47,6 @@ class Accession extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // anchorEl: null,
             selectedIndex: 1,
             dialogOpen: false,
             selectedValue: '',
@@ -67,6 +66,10 @@ class Accession extends React.Component {
         this.setState({
             [name]: event.target.value,
         });
+    };
+
+    handleSnackbarClose = () => {
+        this.setState({snackbarVisible: false})
     };
 
     handleDialogClickOpen = (value) => {
@@ -118,17 +121,63 @@ class Accession extends React.Component {
             });
     };
 
-    // handleClickListItem = event => {
-    //     this.setState({anchorEl: event.currentTarget});
-    // };
-    //
-    // handleMenuItemClick = (event, index) => {
-    //     this.setState({selectedIndex: index, anchorEl: null});
-    // };
-    //
-    // handleClose = () => {
-    //     this.setState({anchorEl: null});
-    // };
+    accessionGear = () => {
+
+        if (parseInt(sessionStorage.getItem('token'), 10) === 0) {
+            this.setState({
+                snackbarMessage: 'Checkout unsuccessful - you are in view-only mode. Please log back in as an officer.',
+                snackbarVisible: true,
+                variant: 'error'
+            });
+            return;
+        }
+
+        if (this.state.itemNumber === '' || this.state.itemTypeValue === '' || this.state.itemConditionValueText === '' || this.state.itemDescription === '') {
+            this.setState({
+                snackbarMessage: 'Checkout unsuccessful - please fill out all required fields',
+                snackbarVisible: true,
+                variant: 'error'
+            });
+            return;
+        }
+
+        let gear = {
+            'number': this.state.itemNumber,
+            'itemType': this.state.itemTypeValue,
+            'itemCondition': this.state.itemConditionValueNumber,
+            'description': this.state.itemDescription,
+            'notes': this.state.itemNotes,
+        };
+
+        console.log(gear);
+
+        fetch(this.props.apiHost + '/gear/accession', {
+            method: 'POST',
+            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: gear}),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+        }).then(response => response.json())
+            .catch(error => console.error('Error with HTTP request:', error))
+            .then(response => {
+                console.log(response);
+                if (response['status'] === 'Success!') {
+                    this.setState({
+                        snackbarVisible: true,
+                        snackbarMessage: "Successfully accessioned gear number " + response['number'] + "!",
+                        variant: 'success',
+                        itemNumber: '',
+                        itemTypeValue: '',
+                        itemConditionValueNumber: '',
+                        itemConditionValueText: '',
+                        itemDescription: '',
+                        itemNotes: '',
+                    })
+                }
+            })
+            .catch(error => console.error(error));
+    };
 
     render() {
 
@@ -149,7 +198,6 @@ class Accession extends React.Component {
         }
 
         const {classes} = this.props;
-        // const { anchorEl } = this.state;
 
         return (
             <div style={{marginBottom: '12vh'}}>
@@ -160,17 +208,23 @@ class Accession extends React.Component {
                           alignContent="stretch"
                           spacing={4}
                     >
-                        <Grid xs={12} sm={12} md={5} lg={3} item style={{marginTop: '3vh', marginLeft: '3vh', marginBottom: '1vh', marginRight:'1vh'}}>
+                        <Grid xs={12} sm={12} md={5} lg={3} item
+                              style={{marginTop: '3vh', marginLeft: '3vh', marginBottom: '1vh', marginRight: '1vh'}}>
                             <Typography variant="title">Gear Number: </Typography>
                             <TextField
                                 placeholder="Enter a Number"
                                 variant='outlined'
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                type="number"
+                                helperText="Aim to keep numbers unique."
+                                required
                                 value={this.state.itemNumber}
                                 onChange={(event) => this.setState({itemNumber: event.target.value})}
                             />
                             <br/>
                             <div style={{margin: '1vh'}}>
-                            <Typography variant="title">Or</Typography>
+                                <Typography variant="title">Or</Typography>
                             </div>
                             <Button
                                 variant="raised"
@@ -185,6 +239,8 @@ class Accession extends React.Component {
                             <TextField
                                 placeholder="Choose an Item Type"
                                 variant='outlined'
+                                required
+                                readonly
                                 onClick={() => this.handleDialogClickOpen('item')}
                                 value={this.state.itemTypeValue}
                             />
@@ -194,6 +250,7 @@ class Accession extends React.Component {
                             <TextField
                                 placeholder="Choose A Condition"
                                 variant='outlined'
+                                required
                                 readonly
                                 onClick={() => this.handleDialogClickOpen('status_level')}
                                 value={this.state.itemConditionValueText}
@@ -205,6 +262,7 @@ class Accession extends React.Component {
                                 multiline
                                 variant="outlined"
                                 placeholder="Enter a Description"
+                                required
                                 rows="2"
                                 helperText="Enter a qualitative description that ideally includes color and brand information."
                                 value={this.state.itemDescription}
@@ -226,14 +284,17 @@ class Accession extends React.Component {
                         <br/>
                     </Grid>
                 </Paper>
-                <Grid xs={12}
-                      container
-                      justify='flex-end'
+                <Grid
+                    xs={12}
+                    container
+                    justify='flex-end'
                 >
                     <Grid item style={{margin: '3vh'}}>
                         <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                            <Typography variant="button" style={{color: 'white'}} align="left">Accession
-                                Gear</Typography>
+                            <Typography variant="button" style={{color: 'white'}} align="left"
+                                        onClick={this.accessionGear}>
+                                Accession Gear
+                            </Typography>
                         </Button>
                     </Grid>
                 </Grid>

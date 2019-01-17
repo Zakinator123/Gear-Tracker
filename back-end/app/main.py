@@ -277,6 +277,23 @@ def checkout_gear():
     return jsonify(post_body)
 
 
+@app.route("/gear/accession", methods=['POST'])
+@authenticated_required
+def accession_gear():
+    post_body = request.get_json()['gear']
+
+    rds_db = _setup_database_connection('AWS')
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    sql = "INSERT INTO gear (number, item, condition_level, status_level, description, notes) VALUES (%d, '%s', %d, %d, '%s', '%s');" % (int(post_body['number']), post_body['itemType'], post_body['itemCondition'], 0, post_body['description'], post_body['notes'])
+
+    cursor.execute(sql)
+    rds_db.commit()
+    rds_db.close()
+    post_body['status'] = "Success!"
+    return jsonify(post_body)
+
+
 @app.route("/user/<uid>")
 # @authenticated_required
 def get_user_contact_information_by_uid(uid):
