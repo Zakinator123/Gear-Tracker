@@ -9,7 +9,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Typography from '@material-ui/core/Typography';
 
 export default class LoginDialog extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props);
         this.state = {
             open: false,
@@ -26,7 +26,7 @@ export default class LoginDialog extends React.Component {
     };
 
     handleClose = () => {
-        this.setState({ open: false });
+        this.setState({open: false});
     };
 
     handleChangeEmail = event => {
@@ -38,19 +38,16 @@ export default class LoginDialog extends React.Component {
     };
 
     handleSubmit = () => {
-
-        // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
 
         fetch(this.props.apiHost + '/login', {
             method: 'POST',
             body: JSON.stringify({email: this.state.email, password: this.state.password}),
-            headers:{
+            headers: {
                 'Content-Type': 'application/json'
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
                 if (response['status'] !== 'Success')
                     this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
@@ -59,27 +56,29 @@ export default class LoginDialog extends React.Component {
                     this.handleClose();
                     this.props.logIn();
                 }
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     };
 
     handleSubmitReadOnly = () => {
-
-        // console.log(JSON.stringify({email: this.state.email, password: this.state.password}));
         this.setState({error: false, errorMessageVisibility: 'hidden'});
-
-        console.log(this.props.apiHost);
 
         fetch(this.props.apiHost + '/login', {
             method: 'POST',
             body: JSON.stringify({email: 'readonly', password: 'readonly'}),
-            headers:{
+            headers: {
                 'Content-Type': 'application/json'
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
                 if (response['status'] !== 'Success')
                     this.setState({error: true, errorMessageVisibility: 'visible', errorMessage: response['message']});
                 else {
@@ -87,13 +86,23 @@ export default class LoginDialog extends React.Component {
                     this.handleClose();
                     this.props.logIn();
                 }
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     };
 
     render() {
         return (
             <div style={this.props.style}>
-                <Button color="primary" variant="contained" onClick={this.handleClickOpen}><Typography variant="button" style={{color:"#ffffff"}}>Login</Typography> </Button>
+                <Button color="primary" variant="contained" onClick={this.handleClickOpen}><Typography variant="button"
+                                                                                                       style={{color: "#ffffff"}}>Login</Typography>
+                </Button>
                 <Dialog
                     open={this.state.open}
                     scroll="body"
@@ -103,9 +112,13 @@ export default class LoginDialog extends React.Component {
                     <DialogTitle id="form-dialog-title">Officer Login</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            <Typography variant="caption">Please login using the same login credentials you use to access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>. </Typography>
+                            <Typography variant="caption">Please login using the same login credentials you use to
+                                access your officer account on <a href="http://outdoorsatuva.org"> oudoorsatuva.org </a>.
+                            </Typography>
                         </DialogContentText>
-                        <div style={{visibility:this.state.errorMessageVisibility}}><br/><Typography variant="caption" style={{color:'red'}}>{this.state.errorMessage}</Typography></div>
+                        <div style={{visibility: this.state.errorMessageVisibility}}><br/><Typography variant="caption"
+                                                                                                      style={{color: 'red'}}>{this.state.errorMessage}</Typography>
+                        </div>
                         <TextField
                             error={this.state.error}
                             margin="dense"
@@ -130,13 +143,14 @@ export default class LoginDialog extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">
-                            <Typography variant="button" style={{color:'red'}} align="left">Cancel</Typography>
+                            <Typography variant="button" style={{color: 'red'}} align="left">Cancel</Typography>
                         </Button>
-                        <Button style={{align: 'left', backgroundColor: '#0000FF'}} onClick={this.handleSubmitReadOnly} color="primary">
-                            <Typography variant="button" style={{color:'white'}} align="left">Dev Login</Typography>
+                        <Button style={{align: 'left', backgroundColor: '#0000FF'}} onClick={this.handleSubmitReadOnly}
+                                color="primary">
+                            <Typography variant="button" style={{color: 'white'}} align="left">Dev Login</Typography>
                         </Button>
                         <Button style={{backgroundColor: '#43A047'}} onClick={this.handleSubmit} color="primary">
-                            <Typography variant="button" style={{color:'white'}} align="left">Login</Typography>
+                            <Typography variant="button" style={{color: 'white'}} align="left">Login</Typography>
                         </Button>
                     </DialogActions>
                 </Dialog>

@@ -1,27 +1,14 @@
 import React from 'react';
 import ReactTable from "react-table";
-import Typography from '@material-ui/core/Typography';
 import matchSorter from 'match-sorter'
 import LoadingBar from './Loading';
 import 'react-table/react-table.css'
 import './Table.css';
 import Fade from '@material-ui/core/Fade';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import IconButton from '@material-ui/core/IconButton';
-import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
+import SnackbarContentWrapper from './SnackbarContentWrapper';
 import OptionSelectorDialog from './OptionSelectorDialog'
-import DeleteIcon from '@material-ui/icons/Delete';
-
+import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
 
 class InventoryTable extends React.Component {
 
@@ -37,7 +24,6 @@ class InventoryTable extends React.Component {
             dialogOpen: false,
             selectedValue: '',
         };
-        this.renderEditable = this.renderEditable.bind(this);
     }
 
     handleSnackbarClose = () => {
@@ -49,22 +35,13 @@ class InventoryTable extends React.Component {
     };
 
     handleDialogClose = value => {
-        console.log(value);
-
-        if (value == '') {
+        if (value === '') {
             this.setState({dialogOpen: false});
             return;
         }
 
-        if (sessionStorage.getItem('token') == 0) {
-            this.setState({
-                dialogOpen: false,
-                snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.',
-                snackbarVisible: true,
-                variant: 'error'
-            });
+        if (showErrorSnackbarIfInReadOnlyMode(this.setState.bind(this)))
             return;
-        }
 
         let cell = this.state.currentCell;
         let oldValue = this.state.data[cell.index][cell.column.id];
@@ -72,10 +49,10 @@ class InventoryTable extends React.Component {
         let inputData = value;
         let gear_uid = cell.original.uid;
 
-        if (oldValue == inputData || inputData == null || inputData == undefined)
+        if (oldValue === inputData || inputData == null || inputData === undefined)
             this.setState({dialogOpen: false});
 
-        if (column == "condition_level") {
+        if (column === "condition_level") {
             switch (inputData) {
                 case "Brand New":
                     inputData = 0;
@@ -109,8 +86,7 @@ class InventoryTable extends React.Component {
         }).then(response => response.json())
             .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
-                if (response['status'] == 'Success!') {
+                if (response['status'] === 'Success!') {
                     const data = [...this.state.data];
                     data[cell.index][cell.column.id] = value;
                     let message = 'Gear #' + cell.original.number + "'s '" + column + "' value changed from '" + oldValue + "' to '" + value + "'.";
@@ -123,14 +99,14 @@ class InventoryTable extends React.Component {
     };
 
     //TODO: Figure out if any risks should be mitigated here (by checking/cleaning input)
-    renderEditable(cellInfo) {
+    renderEditable = (cellInfo) => {
 
         if (!this.props.loggedIn)
             return this.state.data[cellInfo.index][cellInfo.column.id];
 
         let editable = true;
         let column = cellInfo.column.id;
-        if (column == 'item' || column == 'condition_level')
+        if (column === 'item' || column === 'condition_level')
             editable = false;
 
         return (
@@ -138,33 +114,24 @@ class InventoryTable extends React.Component {
                 style={{backgroundColor: "#fafafa"}}
                 contentEditable={editable}
                 onClick={() => {
-                    if (column == 'item' || column == 'condition_level')
+                    if (column === 'item' || column === 'condition_level')
                         this.handleDialogClickOpen(cellInfo)
                 }}
                 suppressContentEditableWarning
                 onKeyPress={e => {
-                    if (e.key == "Enter")
+                    if (e.key === "Enter")
                         e.target.blur();
                 }}
                 onBlur={e => {
-                    if (sessionStorage.getItem('token') == 0) {
-                        this.setState({
-                            snackbarMessage: 'Edit unsuccessful - you are in view-only mode. Please log back in as an officer.',
-                            snackbarVisible: true,
-                            variant: 'error'
-                        });
-                        e.target.innerHTML = this.state.data[cellInfo.index][cellInfo.column.id];
+                    if (showErrorSnackbarIfInReadOnlyMode(this.setState.bind(this)))
                         return;
-                    }
 
-                    debugger;
                     let oldValue = this.state.data[cellInfo.index][cellInfo.column.id];
                     let column = cellInfo.column.id;
-                    // let header = cellInfo.column.header;
                     let inputData = e.target.innerHTML;
                     let gear_uid = cellInfo.original.uid;
 
-                    if (oldValue == inputData)
+                    if (oldValue === inputData)
                         return;
 
                     fetch(this.props.apiHost + '/gear/edit', {
@@ -180,10 +147,16 @@ class InventoryTable extends React.Component {
                         },
                         mode: 'cors'
                     }).then(response => response.json())
-                        .catch(error => console.error('Error with HTTP request:', error))
+                        .catch(() => {
+                            this.setState({
+                                snackbarVisible: true,
+                                snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                                variant: 'error',
+                                list: [],
+                            })
+                        })
                         .then(response => {
-                            console.log(response);
-                            if (response['status'] == 'Success!') {
+                            if (response['status'] === 'Success!') {
                                 const data = [...this.state.data];
                                 data[cellInfo.index][cellInfo.column.id] = inputData;
                                 let message = 'Gear #' + cellInfo.original.number + "'s '" + column + "' value changed from '" + oldValue + "' to '" + inputData + "'.";
@@ -195,14 +168,21 @@ class InventoryTable extends React.Component {
                                 });
                             }
                         })
-                        .catch(error => console.error(error));
+                        .catch(() => {
+                            this.setState({
+                                snackbarVisible: true,
+                                snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                                variant: 'error',
+                                list: [],
+                            })
+                        });
                 }}
                 dangerouslySetInnerHTML={{
                     __html: this.state.data[cellInfo.index][cellInfo.column.id]
                 }}
             />
         );
-    }
+    };
 
     componentDidMount() {
         fetch(this.props.apiHost + '/gear/all')
@@ -252,6 +232,14 @@ class InventoryTable extends React.Component {
                 this.setState({data: myJson, fetched: true});
                 if (!this.props.loggedIn)
                     this.props.connectionEstablished();
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     }
 
@@ -439,7 +427,7 @@ class InventoryTable extends React.Component {
                         autoHideDuration={4500}
                         onClose={this.handleSnackbarClose}
                     >
-                        <MySnackbarContentWrapper
+                        <SnackbarContentWrapper
                             onClose={this.handleSnackbarClose}
                             variant={this.state.variant}
                             message={this.state.snackbarMessage}
@@ -464,74 +452,6 @@ class InventoryTable extends React.Component {
         );
     }
 }
-
-
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close: {marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const {classes, className, message, onClose, variant, ...other} = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon}/>
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default InventoryTable;
 

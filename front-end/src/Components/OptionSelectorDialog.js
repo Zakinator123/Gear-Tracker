@@ -31,28 +31,33 @@ class OptionSelectorDialog extends React.Component {
     };
 
     handleListItemClick = value => {
-        console.log(value);
         this.props.onClose(value);
     };
 
     componentDidMount() {
         fetch(this.props.apiHost + '/item_type/all')
             .then((response) => {
-                console.log(response);
                 return response.json();
             })
             .then((myJson) => {
                 this.setState({itemTypes: myJson.sort()});
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
 
         fetch(this.props.apiHost + '/condition/all')
             .then((response) => {
-                console.log(response);
                 return response.json();
             })
             .then((myJson) => {
                 for (let i = 0; i < myJson.length; i++) {
-                    switch (parseInt(myJson[i])) {
+                    switch (parseInt(myJson[i], 10)) {
                         case 0:
                             myJson[i] = "Brand New";
                             break;
@@ -71,6 +76,14 @@ class OptionSelectorDialog extends React.Component {
                     }
                 }
                 this.setState({conditionLevels: myJson});
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     }
 
@@ -80,11 +93,11 @@ class OptionSelectorDialog extends React.Component {
         let listItems;
         let cellInfo = this.props.currentCell;
         let dialogText;
-        if (cellInfo.column.id == 'item') {
+        if (cellInfo.column.id === 'item') {
             dialogText = " an Item Type";
-            listItems=this.state.itemTypes;
+            listItems = this.state.itemTypes;
         }
-        else if (cellInfo.column.id == 'condition_level') {
+        else if (cellInfo.column.id === 'condition_level') {
             dialogText = " a Condition Descriptor";
             listItems = this.state.conditionLevels;
         }
@@ -98,7 +111,7 @@ class OptionSelectorDialog extends React.Component {
             >
                 <DialogTitle>
                     <Typography
-                        variant="title"
+                        variant="h6"
                         style={{margin: '0.5vh'}}
                         color="primary"
                     >

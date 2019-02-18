@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Downshift from 'downshift';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -38,24 +38,27 @@ class MemberSearch extends React.Component {
         super(props);
         this.suggestions = "Loading suggestions, please wait";
         let url = this.props.apiHost + '/get_active_members';
-        this.state = {fetchingMembers : true};
+        this.state = {fetchingMembers: true};
         fetch(url, {
             method: 'GET',
-            headers:{
+            headers: {
                 'Authorization': sessionStorage.getItem('token')
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                // console.log(response);
                 if (response['status'] !== 'Success') {
                     this.suggestions = response;
                     this.setState({fetchingMembers: false});
                 }
-                else {
-                    console.log("Something went wrong with the API request.")
-                }
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     }
 
@@ -73,7 +76,7 @@ class MemberSearch extends React.Component {
         });
     }
 
-    renderSuggestion({ suggestion, index, itemProps, highlightedIndex, selectedItem }) {
+    renderSuggestion({suggestion, index, itemProps, highlightedIndex, selectedItem}) {
         const isHighlighted = highlightedIndex === index;
         const isSelected = (selectedItem || '').indexOf(suggestion.c_full_name) > -1;
 
@@ -93,8 +96,7 @@ class MemberSearch extends React.Component {
     }
 
     renderInput(inputProps) {
-        const { InputProps, classes, ref, ...other } = inputProps;
-
+        const {InputProps, classes, ref, ...other} = inputProps;
         return (
             <TextField
                 InputProps={{
@@ -110,7 +112,7 @@ class MemberSearch extends React.Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
 
         let jsx;
         if (this.state.fetchingMembers)
@@ -122,33 +124,33 @@ class MemberSearch extends React.Component {
                     let memberInfo = this.suggestions.find(member => member.c_email === memberEmail);
                     this.props.setMember(memberInfo);
                 }}
-                >
-                    {({getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex}) => (
-                        <div className={classes.container}>
-                            {this.renderInput({
-                                fullWidth: true,
-                                classes,
-                                InputProps: getInputProps({
-                                    placeholder: 'Search for Club Members',
-                                    id: 'integration-downshift-simple',
-                                }),
-                            })}
-                            {isOpen ? (
-                                <Paper className={classes.paper} square>
-                                    {this.getSuggestions(inputValue).map((suggestion, index) =>
-                                        this.renderSuggestion({
-                                            suggestion,
-                                            index,
-                                            itemProps: getItemProps({item: (suggestion.c_full_name + " - " + suggestion.c_email)}),
-                                            highlightedIndex,
-                                            selectedItem,
-                                        }),
-                                    )}
-                                </Paper>
-                            ) : null}
-                        </div>
-                    )}
-                </Downshift>);
+            >
+                {({getInputProps, getItemProps, isOpen, inputValue, selectedItem, highlightedIndex}) => (
+                    <div className={classes.container}>
+                        {this.renderInput({
+                            fullWidth: true,
+                            classes,
+                            InputProps: getInputProps({
+                                placeholder: 'Search for Club Members',
+                                id: 'integration-downshift-simple',
+                            }),
+                        })}
+                        {isOpen ? (
+                            <Paper className={classes.paper} square>
+                                {this.getSuggestions(inputValue).map((suggestion, index) =>
+                                    this.renderSuggestion({
+                                        suggestion,
+                                        index,
+                                        itemProps: getItemProps({item: (suggestion.c_full_name + " - " + suggestion.c_email)}),
+                                        highlightedIndex,
+                                        selectedItem,
+                                    }),
+                                )}
+                            </Paper>
+                        ) : null}
+                    </div>
+                )}
+            </Downshift>);
 
         return (
             <div className={classes.root}>

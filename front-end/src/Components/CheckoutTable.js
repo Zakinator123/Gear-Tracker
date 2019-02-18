@@ -1,21 +1,11 @@
 import React from 'react';
 import ReactTable from "react-table";
 import LoadingBar from './Loading';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import IconButton from '@material-ui/core/IconButton';
-import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import CheckoutDialog from './CheckoutDialog'
+import SnackbarContentWrapper from './SnackbarContentWrapper';
+import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
 
 class CheckoutTable extends React.Component {
     constructor(props) {
@@ -30,19 +20,13 @@ class CheckoutTable extends React.Component {
             dialogOpen: false,
             dialogData: {},
         };
-
-
-        this.handleButtonPress = this.handleButtonPress.bind(this);
-        this.handleSnackbarClose = this.handleSnackbarClose.bind(this);
-        this.handleCheckIn = this.handleCheckIn.bind(this);
-        this.fetchCheckouts = this.fetchCheckouts.bind(this);
     }
 
     componentDidMount() {
         this.fetchCheckouts();
     }
 
-    fetchCheckouts() {
+    fetchCheckouts = () => {
         fetch(this.props.apiHost + this.props.checkoutURL)
             .then((response) => {
                 return response.json();
@@ -53,29 +37,23 @@ class CheckoutTable extends React.Component {
                     fetched: true
                 });
             });
-    }
+    };
 
-    handleButtonPress() {
+    handleButtonPress = () => {
         this.setState({
             snackbarVisible: true,
             snackbarMessage: "Action unsuccessful - This feature has not been implemented yet.",
             variant: 'error'
         })
-    }
+    };
 
     dialogClose = () => {
         this.setState({dialogOpen: false, dialogData: {}});
     };
 
-    handleCheckIn() {
-        if (sessionStorage.getItem('token') == 0) {
-            this.setState({
-                snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.',
-                snackbarVisible: true,
-                variant: 'error'
-            });
+    handleCheckIn = () => {
+        if (showErrorSnackbarIfInReadOnlyMode(this.setState.bind(this)))
             return;
-        }
 
         let today = new Date(Date.now() + 1);
         let date;
@@ -107,10 +85,8 @@ class CheckoutTable extends React.Component {
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
-                if (response['status'] == 'Success!') {
+                if (response['status'] === 'Success!') {
 
                     this.fetchCheckouts();
 
@@ -124,8 +100,15 @@ class CheckoutTable extends React.Component {
                     })
                 }
             })
-            .catch(error => console.error(error));
-    }
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
+            });
+    };
 
 
     handleSnackbarClose = () => {
@@ -150,8 +133,6 @@ class CheckoutTable extends React.Component {
         else
             color = "#FFFFFF";
 
-        console.log(diffDays);
-        console.log(color);
         return color;
     };
 
@@ -277,35 +258,35 @@ class CheckoutTable extends React.Component {
                                         minWidth: 100,
                                     },
                                     this.props.pastCheckouts &&
-                                        {
-                                            Header: () => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    textAlign: 'left',
-                                                    fontWeight: 'bold',
-                                                    fontSize: '15px'
-                                                }}>
-                                                    Check-in Date
-                                                </div>
-                                            ),
-                                            accessor: "date_checked_in",
-                                            minWidth: 100,
-                                        },
+                                    {
+                                        Header: () => (
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Check-in Date
+                                            </div>
+                                        ),
+                                        accessor: "date_checked_in",
+                                        minWidth: 100,
+                                    },
                                     this.props.pastCheckouts &&
-                                        {
-                                            Header: () => (
-                                                <div style={{
-                                                    width: '100%',
-                                                    textAlign: 'left',
-                                                    fontWeight: 'bold',
-                                                    fontSize: '15px'
-                                                }}>
-                                                    Officer In
-                                                </div>
-                                            ),
-                                            accessor: "officer_in",
-                                            minWidth: 100,
-                                        }
+                                    {
+                                        Header: () => (
+                                            <div style={{
+                                                width: '100%',
+                                                textAlign: 'left',
+                                                fontWeight: 'bold',
+                                                fontSize: '15px'
+                                            }}>
+                                                Officer In
+                                            </div>
+                                        ),
+                                        accessor: "officer_in",
+                                        minWidth: 100,
+                                    }
                                 ]
                             }
                         ]}
@@ -320,7 +301,6 @@ class CheckoutTable extends React.Component {
             <div style={{marginBottom: '12vh', height: '100%',}}>
 
                 {jsx}
-
 
                 <CheckoutDialog
                     apiHost={this.props.apiHost}
@@ -341,7 +321,7 @@ class CheckoutTable extends React.Component {
                     autoHideDuration={7000}
                     onClose={this.handleSnackbarClose}
                 >
-                    <MySnackbarContentWrapper
+                    <SnackbarContentWrapper
                         onClose={this.handleSnackbarClose}
                         variant={this.state.variant}
                         message={this.state.snackbarMessage}
@@ -352,72 +332,5 @@ class CheckoutTable extends React.Component {
         );
     }
 }
-
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close: {marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const {classes, className, message, onClose, variant, ...other} = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon}/>
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default CheckoutTable;

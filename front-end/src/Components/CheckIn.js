@@ -3,20 +3,11 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper'
-import { withStyles } from '@material-ui/core/styles';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
+import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import IconButton from '@material-ui/core/IconButton';
-import classNames from 'classnames';
+import SnackbarContentWrapper from './SnackbarContentWrapper';
 import CheckInCart from './CheckInCart'
+import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
 
 
 const styles = theme => ({
@@ -38,22 +29,21 @@ const styles = theme => ({
 });
 
 
-class CheckIn extends React.Component{
+class CheckIn extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
         let message = '';
         let visible = false;
-        if (sessionStorage.getItem('token') == 0) {
+        if (parseInt(sessionStorage.getItem('token'), 10) === 0) {
             message = 'You are in view-only mode. This means that none of your actions will be saved to the database.';
             visible = false;
         }
 
         this.state = {
-            member: '',
-            list : [],
-            datetime : '',
+            list: [],
+            datetime: '',
             snackbarVisible: visible,
             snackbarMessage: message,
             variant: 'info'
@@ -66,21 +56,24 @@ class CheckIn extends React.Component{
 
 
     componentDidMount() {
-        setTimeout(function() {if (sessionStorage.getItem('token') == 0) {this.setState({snackbarVisible: true});}}.bind(this), 2000);
+        setTimeout(function () {
+            if (parseInt(sessionStorage.getItem('token'), 10) === 0) {
+                this.setState({snackbarVisible: true});
+            }
+        }.bind(this), 2000);
     }
 
-    removeGear(uid) {
-        for (let i = 0; i < this.state.list.length; i++)
-        {
-            if (this.state.list[i]['uid'] == uid)
-                this.setState(prevState=>{
+    removeGear = (uid) => {
+        for (let i = 0; i < this.state.list.length; i++) {
+            if (this.state.list[i]['uid'] === uid)
+                this.setState(prevState => {
                     prevState.list.splice(i, 1);
                     return {list: [...prevState.list]};
                 });
         }
-    }
+    };
 
-    addGearToList(response) {
+    addGearToList = (response) => {
         let count = 0;
         for (let i = 0; i < response.length; i++) {
             let gear = response[i];
@@ -96,19 +89,17 @@ class CheckIn extends React.Component{
         }
 
         return count;
-    }
+    };
 
     handleSnackbarClose = () => {
-        this.setState({snackbarVisible : false})
+        this.setState({snackbarVisible: false})
     };
 
 
-    checkInGear() {
+    checkInGear = () => {
 
-        if (sessionStorage.getItem('token') == 0) {
-            this.setState({snackbarMessage: 'Check In unsuccessful - you are in view-only mode. Please log back in as an officer.', snackbarVisible: true, variant: 'error'});
+        if (showErrorSnackbarIfInReadOnlyMode(this.setState.bind(this)))
             return;
-        }
 
         let today = new Date(Date.now() + 1);
         let date;
@@ -130,16 +121,18 @@ class CheckIn extends React.Component{
 
         fetch(this.props.apiHost + '/gear/checkin', {
             method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: this.state.list, date_checked_in: datetime}),
-            headers:{
+            body: JSON.stringify({
+                authorization: sessionStorage.getItem('token'),
+                gear: this.state.list,
+                date_checked_in: datetime
+            }),
+            headers: {
                 'Content-Type': 'application/json'
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
-                if (response['status'] == 'Success!') {
+                if (response['status'] === 'Success!') {
                     this.setState({
                         snackbarVisible: true,
                         snackbarMessage: response['count'].toString() + ' piece(s) of gear were successfully checked in.',
@@ -148,14 +141,21 @@ class CheckIn extends React.Component{
                     })
                 }
             })
-            .catch(error => console.error(error));
-    }
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
+            });
+    };
 
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
 
-        return(
+        return (
             <div style={{marginBottom: '12vh'}}>
                 <Grid container
                       alignItems='center'
@@ -164,7 +164,8 @@ class CheckIn extends React.Component{
 
                     <Grid md={6} lg={6} xl={6} item>
                         <Paper className={classes.paper}>
-                            <CheckInCart addGearToList={this.addGearToList} removeGear={this.removeGear} list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
+                            <CheckInCart addGearToList={this.addGearToList} removeGear={this.removeGear}
+                                         list={this.state.list} apiHost={this.props.apiHost} data={this.props.data}/>
                         </Paper>
                     </Grid>
 
@@ -173,8 +174,9 @@ class CheckIn extends React.Component{
                               justify="flex-end"
                               direction="column">
                             <Grid item>
-                                <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
-                                    <Typography variant="button" onClick={this.checkInGear} style={{color:'white'}} align="left">Check In Gear</Typography>
+                                <Button variant="contained" style={{backgroundColor: '#43A047'}} color="primary">
+                                    <Typography variant="button" onClick={this.checkInGear} style={{color: 'white'}}
+                                                align="left">Check In Gear</Typography>
                                 </Button>
                             </Grid>
                         </Grid>
@@ -192,84 +194,16 @@ class CheckIn extends React.Component{
                     autoHideDuration={7000}
                     onClose={this.handleSnackbarClose}
                 >
-                    <MySnackbarContentWrapper
+                    <SnackbarContentWrapper
                         onClose={this.handleSnackbarClose}
                         variant={this.state.variant}
                         message={this.state.snackbarMessage}
                     />
                 </Snackbar>
 
-
             </div>
         );
     }
 }
-
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close:{marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 export default withStyles(styles)(CheckIn);

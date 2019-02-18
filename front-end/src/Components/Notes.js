@@ -1,6 +1,4 @@
 import React from 'react';
-import ReactTable from "react-table";
-import LoadingBar from './Loading';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
 import InfoIcon from '@material-ui/icons/Info';
@@ -105,7 +103,6 @@ class Notes extends React.Component {
     //     }).then(response => response.json())
     //         .catch(error => console.error('Error with HTTP request:', error))
     //         .then(response => {
-    //             console.log(response);
     //             if (response['status'] == 'Success!') {
     //
     //                 this.fetchCheckouts();
@@ -128,15 +125,6 @@ class Notes extends React.Component {
         this.setState({snackbarVisible: false})
     };
 
-    getOverdueSeverityColor(date_due) {
-        var date1 = new Date(date_due);
-        var date2 = new Date();
-        var timeDiff = Math.abs(date1.getTime() - date2.getTime());
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        // if (diffDays < 0)
-
-    };
-
     render() {
         //
         // let jsx;
@@ -155,7 +143,7 @@ class Notes extends React.Component {
                     <Grid item>
                         <Card>
                             <CardContent>
-                                <Typography variant="title">
+                                <Typography variant="h6">
                                     Notes Functionality coming soon!
                                 </Typography>
                                 <br/>
@@ -184,7 +172,7 @@ class Notes extends React.Component {
                     <Grid item>
                         <Card>
                             <CardContent>
-                                <Typography variant="title">
+                                <Typography variant="h6">
                                     (Example) Kendall Benoit has a couple blue slings
                                 </Typography>
                                 <br/>

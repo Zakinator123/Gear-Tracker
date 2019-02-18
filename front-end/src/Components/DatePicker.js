@@ -54,7 +54,7 @@ class DateTimePicker extends React.Component {
     render() {
         return (
             <div>
-                <Typography variant="title">Gear Due Date</Typography> <br/>
+                <Typography variant="h6">Gear Due Date</Typography> <br/>
                 <form className={this.classes.container} noValidate>
                     <TextField
                         id="datetime-local"

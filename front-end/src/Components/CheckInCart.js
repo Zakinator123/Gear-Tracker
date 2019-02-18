@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -19,18 +20,8 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import classNames from 'classnames';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
+import SnackbarContentWrapper from './SnackbarContentWrapper'
 
 const styles = theme => ({
     root: {
@@ -43,10 +34,8 @@ const styles = theme => ({
 
 class CheckInCart extends React.Component {
 
-    constructor(props)
-    {
+    constructor(props) {
         super(props);
-        this.validateGear = this.validateGear.bind(this);
 
         this.state = {
             list: [],
@@ -61,13 +50,13 @@ class CheckInCart extends React.Component {
         };
     }
 
-    validateGear() {
+    validateGear = () => {
         let gearNumber = this.state.textFieldValue;
-        if (gearNumber == '')
+        if (gearNumber === '')
             return this.setState({open: true});
 
         for (let i = 0; i < this.props.list.length; i++) {
-            if (gearNumber == this.props.list[i]['number']) {
+            if (gearNumber === this.props.list[i]['number']) {
                 this.setState({open: true, alreadyAdded: true});
                 return;
             }
@@ -80,18 +69,22 @@ class CheckInCart extends React.Component {
             method: 'GET',
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
 
                 let checked_out_gear = response.filter(gear => gear['status_level'] !== 0);
-
                 let count = this.props.addGearToList(checked_out_gear);
-
                 let checkedInList = [];
                 for (let i = 0; i < response.length; i++)
-                    if (response[i]['status_level'] == 0)
+                    if (response[i]['status_level'] === 0)
                         checkedInList.push(response[i]);
 
+
+                if (count === 0)
+                    this.setState({open: true});
+                else if (count > 1)
+                    this.setState({multiple: true, open: true});
+
+                this.setState({validating: false, textFieldValue: ''});
                 // if (checkedInList.length == 1)
                 //     this.setState({
                 //         variant: 'warning', snackbarVisible: true, snackbarMessage: 'Gear Item #' +
@@ -106,22 +99,23 @@ class CheckInCart extends React.Component {
                 //     this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked in: ' + messageList +
                 //     'Checking them in again will cause no changes to be made.'});
                 // }
-
-                if (count == 0)
-                    this.setState({open: true});
-                else if (count > 1)
-                    this.setState({multiple: true, open: true});
-
-                this.setState({validating: false, textFieldValue: ''});
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
-    }
+    };
 
     handleClose = () => {
-        this.setState({ open: false, multiple: false, alreadyAdded: false});
+        this.setState({open: false, multiple: false, alreadyAdded: false});
     };
 
     handleSnackbarClose = () => {
-        this.setState({snackbarVisible : false})
+        this.setState({snackbarVisible: false})
     };
 
     handleChange = (event) => {
@@ -129,19 +123,31 @@ class CheckInCart extends React.Component {
     };
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
 
         let dialogMessage;
         let dialogTitle;
-        if (this.state.alreadyAdded == true){
-            dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
-            dialogTitle = "Duplicate Gear Entry";}
-        else if (this.state.multiple == false){
-            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database) or all pieces of gear with this number are already checked in. Please accession the gear to check it out.</Typography>;
-            dialogTitle = "Invalid Gear Entry";}
-        else if (this.state.multiple){
-            dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database (that are checked out). All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
-            dialogTitle = "Multiple Gear Items Added";}
+        if (this.state.alreadyAdded === true) {
+            dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the
+                cart.</Typography>;
+            dialogTitle = "Duplicate Gear Entry";
+        }
+        else if (this.state.multiple === false) {
+            dialogMessage =
+                <Typography variant="body2">This may have occurred because: <br/><br/>
+                    1. All pieces of gear with this number are already checked in. <br/><br/>
+                    2. The gear number you entered is not a valid gear number (meaning it does not exist in
+                    the inventory). Please accession the gear to add it to the inventory.
+                </Typography>;
+            dialogTitle = "Invalid Gear Entry";
+        }
+        else if (this.state.multiple) {
+            dialogMessage =
+                <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in
+                    the database (that are checked out). All of the entries have been added to the list above - please
+                    remove the ones you did not intend to add to the list.</Typography>;
+            dialogTitle = "Multiple Gear Items Added";
+        }
 
         // List of gear values:
         let validatedGearItemsJSX;
@@ -155,8 +161,9 @@ class CheckInCart extends React.Component {
                 />
                 <ListItemSecondaryAction>
                     <Tooltip id="tooltip-icon" title="Delete">
-                        <IconButton onClick={(e) => this.props.removeGear(gearItem['uid'])} aria-label="Delete from Cart">
-                            <DeleteIcon />
+                        <IconButton onClick={(e) => this.props.removeGear(gearItem['uid'])}
+                                    aria-label="Delete from Cart">
+                            <DeleteIcon/>
                         </IconButton>
                     </Tooltip>
                 </ListItemSecondaryAction>
@@ -171,10 +178,10 @@ class CheckInCart extends React.Component {
             );
 
         let validating;
-        if (this.state.validating == true)
+        if (this.state.validating === true)
             validating = (
                 <ListItem>
-                    <CircularProgress />
+                    <CircularProgress/>
                 </ListItem>);
         else
             validating = null;
@@ -193,7 +200,7 @@ class CheckInCart extends React.Component {
                     autoHideDuration={7000}
                     onClose={this.handleSnackbarClose}
                 >
-                    <MySnackbarContentWrapper
+                    <SnackbarContentWrapper
                         onClose={this.handleSnackbarClose}
                         variant={this.state.variant}
                         message={this.state.snackbarMessage}
@@ -212,12 +219,12 @@ class CheckInCart extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">
-                            <Typography variant="button"  align="left">Ok</Typography>
+                            <Typography variant="button" align="left">Ok</Typography>
                         </Button>
                     </DialogActions>
                 </Dialog>
 
-                <List dense={true} subheader={<Typography variant="title"> Gear Check In Cart</Typography>}>
+                <List dense={true} subheader={<Typography variant="h6"> Gear Check In Cart</Typography>}>
 
                     {validatedGearItemsJSX}
 
@@ -237,9 +244,9 @@ class CheckInCart extends React.Component {
                             value={this.state.textFieldValue}
                         />
                         <Tooltip id="tooltip-fab" title="Add to Gear Cart">
-                            <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
-                                <AddIcon />
-                            </Button>
+                            <Fab size="small" onClick={this.validateGear} color="primary" aria-label="add">
+                                <AddIcon/>
+                            </Fab>
                         </Tooltip>
                     </ListItem>
                 </List>
@@ -252,74 +259,5 @@ class CheckInCart extends React.Component {
 CheckInCart.propTypes = {
     classes: PropTypes.object.isRequired,
 };
-
-
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close:{marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
 
 export default withStyles(styles)(CheckInCart);

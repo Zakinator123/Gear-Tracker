@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -19,18 +19,9 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
-import classNames from 'classnames';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
+import SnackbarContentWrapper from './SnackbarContentWrapper';
+import Fab from '@material-ui/core/Fab';
 
 const styles = theme => ({
     root: {
@@ -40,78 +31,9 @@ const styles = theme => ({
     },
 });
 
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close:{marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const { classes, className, message, onClose, variant, ...other } = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon} />
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
-
 class CheckoutCart extends React.Component {
 
-    constructor(props)
-    {
+    constructor(props) {
         super(props);
         this.validateGear = this.validateGear.bind(this);
 
@@ -131,11 +53,11 @@ class CheckoutCart extends React.Component {
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;
-        if (gearNumber == '' || gearNumber < 0)
+        if (gearNumber === '' || gearNumber < 0)
             return this.setState({open: true});
 
         for (let i = 0; i < this.props.list.length; i++) {
-            if (gearNumber == this.props.list[i]['number']) {
+            if (gearNumber === this.props.list[i]['number']) {
                 this.setState({open: true, alreadyAdded: true});
                 return;
             }
@@ -148,48 +70,56 @@ class CheckoutCart extends React.Component {
             method: 'GET',
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
-                console.log(response);
                 let count = this.props.addGearToList(response);
 
                 let checkedOutList = [];
                 for (let i = 0; i < response.length; i++)
-                    if (response[i]['status_level'] == 1)
+                    if (response[i]['status_level'] === 1)
                         checkedOutList.push(response[i]);
 
                 // TODO: Make a check-in dialog that can be used on the spot.
-                if (checkedOutList.length == 1)
+                if (checkedOutList.length === 1)
                     this.setState({
                         variant: 'warning', snackbarVisible: true, snackbarMessage: 'Gear Item #' +
-                        checkedOutList[0]['number'] + ' is already checked out. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'
+                            checkedOutList[0]['number'] + ' is already checked out. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'
                     });
-                else if (checkedOutList.length > 1)
-                {
+                else if (checkedOutList.length > 1) {
                     let messageList = checkedOutList[0]['number'].toString();
-                    for (let i=1; i < checkedOutList.length; i++)
+                    for (let i = 1; i < checkedOutList.length; i++)
                         messageList = messageList + ', ' + checkedOutList[i]['number'];
 
-                    this.setState({variant: 'warning', snackbarVisible: true, snackbarMessage: 'The following gear numbers are already checked out: ' + messageList +
-                    '. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'});
+                    this.setState({
+                        variant: 'warning',
+                        snackbarVisible: true,
+                        snackbarMessage: 'The following gear numbers are already checked out: ' + messageList +
+                            '. Please delete it from the cart and check it back in before checking it out. Alternatively, you can overwrite the current "checkout record" for this object by leaving it in the cart.'
+                    });
                 }
 
-
-                if (count == 0)
+                if (count === 0)
                     this.setState({open: true});
                 else if (count > 1)
                     this.setState({multiple: true, open: true});
 
                 this.setState({validating: false, textFieldValue: ''});
+            })
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
             });
     }
 
     handleClose = () => {
-        this.setState({ open: false, multiple: false, alreadyAdded: false});
+        this.setState({open: false, multiple: false, alreadyAdded: false});
     };
 
     handleSnackbarClose = () => {
-        this.setState({snackbarVisible : false})
+        this.setState({snackbarVisible: false})
     };
 
     handleChange = (e) => {
@@ -197,19 +127,28 @@ class CheckoutCart extends React.Component {
     };
 
     render() {
-        const { classes } = this.props;
+        const {classes} = this.props;
 
         let dialogMessage;
         let dialogTitle;
-        if (this.state.alreadyAdded == true){
-            dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the cart.</Typography>;
-            dialogTitle = "Duplicate Gear Entry";}
-        else if (this.state.multiple == false){
-            dialogMessage = <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in database). Please accession the gear to check it out.</Typography>;
-            dialogTitle = "Invalid Gear Entry";}
-        else if (this.state.multiple){
-            dialogMessage = <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in the database. All of the entries have been added to the list above - please remove the ones you did not intend to add to the list.</Typography>;
-            dialogTitle = "Multiple Gear Items Added";}
+        if (this.state.alreadyAdded === true) {
+            dialogMessage = <Typography variant="body2">The gear number you entered has already been added to the
+                cart.</Typography>;
+            dialogTitle = "Duplicate Gear Entry";
+        }
+        else if (this.state.multiple === false) {
+            dialogMessage =
+                <Typography variant="body2">The gear number you entered is not a valid gear number (does not exist in
+                    database). Please accession the gear to check it out.</Typography>;
+            dialogTitle = "Invalid Gear Entry";
+        }
+        else if (this.state.multiple) {
+            dialogMessage =
+                <Typography variant="body2">You have entered a gear number that has multiple corresponding entries in
+                    the database. All of the entries have been added to the list above - please remove the ones you did
+                    not intend to add to the list.</Typography>;
+            dialogTitle = "Multiple Gear Items Added";
+        }
 
         // List of gear values:
         let validatedGearItemsJSX;
@@ -223,8 +162,9 @@ class CheckoutCart extends React.Component {
                 />
                 <ListItemSecondaryAction>
                     <Tooltip id="tooltip-icon" title="Delete">
-                        <IconButton onClick={(e) => this.props.removeGear(gearItem['uid'])} aria-label="Delete from Cart">
-                            <DeleteIcon />
+                        <IconButton onClick={(e) => this.props.removeGear(gearItem['uid'])}
+                                    aria-label="Delete from Cart">
+                            <DeleteIcon/>
                         </IconButton>
                     </Tooltip>
                 </ListItemSecondaryAction>
@@ -239,10 +179,10 @@ class CheckoutCart extends React.Component {
             );
 
         let validating;
-        if (this.state.validating == true)
+        if (this.state.validating === true)
             validating = (
                 <ListItem>
-                    <CircularProgress />
+                    <CircularProgress/>
                 </ListItem>);
         else
             validating = null;
@@ -261,7 +201,7 @@ class CheckoutCart extends React.Component {
                     autoHideDuration={7000}
                     onClose={this.handleSnackbarClose}
                 >
-                    <MySnackbarContentWrapper
+                    <SnackbarContentWrapper
                         onClose={this.handleSnackbarClose}
                         variant={this.state.variant}
                         message={this.state.snackbarMessage}
@@ -280,12 +220,12 @@ class CheckoutCart extends React.Component {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleClose} color="primary">
-                            <Typography variant="button"  align="left">Ok</Typography>
+                            <Typography variant="button" align="left">Ok</Typography>
                         </Button>
                     </DialogActions>
                 </Dialog>
 
-                <List dense={true} subheader={<Typography variant="title"> Gear Checkout Cart</Typography>}>
+                <List dense={true} subheader={<Typography variant="h6"> Gear Checkout Cart</Typography>}>
 
                     {validatedGearItemsJSX}
 
@@ -305,9 +245,9 @@ class CheckoutCart extends React.Component {
                             value={this.state.textFieldValue}
                         />
                         <Tooltip id="tooltip-fab" title="Add to Gear Cart">
-                            <Button variant="fab" mini onClick={this.validateGear}  color="primary" aria-label="add">
-                                <AddIcon />
-                            </Button>
+                            <Fab size="small" onClick={this.validateGear} color="primary" aria-label="add">
+                                <AddIcon/>
+                            </Fab>
                         </Tooltip>
                     </ListItem>
                 </List>

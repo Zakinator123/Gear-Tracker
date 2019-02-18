@@ -6,28 +6,14 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import RenewIcon from '@material-ui/icons/Autorenew';
 import ReturnIcon from '@material-ui/icons/AssignmentReturned'
-import {CopyToClipboard} from 'react-copy-to-clipboard';
 import Tooltip from '@material-ui/core/Tooltip';
-
-
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Grid from '@material-ui/core/Grid';
 import ListItemText from '@material-ui/core/ListItemText';
 import DateTimePicker from "./DatePicker";
-import {withStyles} from '@material-ui/core/styles';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import green from '@material-ui/core/colors/green';
-import amber from '@material-ui/core/colors/amber';
-import blue from '@material-ui/core/colors/blue';
 import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import IconButton from '@material-ui/core/IconButton';
-import classNames from 'classnames';
+import SnackbarContentWrapper from './SnackbarContentWrapper';
 import Typography from '@material-ui/core/Typography'
 
 class CheckoutDialog extends React.Component {
@@ -49,9 +35,9 @@ class CheckoutDialog extends React.Component {
         this.setState({datetime: newDateTime})
     }
 
-    handleRenewDialogOpen = () => {
-        this.setState({renewDialogOpen: true})
-    };
+    // handleRenewDialogOpen = () => {
+    //     this.setState({renewDialogOpen: true})
+    // };
 
     handleRenewDialogClose = () => {
         this.setState({renewDialogOpen: false})
@@ -87,11 +73,18 @@ class CheckoutDialog extends React.Component {
                         return response.json();
                     })
                     .then((myJson) => {
-                        console.log(myJson);
                         this.setState({
                             gearData: myJson[0],
                             fetched: true
                         });
+                    })
+                    .catch(() => {
+                        this.setState({
+                            snackbarVisible: true,
+                            snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                            variant: 'error',
+                            list: [],
+                        })
                     });
             }
 
@@ -102,11 +95,18 @@ class CheckoutDialog extends React.Component {
                         return response.json();
                     })
                     .then((myJson) => {
-                        console.log(myJson);
                         this.setState({
                             memberData: myJson,
                             fetched: true
                         });
+                    })
+                    .catch(() => {
+                        this.setState({
+                            snackbarVisible: true,
+                            snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                            variant: 'error',
+                            list: [],
+                        })
                     });
             }
 
@@ -126,7 +126,6 @@ class CheckoutDialog extends React.Component {
             if (this.props.pastCheckouts) {
                 formattedCheckoutDetails["Officer In"] = checkoutData.officer_in;
                 formattedCheckoutDetails["Check-In Date"] = checkoutData.date_checked_in;
-                formattedCheckoutDetails[""]
             }
 
             return Object.keys(formattedCheckoutDetails).map((key) => {
@@ -252,7 +251,7 @@ class CheckoutDialog extends React.Component {
                     autoHideDuration={7000}
                     onClose={this.handleSnackbarClose}
                 >
-                    <MySnackbarContentWrapper
+                    <SnackbarContentWrapper
                         onClose={this.handleSnackbarClose}
                         variant={this.state.variant}
                         message={this.state.snackbarMessage}
@@ -263,70 +262,4 @@ class CheckoutDialog extends React.Component {
     }
 }
 
-const variantIcon = {
-    success: CheckCircleIcon,
-    warning: WarningIcon,
-    error: ErrorIcon,
-    info: InfoIcon,
-};
-
-//TODO: Extract repeated snackbar code into a component
-const styles1 = theme => ({
-    success: {
-        backgroundColor: green[600],
-    },
-    error: {
-        backgroundColor: '#B71C1C',
-    },
-    info: {
-        backgroundColor: blue[900],
-    },
-    warning: {
-        backgroundColor: amber[700],
-    },
-    icon: {
-        fontSize: 20,
-    },
-    close: {marginTop: -20},
-    iconVariant: {
-        opacity: 0.9,
-        marginRight: theme.spacing.unit,
-    },
-    message: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-});
-
-function MySnackbarContent(props) {
-    const {classes, className, message, onClose, variant, ...other} = props;
-    const Icon = variantIcon[variant];
-
-    return (
-        <SnackbarContent
-            className={classNames(classes[variant], className)}
-            aria-describedby="client-snackbar"
-            message={
-                <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)}/>
-                    {message}
-        </span>
-            }
-            action={
-                <IconButton
-                    key="close"
-                    aria-label="Close"
-                    color="inherit"
-                    className={classes.close}
-                    onClick={onClose}
-                >
-                    <CloseIcon className={classes.icon}/>
-                </IconButton>
-            }
-            {...other}
-        />
-    );
-}
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 export default CheckoutDialog;

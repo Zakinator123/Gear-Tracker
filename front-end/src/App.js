@@ -4,9 +4,7 @@ import BottomBar from './Layouts/BottomBar';
 import InventoryTable from './Components/Table';
 import FullWidthTabs from './Layouts/NavigationTabs'
 import "./index.css";
-import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles';
-
-import {withStyles} from '@material-ui/core/styles';
+import {createMuiTheme, MuiThemeProvider} from '@material-ui/core/styles';
 import InfoIcon from '@material-ui/icons/Info';
 import CloseIcon from '@material-ui/icons/Close';
 import green from '@material-ui/core/colors/green';
@@ -30,6 +28,9 @@ const theme = createMuiTheme({
             contrastText: '#fff',
         },
     },
+    typography: {
+        useNextVariants: true,
+    }
 });
 
 class App extends Component {
@@ -87,7 +88,7 @@ class App extends Component {
                 } else {
                     console.log('User dismissed the A2HS prompt');
                 }
-                this.setState({deferredPrompt :null});
+                this.setState({deferredPrompt: null});
             });
     };
 
@@ -111,13 +112,13 @@ class App extends Component {
         fetch(this.apiHost + '/logout', {
             method: 'POST',
             body: JSON.stringify({token: storedToken}),
-            headers:{
+            headers: {
                 'Content-Type': 'application/json'
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
-            .then(response => console.log(response));
+            .catch(error => console.error('Error with HTTP request:', error));
+            // .then(response => return);
 
         // Remove token from local storage.
         sessionStorage.removeItem('token');
