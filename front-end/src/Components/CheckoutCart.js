@@ -53,11 +53,11 @@ class CheckoutCart extends React.Component {
 
     validateGear() {
         let gearNumber = this.state.textFieldValue;
-        if (gearNumber === '' || gearNumber < 0)
+        if (gearNumber === '' || parseInt(gearNumber, 10) < 0)
             return this.setState({open: true});
 
         for (let i = 0; i < this.props.list.length; i++) {
-            if (gearNumber === this.props.list[i]['number']) {
+            if (parseInt(gearNumber, 10) === this.props.list[i]['number']) {
                 this.setState({open: true, alreadyAdded: true});
                 return;
             }
@@ -74,9 +74,10 @@ class CheckoutCart extends React.Component {
                 let count = this.props.addGearToList(response);
 
                 let checkedOutList = [];
-                for (let i = 0; i < response.length; i++)
+                for (let i = 0; i < response.length; i++) {
                     if (response[i]['status_level'] === 1)
                         checkedOutList.push(response[i]);
+                }
 
                 // TODO: Make a check-in dialog that can be used on the spot.
                 if (checkedOutList.length === 1)

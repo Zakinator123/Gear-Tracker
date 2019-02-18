@@ -56,7 +56,7 @@ class CheckInCart extends React.Component {
             return this.setState({open: true});
 
         for (let i = 0; i < this.props.list.length; i++) {
-            if (gearNumber === this.props.list[i]['number']) {
+            if (parseInt(gearNumber, 10) === this.props.list[i]['number']) {
                 this.setState({open: true, alreadyAdded: true});
                 return;
             }
