@@ -8,7 +8,7 @@ import Fade from '@material-ui/core/Fade';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
 import OptionSelectorDialog from './OptionSelectorDialog'
-import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
+import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 class InventoryTable extends React.Component {
 
@@ -84,7 +84,6 @@ class InventoryTable extends React.Component {
             },
             mode: 'cors'
         }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error))
             .then(response => {
                 if (response['status'] === 'Success!') {
                     const data = [...this.state.data];
@@ -92,8 +91,16 @@ class InventoryTable extends React.Component {
                     let message = 'Gear #' + cell.original.number + "'s '" + column + "' value changed from '" + oldValue + "' to '" + value + "'.";
                     this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
                 }
+                else throw "Error";
             })
-            .catch(error => console.error(error));
+            .catch(() => {
+                this.setState({
+                    snackbarVisible: true,
+                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                    variant: 'error',
+                    list: [],
+                })
+            });
 
         this.setState({dialogOpen: false});
     };
@@ -167,6 +174,7 @@ class InventoryTable extends React.Component {
                                     variant: 'success'
                                 });
                             }
+                            else throw "Error";
                         })
                         .catch(() => {
                             this.setState({

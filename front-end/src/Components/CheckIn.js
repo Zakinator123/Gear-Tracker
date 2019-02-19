@@ -7,7 +7,7 @@ import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
 import CheckInCart from './CheckInCart'
-import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
+import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 
 const styles = theme => ({
@@ -140,6 +140,7 @@ class CheckIn extends React.Component {
                         list: [],
                     })
                 }
+            else throw "Error";
             })
             .catch(() => {
                 this.setState({

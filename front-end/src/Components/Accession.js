@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import OptionSelectorDialog from "./OptionSelectorDialog";
 import Button from '@material-ui/core/Button';
-import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
+import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 const styles = theme => ({
     root: {
@@ -155,6 +155,7 @@ class Accession extends React.Component {
                         itemNotes: '',
                     })
                 }
+                else throw "Error";
             })
             .catch(() => {
                 this.setState({

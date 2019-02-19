@@ -51,6 +51,7 @@ class MemberSearch extends React.Component {
                     this.suggestions = response;
                     this.setState({fetchingMembers: false});
                 }
+                else throw "Error";
             })
             .catch(() => {
                 this.setState({

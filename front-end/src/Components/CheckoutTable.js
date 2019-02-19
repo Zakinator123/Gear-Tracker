@@ -5,7 +5,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Fade from '@material-ui/core/Fade';
 import CheckoutDialog from './CheckoutDialog'
 import SnackbarContentWrapper from './SnackbarContentWrapper';
-import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
+import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 class CheckoutTable extends React.Component {
     constructor(props) {
@@ -99,6 +99,7 @@ class CheckoutTable extends React.Component {
                         list: [],
                     })
                 }
+                else throw "Error";
             })
             .catch(() => {
                 this.setState({

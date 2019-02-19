@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper'
 import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
-import {showErrorSnackbarIfInReadOnlyMode} from './utilites';
+import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 const styles = theme => ({
     root: {
@@ -139,6 +139,7 @@ class Checkout extends React.Component {
                         // memberId: '',
                     })
                 }
+                else throw "Error";
             })
             .catch(() => {
                 this.setState({
