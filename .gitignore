@@ -1,0 +1,6 @@
+db/*
+.idea
+odc.pem
+back-end/env_vars
+.DS_Store
+back-end/app/__pycache__/*

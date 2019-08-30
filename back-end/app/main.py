@@ -7,119 +7,146 @@ from flask_cors import CORS
 from flask import request
 import hmac
 from functools import wraps
+import requests
+from jose import jwt
 
 app = Flask(__name__)
 CORS(app)
 
+#######################
+
+
+AUTH_DOMAIN = 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_i92prdhXi'
+API_AUDIENCE = 'gear-tracker'
+ALGORITHMS = ["RS256"]
+
+# Error handler
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
+
+@app.errorhandler(AuthError)
+def handle_auth_error(ex):
+    response = jsonify(ex.error)
+    response.status_code = ex.status_code
+    return response
+
+# Format error response and append status code
+def get_token_auth_header():
+    """Obtains the Access Token from the Authorization Header
+    """
+    auth = request.headers.get("Authorization", None)
+    if not auth:
+        raise AuthError({"code": "authorization_header_missing",
+                        "description":
+                            "Authorization header is expected"}, 401)
+
+    parts = auth.split()
+
+    if parts[0].lower() != "bearer":
+        raise AuthError({"code": "invalid_header",
+                        "description":
+                            "Authorization header must start with"
+                            " Bearer"}, 401)
+    elif len(parts) == 1:
+        raise AuthError({"code": "invalid_header",
+                        "description": "Token not found"}, 401)
+    elif len(parts) > 2:
+        raise AuthError({"code": "invalid_header",
+                        "description":
+                            "Authorization header must be"
+                            " Bearer token"}, 401)
+
+    token = parts[1]
+    return token
+
+def requires_authorization(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = get_token_auth_header()
+        r = requests.get(AUTH_DOMAIN+"/.well-known/jwks.json")
+        jwks = r.json()
+        unverified_header = jwt.get_unverified_header(token)
+        rsa_key = {}
+        for key in jwks["keys"]:
+            if key["kid"] == unverified_header["kid"]:
+                rsa_key = {
+                    "kty": key["kty"],
+                    "kid": key["kid"],
+                    "use": key["use"],
+                    "n": key["n"],
+                    "e": key["e"]
+                }
+        if rsa_key:
+            try:
+                payload = jwt.decode(
+                    token,
+                    rsa_key,
+                    algorithms=ALGORITHMS,
+                    audience=API_AUDIENCE,
+                    issuer=AUTH_DOMAIN
+                )
+            except jwt.ExpiredSignatureError:
+                raise AuthError({"code": "token_expired",
+                                "description": "token is expired"}, 401)
+            except jwt.JWTClaimsError:
+                raise AuthError({"code": "invalid_claims",
+                                "description":
+                                    "incorrect claims,"
+                                    "please check the audience and issuer"}, 401)
+            except Exception:
+                raise AuthError({"code": "invalid_header",
+                                "description":
+                                    "Unable to parse authentication"
+                                    " token."}, 401)
+
+            return f(*args, **kwargs)
+        raise AuthError({"code": "invalid_header",
+                        "description": "Unable to find appropriate key"}, 401)
+    return decorated
+
+
+def has_scope(required_scope):
+    token = get_token_auth_header()
+    unverified_claims = jwt.get_unverified_claims(token)
+    if unverified_claims.get("cognito:groups"):
+            token_scopes = unverified_claims["cognito:groups"]
+            for token_scope in token_scopes:
+                if token_scope == required_scope:
+                    return True
+    return False
+
+def read_access_required(f):
+    @wraps(f)
+    def check_read_scope(*args, **kwargs):
+        if has_scope("Read-Access") is True or has_scope("Read-Write-Access") is True:
+            return f(*args, **kwargs)
+        else:
+            return jsonify({'Status': 'Error', 'message': 'Missing Scopes'})
+    return check_read_scope
+
+def read_and_write_access_required(f):
+    @wraps(f)
+    def check_read_scope(*args, **kwargs):
+        if has_scope("Read-Write-Access") is True:
+            return f(*args, **kwargs)
+        else:
+            return jsonify({'Status': 'Error', 'message': 'Missing Scopes'})
+    return check_read_scope
+
+#######################
 
 @app.route("/")
+@requires_authorization
+@read_and_write_access_required
 def home():
     return ("The Gear-App API is alive and well!!!")
 
 
-@app.route("/login", methods=['POST'])
-def login():
-    post_body = request.get_json()
+##############################
 
-    # If login info is user: 'readonly', pass: 'readonly', give user a token value of 0
-    if post_body['email'] == 'readonly' and post_body['password'] == 'readonly':
-        return jsonify({'status': 'Success', 'token': '0', 'message': 'Successfully logged in as read-only user'})
-
-    # Validate login info
-    try:
-        odc_db = _setup_database_connection('ODC')
-        cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
-        sql = "SELECT * FROM m_member WHERE c_email='%s' AND c_password='%s'" % (
-            post_body['email'], post_body['password'])
-        cursor.execute(sql)
-        odc_db.close()
-        if cursor.rowcount == 0:
-            return jsonify({'status': 'Error', 'message': 'Error on Login - incorrect email/password'})
-    except Exception as e:
-        exception_string = 'Error retrieving information from ODC database.' + str(e)
-        return jsonify({'status': 'Error', 'message': exception_string})
-
-    member = cursor.fetchone()
-    # Check to see if user is an officer:
-    if member['c_group_memberships'] & 2 != 2:
-        return jsonify({'status': 'Error', 'message': 'Login rejected: User is not an officer'})
-
-    rds_db = _setup_database_connection('AWS')
-    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
-
-    member_id = member['c_uid']
-
-    # Check if user is already logged in: If so, give them the current authenticator in the database if it isn't expired
-    # TODO: Set an authenticator expiration policy
-    sql = "SELECT * FROM authenticator WHERE userid=%d" % (member_id)
-    cursor.execute(sql)
-
-    if cursor.rowcount > 0:
-        auth_token = cursor.fetchone()['token']
-        return jsonify(
-            {'status': 'Success', 'token': auth_token, 'message': 'Successfully logged in as privileged user'})
-
-    # Generate an authenticator token for the user
-    k = os.environ['SECRET_KEY']
-    auth_token = hmac.new(
-        key=k.encode('utf-8'),
-        msg=os.urandom(32),
-        digestmod='sha256',
-    ).hexdigest()
-
-    # Save the authenticator token to the database.
-    sql = "INSERT INTO authenticator (token, userid) VALUES ('%s', '%d')" % (auth_token, member_id)
-    cursor.execute(sql)
-    rds_db.commit()
-    rds_db.close()
-
-    return jsonify({'status': 'Success', 'token': auth_token, 'message': 'Successfully logged in as privileged user'})
-
-
-@app.route("/logout", methods=['POST'])
-def logout():
-    post_body = request.get_json()
-    token = post_body['token']
-
-    if token == '0':
-        return jsonify({'status': 'Success', 'message': "Successfully logged out of readonly user"})
-
-    try:
-        db = _setup_database_connection('AWS')
-        cursor = db.cursor(MySQLdb.cursors.DictCursor)
-        sql = "DELETE FROM authenticator WHERE token='%s'" % (token)
-        cursor.execute(sql)
-        db.commit()
-        db.close()
-    except:
-        return jsonify({'status': 'Error', 'message': 'Error deleting authenticator'})
-
-    return jsonify({'status': 'Success', 'message': 'Successfully logged out'})
-
-
-def authenticated_required(f):
-    @wraps(f)
-    def authenticate(*args, **kwargs):
-        post_body = request.get_json()
-        # if not post_body['authorization']:
-        #     return {'Status': 'Error', 'message': 'No authentication token in API request'}
-
-        db = _setup_database_connection('AWS')
-        cursor = db.cursor(MySQLdb.cursors.DictCursor)
-
-        # Check if user is already logged in:
-        sql = "SELECT * FROM authenticator WHERE token='%s'" % (post_body['authorization'])
-        cursor.execute(sql)
-
-        db.close()
-        if cursor.rowcount > 0:     
-            authenticator_data = cursor.fetchone()
-            # TODO: Check to make sure token isn't too old.
-            return f(*args, **kwargs)
-        else:
-            return jsonify({'Status': 'Error', 'message': 'Invalid authentication'})
-    return authenticate
-
+# No Authentication Required #
 
 @app.route("/gear/<number>")
 def get_gear_by_number(number):
@@ -164,29 +191,6 @@ def get_gear():
 
     return jsonify(data)
 
-@app.route("/checkout/current")
-def get_current_checkouts():
-    db = _setup_database_connection('AWS')
-    cursor = db.cursor(MySQLdb.cursors.DictCursor)
-
-    cursor.execute(
-        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level=1 AND checkout.checkout_status=1")
-    data = cursor.fetchall()
-    db.close()
-    return jsonify(data)
-
-#TODO: Get Old Checkouts
-@app.route("/checkout/past")
-def get_past_checkouts():
-    db = _setup_database_connection('AWS')
-    cursor = db.cursor(MySQLdb.cursors.DictCursor)
-
-    cursor.execute(
-        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, DATE_FORMAT(checkout.date_checked_in,'%m/%d/%Y') AS date_checked_in, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.officer_in, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE checkout.checkout_status=0")
-    data = cursor.fetchall()
-    db.close()
-    return jsonify(data)
-
 @app.route("/item_type/all")
 def get_item_types():
     db = _setup_database_connection('AWS')
@@ -214,34 +218,62 @@ def get_condition_types():
     db.close()
     return jsonify(list)
 
+@app.route("/get_unused_number")
+def get_unused_gear_number():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor()
+    cursor.execute("SELECT FLOOR(RAND()*9999) AS random_num FROM gear WHERE 'random_num' NOT IN (SELECT number FROM gear) LIMIT 1;")
+    data = cursor.fetchone()
+    db.close()
+    return jsonify(data)
+
+##############################
+
+# Authentication and Read-Access Required #
+
+@app.route("/checkout/current")
+@requires_authorization
+@read_access_required
+def get_current_checkouts():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE gear.status_level=1 AND checkout.checkout_status=1")
+    data = cursor.fetchall()
+    db.close()
+    return jsonify(data)
+
+@app.route("/checkout/past")
+@requires_authorization
+@read_access_required
+def get_past_checkouts():
+    db = _setup_database_connection('AWS')
+    cursor = db.cursor(MySQLdb.cursors.DictCursor)
+
+    cursor.execute(
+        "SELECT DATE_FORMAT(checkout.date_checked_out,'%m/%d/%Y') AS date_checked_out , DATE_FORMAT(checkout.date_due,'%m/%d/%Y') AS date_due, DATE_FORMAT(checkout.date_checked_in,'%m/%d/%Y') AS date_checked_in, checkout.checkout_id, checkout.gear_uid, checkout.officer_out, checkout.officer_in, checkout.member_name, checkout.member_uid, gear.number, gear.item, gear.description, gear.status_level FROM checkout LEFT JOIN gear ON checkout.gear_uid = gear.uid WHERE checkout.checkout_status=0")
+    data = cursor.fetchall()
+    db.close()
+    return jsonify(data)
+
 
 @app.route("/gear/checkout", methods=['POST'])
-@authenticated_required
+@requires_authorization
+@read_and_write_access_required
 def checkout_gear():
     post_body = request.get_json()
 
-    print(post_body)
+    officer_name = post_body['officerName']
 
     rds_db = _setup_database_connection('AWS')
-    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
-
-    # Get officer name
-    token = post_body['authorization']
-    sql = "SELECT userid FROM authenticator WHERE token='%s'" % (token)
-    cursor.execute(sql)
-    officer_uid = cursor.fetchone()['userid']
-
     odc_db = _setup_database_connection('ODC')
-    cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
-    sql = "SELECT * FROM m_member WHERE c_uid=%d" % (officer_uid)
-    cursor.execute(sql)
-    officer_name = cursor.fetchone()['c_full_name']
 
+    cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
     sql = "SELECT * FROM m_member WHERE c_email='%s'" % (post_body['memberEmail'])
     cursor.execute(sql)
     member_uid = cursor.fetchone()['c_uid']
     odc_db.close()
-
     cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
 
     old_datetime = (post_body['dueDate'] + ':00')
@@ -278,7 +310,8 @@ def checkout_gear():
 
 
 @app.route("/gear/accession", methods=['POST'])
-@authenticated_required
+@requires_authorization
+@read_and_write_access_required
 def accession_gear():
     post_body = request.get_json()['gear']
 
@@ -295,7 +328,8 @@ def accession_gear():
 
 
 @app.route("/user/<uid>")
-# @authenticated_required
+@requires_authorization
+@read_access_required
 def get_user_contact_information_by_uid(uid):
     db = _setup_database_connection('ODC')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
@@ -306,7 +340,8 @@ def get_user_contact_information_by_uid(uid):
     return jsonify(data)
 
 @app.route("/gear/checkin", methods=['POST'])
-@authenticated_required
+@requires_authorization
+@read_and_write_access_required
 def check_in_gear():
     post_body = request.get_json()
 
@@ -316,18 +351,7 @@ def check_in_gear():
     old_datetime = (post_body['date_checked_in'] + ':00')
     sql_datetime = old_datetime.replace('T', ' ')
 
-    # Get officer name
-    token = post_body['authorization']
-    sql = "SELECT userid FROM authenticator WHERE token='%s'" % (token)
-    aws_cursor.execute(sql)
-    officer_uid = aws_cursor.fetchone()['userid']
-
-    odc_db = _setup_database_connection('ODC')
-    odc_cursor = odc_db.cursor(MySQLdb.cursors.DictCursor)
-    sql = "SELECT * FROM m_member WHERE c_uid=%d" % (officer_uid)
-    odc_cursor.execute(sql)
-    officer_name = odc_cursor.fetchone()['c_full_name']
-    odc_db.close()
+    officer_name = post_body['officerName']
 
     count = 0
     for gear in post_body['gear']:
@@ -346,7 +370,8 @@ def check_in_gear():
     return jsonify({'status': 'Success!', 'count': count})
 
 @app.route("/gear/edit", methods=['POST'])
-@authenticated_required
+@requires_authorization
+@read_and_write_access_required
 def edit_gear():
     post_body = request.get_json()
     db = _setup_database_connection('AWS')
@@ -364,21 +389,14 @@ def edit_gear():
 
 
 @app.route("/get_active_members")
+@requires_authorization
+@read_access_required
 def get_active_members():
     db = _setup_database_connection('ODC')
     cursor = db.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute(
         'SELECT m_member.c_uid, c_full_name, c_email FROM m_member, m_membership WHERE m_membership.c_member = m_member.c_uid and m_member.c_deleted < 1 and m_membership.c_begin_date <= current_date and m_membership.c_expiration_date >= current_date and m_membership.c_deleted < 1 order by m_member.c_last_name, m_member.c_first_name;')
     data = cursor.fetchall()
-    db.close()
-    return jsonify(data)
-
-@app.route("/get_unused_number")
-def get_unused_gear_number():
-    db = _setup_database_connection('AWS')
-    cursor = db.cursor()
-    cursor.execute("SELECT FLOOR(RAND()*9999) AS random_num FROM gear WHERE 'random_num' NOT IN (SELECT number FROM gear) LIMIT 1;")
-    data = cursor.fetchone()
     db.close()
     return jsonify(data)
 

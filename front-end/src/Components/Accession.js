@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import OptionSelectorDialog from "./OptionSelectorDialog";
 import Button from '@material-ui/core/Button';
-import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
+import {getBearerAccessToken, showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 const styles = theme => ({
     root: {
@@ -133,38 +133,41 @@ class Accession extends React.Component {
             'notes': this.state.itemNotes,
         };
 
-        fetch(this.props.apiHost + '/gear/accession', {
-            method: 'POST',
-            body: JSON.stringify({authorization: sessionStorage.getItem('token'), gear: gear}),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .then(response => {
-                if (response['status'] === 'Success!') {
+        getBearerAccessToken().then(token =>
+            fetch(this.props.apiHost + '/gear/accession', {
+                method: 'POST',
+                body: JSON.stringify({gear: gear}),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                mode: 'cors'
+            }).then(response => response.json())
+                .then(response => {
+                    if (response['status'] === 'Success!') {
+                        this.setState({
+                            snackbarVisible: true,
+                            snackbarMessage: "Successfully accessioned gear number " + response['number'] + "!",
+                            variant: 'success',
+                            itemNumber: '',
+                            itemTypeValue: '',
+                            itemConditionValueNumber: '',
+                            itemConditionValueText: '',
+                            itemDescription: '',
+                            itemNotes: '',
+                        })
+                    }
+                    else throw "Error";
+                })
+                .catch(() => {
                     this.setState({
                         snackbarVisible: true,
-                        snackbarMessage: "Successfully accessioned gear number " + response['number'] + "!",
-                        variant: 'success',
-                        itemNumber: '',
-                        itemTypeValue: '',
-                        itemConditionValueNumber: '',
-                        itemConditionValueText: '',
-                        itemDescription: '',
-                        itemNotes: '',
+                        snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                        variant: 'error',
+                        list: [],
                     })
-                }
-                else throw "Error";
-            })
-            .catch(() => {
-                this.setState({
-                    snackbarVisible: true,
-                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
-                    variant: 'error',
-                    list: [],
                 })
-            });
+        );
     };
 
     render() {

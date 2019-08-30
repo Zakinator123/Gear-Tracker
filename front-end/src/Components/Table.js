@@ -8,7 +8,7 @@ import Fade from '@material-ui/core/Fade';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
 import OptionSelectorDialog from './OptionSelectorDialog'
-import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
+import {getBearerAccessToken, showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 class InventoryTable extends React.Component {
 
@@ -71,36 +71,42 @@ class InventoryTable extends React.Component {
             }
         }
 
-        fetch(this.props.apiHost + '/gear/edit', {
-            method: 'POST',
-            body: JSON.stringify({
-                authorization: sessionStorage.getItem('token'),
-                column: column,
-                input_data: inputData,
-                gear_uid: gear_uid
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .then(response => {
-                if (response['status'] === 'Success!') {
-                    const data = [...this.state.data];
-                    data[cell.index][cell.column.id] = value;
-                    let message = 'Gear #' + cell.original.number + "'s '" + column + "' value changed from '" + oldValue + "' to '" + value + "'.";
-                    this.setState({data: data, snackbarMessage: message, snackbarVisible: true, variant: 'success'});
-                }
-                else throw "Error";
-            })
-            .catch(() => {
-                this.setState({
-                    snackbarVisible: true,
-                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
-                    variant: 'error',
-                    list: [],
+        getBearerAccessToken().then(token =>
+            fetch(this.props.apiHost + '/gear/edit', {
+                method: 'POST',
+                body: JSON.stringify({
+                    column: column,
+                    input_data: inputData,
+                    gear_uid: gear_uid
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                },
+                mode: 'cors'
+            }).then(response => response.json())
+                .then(response => {
+                    if (response['status'] === 'Success!') {
+                        const data = [...this.state.data];
+                        data[cell.index][cell.column.id] = value;
+                        let message = 'Gear #' + cell.original.number + "'s '" + column + "' value changed from '" + oldValue + "' to '" + value + "'.";
+                        this.setState({
+                            data: data,
+                            snackbarMessage: message,
+                            snackbarVisible: true,
+                            variant: 'success'
+                        });
+                    }
+                    else throw "Error";
                 })
-            });
+                .catch(() => {
+                    this.setState({
+                        snackbarVisible: true,
+                        snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                        variant: 'error',
+                        list: [],
+                    })
+                }));
 
         this.setState({dialogOpen: false});
     };
@@ -141,16 +147,17 @@ class InventoryTable extends React.Component {
                     if (oldValue === inputData)
                         return;
 
+                    getBearerAccessToken().then(token =>
                     fetch(this.props.apiHost + '/gear/edit', {
                         method: 'POST',
                         body: JSON.stringify({
-                            authorization: sessionStorage.getItem('token'),
                             column: column,
                             input_data: inputData,
                             gear_uid: gear_uid
                         }),
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': token
                         },
                         mode: 'cors'
                     }).then(response => response.json())
@@ -183,7 +190,7 @@ class InventoryTable extends React.Component {
                                 variant: 'error',
                                 list: [],
                             })
-                        });
+                        }));
                 }}
                 dangerouslySetInnerHTML={{
                     __html: this.state.data[cellInfo.index][cellInfo.column.id]

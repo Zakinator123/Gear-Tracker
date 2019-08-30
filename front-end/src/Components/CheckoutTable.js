@@ -5,7 +5,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Fade from '@material-ui/core/Fade';
 import CheckoutDialog from './CheckoutDialog'
 import SnackbarContentWrapper from './SnackbarContentWrapper';
-import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
+import {getBearerAccessToken, getUserName, showErrorSnackbarIfInReadOnlyMode} from './Utilites';
 
 class CheckoutTable extends React.Component {
     constructor(props) {
@@ -26,8 +26,10 @@ class CheckoutTable extends React.Component {
         this.fetchCheckouts();
     }
 
-    fetchCheckouts = () => {
-        fetch(this.props.apiHost + this.props.checkoutURL)
+    fetchCheckouts = () =>
+        getBearerAccessToken().then(token =>
+        fetch(this.props.apiHost + this.props.checkoutURL,
+            {headers: {'Authorization': token}})
             .then((response) => {
                 return response.json();
             })
@@ -36,8 +38,7 @@ class CheckoutTable extends React.Component {
                     data: myJson,
                     fetched: true
                 });
-            });
-    };
+            }));
 
     handleButtonPress = () => {
         this.setState({
@@ -73,42 +74,45 @@ class CheckoutTable extends React.Component {
             + date + "T"
             + "23:59";
 
-        fetch(this.props.apiHost + '/gear/checkin', {
-            method: 'POST',
-            body: JSON.stringify({
-                authorization: sessionStorage.getItem('token'),
-                gear: [{uid: this.state.dialogData.original.gear_uid}],
-                date_checked_in: datetime
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .then(response => {
-                if (response['status'] === 'Success!') {
+        Promise.all([getBearerAccessToken(), getUserName()]).then(auth =>
+            fetch(this.props.apiHost + '/gear/checkin', {
+                method: 'POST',
+                body: JSON.stringify({
+                    gear: [{uid: this.state.dialogData.original.gear_uid}],
+                    date_checked_in: datetime,
+                    officerName: auth[1]
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': auth[0]
+                },
+                mode: 'cors'
+            }).then(response => response.json())
+                .then(response => {
+                    console.log(response);
+                    if (response['status'] === 'Success!') {
 
-                    this.fetchCheckouts();
+                        this.fetchCheckouts();
 
+                        this.setState({
+                            snackbarVisible: true,
+                            snackbarMessage: response['count'].toString() + ' piece(s) of gear were successfully checked in.',
+                            variant: 'success',
+                            dialogOpen: false,
+                            dialogData: {},
+                            list: [],
+                        })
+                    }
+                    else throw "Error";
+                })
+                .catch(() => {
                     this.setState({
                         snackbarVisible: true,
-                        snackbarMessage: response['count'].toString() + ' piece(s) of gear were successfully checked in.',
-                        variant: 'success',
-                        dialogOpen: false,
-                        dialogData: {},
+                        snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                        variant: 'error',
                         list: [],
                     })
-                }
-                else throw "Error";
-            })
-            .catch(() => {
-                this.setState({
-                    snackbarVisible: true,
-                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
-                    variant: 'error',
-                    list: [],
-                })
-            });
+                }));
     };
 
 

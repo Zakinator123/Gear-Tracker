@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {getBearerAccessToken} from "./Utilites";
 
 
 const styles = theme => ({
@@ -39,28 +40,31 @@ class MemberSearch extends React.Component {
         this.suggestions = "Loading suggestions, please wait";
         let url = this.props.apiHost + '/get_active_members';
         this.state = {fetchingMembers: true};
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'Authorization': sessionStorage.getItem('token')
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .then(response => {
-                if (response['status'] !== 'Success') {
-                    this.suggestions = response;
-                    this.setState({fetchingMembers: false});
-                }
-                else throw "Error";
-            })
-            .catch(() => {
-                this.setState({
-                    snackbarVisible: true,
-                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
-                    variant: 'error',
-                    list: [],
+
+        getBearerAccessToken().then(token => {
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': token
+                },
+                mode: 'cors'
+            }).then(response => response.json())
+                .then(response => {
+                    if (response['status'] !== 'Success') {
+                        this.suggestions = response;
+                        this.setState({fetchingMembers: false});
+                    }
+                    else throw "Error";
                 })
-            });
+                .catch(() => {
+                    this.setState({
+                        snackbarVisible: true,
+                        snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                        variant: 'error',
+                        list: [],
+                    })
+                });
+        });
     }
 
     getSuggestions(inputValue) {

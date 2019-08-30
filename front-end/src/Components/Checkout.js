@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper'
 import {withStyles} from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
-import {showErrorSnackbarIfInReadOnlyMode} from './Utilites';
+import {showErrorSnackbarIfInReadOnlyMode, getUserName, getBearerAccessToken} from './Utilites';
 
 const styles = theme => ({
     root: {
@@ -113,42 +113,43 @@ class Checkout extends React.Component {
             return;
         }
 
-        fetch(this.props.apiHost + '/gear/checkout', {
-            method: 'POST',
-            body: JSON.stringify({
-                authorization: sessionStorage.getItem('token'),
-                gear: this.state.list,
-                member: this.state.member,
-                memberEmail: this.state.memberEmail,
-                dueDate: this.state.datetime
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .then(response => {
-                if (response['status'] === 'Success!') {
-                    this.setState({
-                        snackbarVisible: true,
-                        snackbarMessage: response['gear'].length.toString() + ' piece(s) of gear were successfully checked out to ' + response['member'],
-                        variant: 'success',
-                        list: [],
-                        // member: '',
-                        // memberEmail: '',
-                        // memberId: '',
+
+        Promise.all([getBearerAccessToken(), getUserName()])
+            .then(auth =>
+                fetch(this.props.apiHost + '/gear/checkout', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        gear: this.state.list,
+                        officerName: auth[1],
+                        member: this.state.member,
+                        memberEmail: this.state.memberEmail,
+                        dueDate: this.state.datetime
+                    }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': auth[0]
+                    },
+                    mode: 'cors'
+                }).then(response => response.json())
+                    .then(response => {
+                        if (response['status'] === 'Success!') {
+                            this.setState({
+                                snackbarVisible: true,
+                                snackbarMessage: response['gear'].length.toString() + ' piece(s) of gear were successfully checked out to ' + response['member'],
+                                variant: 'success',
+                                list: [],
+                            })
+                        }
+                        else throw "Error";
                     })
-                }
-                else throw "Error";
-            })
-            .catch(() => {
-                this.setState({
-                    snackbarVisible: true,
-                    snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
-                    variant: 'error',
-                    list: [],
-                })
-            });
+                    .catch(() => {
+                        this.setState({
+                            snackbarVisible: true,
+                            snackbarMessage: 'An error occurred. Please contact the developer and provide screenshots and specific information regarding what caused the error.',
+                            variant: 'error',
+                            list: [],
+                        })
+                    }));
     };
 
     setMember = (memberInfo) => {

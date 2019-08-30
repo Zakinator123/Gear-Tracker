@@ -15,6 +15,7 @@ import DateTimePicker from "./DatePicker";
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContentWrapper from './SnackbarContentWrapper';
 import Typography from '@material-ui/core/Typography'
+import {getBearerAccessToken} from "./Utilites";
 
 class CheckoutDialog extends React.Component {
 
@@ -90,7 +91,12 @@ class CheckoutDialog extends React.Component {
 
             //Fetch User Contact Info
             if (!this.state.fetched) {
-                fetch(this.props.apiHost + '/user/' + checkoutData.member_uid)
+                getBearerAccessToken().then(token =>
+                fetch(this.props.apiHost + '/user/' + checkoutData.member_uid, {
+                    headers: {
+                        "Authorization": token
+                    }
+                })
                     .then((response) => {
                         return response.json();
                     })
@@ -107,7 +113,7 @@ class CheckoutDialog extends React.Component {
                             variant: 'error',
                             list: [],
                         })
-                    });
+                    }));
             }
 
 

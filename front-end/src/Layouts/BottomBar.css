@@ -8,41 +8,27 @@
     width: 100%;
 }
 
-@media (max-height: 749px) {
-    .ODC_Logo {
-        display: none;
-    }
-}
-
-@media (min-height: 750px) {
-    .ODC_Logo {
-        height: 19%;
-        margin-top: 2vh;
-    }
-}
-
 @media (max-height: 375px) {
     .geartracker{
-        font-size: 17px;
+        font-size: 15px;
         color: white;
-        margin-top: 0.5vh;
-        /*padding-bottom: 3vh;*/
+        margin-top: 2vh;
     }
 }
 
 @media (min-height: 376px) {
     .geartracker{
-        font-size: 22px;
+        font-size: 27px;
         color: white;
-        margin-top: 0.5vh;
+        margin-top: 2vh;
     }
 }
 
 @media (min-height: 750px) {
     .geartracker{
-        font-size: 27px;
+        font-size: 30px;
         color: white;
-        margin-top: 2vh;
+        margin-top: 3vh;
     }
 }
 

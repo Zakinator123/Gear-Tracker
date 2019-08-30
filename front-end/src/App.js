@@ -12,6 +12,10 @@ import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import {Auth, Hub} from 'aws-amplify';
+import {AmplifyConfiguration} from "./Components/Utilites";
+
+AmplifyConfiguration();
 
 const theme = createMuiTheme({
     palette: {
@@ -37,24 +41,25 @@ class App extends Component {
 
     constructor(props) {
         super(props);
+
+        this.onHubCapsule = this.onHubCapsule.bind(this);
+        this.signOut = this.signOut.bind(this);
+
+        // let the Hub module listen on Auth events
+        Hub.listen('auth', this);
+
         this.state = {
             loggedIn: false,
             connected: false,
             addToHomeScreenSnackbar: false,
             deferredPrompt: null,
+            authState: 'signIn'
         };
 
         // this.apiHost = 'http://localhost:5000';
         this.apiHost = 'https://api.gear-tracker.com';
 
-        this.gearmasterLoggedIn = this.gearmasterLoggedIn.bind(this);
-        this.gearmasterLoggedOut = this.gearmasterLoggedOut.bind(this);
         this.connectionEstablished = this.connectionEstablished.bind(this);
-
-        // if (sessionStorage.getItem('token') !== '')
-        // {
-        //     this.gearmasterLoggedIn();
-        // }
 
         window.addEventListener('beforeinstallprompt', (e) => {
             // Prevent Chrome 67 and earlier from automatically showing the prompt
@@ -78,6 +83,44 @@ class App extends Component {
         // }
     }
 
+    componentDidMount() {
+        console.log('on component mount');
+        // check the current user when the App component is loaded
+        Auth.currentAuthenticatedUser().then(user => {
+            console.log(user);
+            this.setState({authState: 'signedIn'});
+        }).catch(e => {
+            console.log(e);
+            this.setState({authState: 'signIn'});
+        });
+    }
+
+    onHubCapsule(capsule) {
+        // The Auth module will emit events when user signs in, signs out, etc
+        const {channel, payload, source} = capsule;
+        if (channel === 'auth') {
+            switch (payload.event) {
+                case 'signIn':
+                    console.log('signed in');
+                    this.setState({authState: 'signedIn'});
+                    break;
+                case 'signIn_failure':
+                    console.log('not signed in');
+                    this.setState({authState: 'signIn'});
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    signOut() {
+        Auth.signOut().then(() => {}).catch(e => {
+            console.log(e);
+        });
+    }
+
+
     addToHomeScreen = () => {
         this.handleSnackbarClose();
         this.state.deferredPrompt.prompt();
@@ -100,46 +143,31 @@ class App extends Component {
         this.setState({connected: true})
     }
 
-// Event handler called upon successful login.
-    gearmasterLoggedIn() {
-        this.setState({loggedIn: true})
-    }
-
-//Event handler called upon logout
-    gearmasterLoggedOut() {
-        this.setState({loggedIn: false});
-        let storedToken = sessionStorage.getItem('token');
-        fetch(this.apiHost + '/logout', {
-            method: 'POST',
-            body: JSON.stringify({token: storedToken}),
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            mode: 'cors'
-        }).then(response => response.json())
-            .catch(error => console.error('Error with HTTP request:', error));
-            // .then(response => return);
-
-        // Remove token from local storage.
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('access_token')
-
-    }
-
     render() {
+
+        const {authState} = this.state;
+
         return (
             <div>
                 <MuiThemeProvider theme={theme}>
-                    <TopBar loggedIn={this.state.loggedIn}
+                    <TopBar loggedIn={authState === 'signedIn'}
                             connected={this.state.connected}
                             apiHost={this.apiHost}
-                            logIn={this.gearmasterLoggedIn}
-                            logOut={this.gearmasterLoggedOut}
+                            logOut={this.signOut}
                     />
-                    {(this.state.loggedIn) ?
-                        <FullWidthTabs data={this.state.data} loggedIn={this.state.loggedIn} apiHost={this.apiHost}/> :
-                        <InventoryTable connectionEstablished={this.connectionEstablished}
-                                        loggedIn={this.state.loggedIn} apiHost={this.apiHost}/>}
+                    {
+                        (authState === 'signedIn')
+                            ?
+                        <FullWidthTabs
+                            data={this.state.data}
+                            loggedIn={authState === 'signedIn'}
+                            apiHost={this.apiHost}/>
+                            :
+                        <InventoryTable
+                            connectionEstablished={this.connectionEstablished}
+                            loggedIn={authState === 'signedIn'}
+                            apiHost={this.apiHost}/>
+                    }
                     <BottomBar/>
                 </MuiThemeProvider>
 

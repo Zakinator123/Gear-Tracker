@@ -21,6 +21,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Paper from '@material-ui/core/Paper';
 import DownloadIcon from '@material-ui/icons/Archive'
+import OAuthButton from '../Components/OAuthButton'
 
 const styles = theme => ({
     root: {
@@ -101,7 +102,7 @@ class TopBar extends React.Component {
         else if (this.props.loggedIn === false)
             loginLogoutButton = (
                 <Slide in={true} style={{transitionDelay: 300}} mountOnEnter unmountOnExit>
-                    <LoginDialog logIn={this.props.logIn} apiHost={this.props.apiHost}/>
+                    <OAuthButton/>
                 </Slide>
             );
         else
