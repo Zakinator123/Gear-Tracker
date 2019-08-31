@@ -7,7 +7,7 @@ let AmplifyConfiguration = function () {
         Auth: {
             region: 'us-east-1',
             userPoolId: 'us-east-1_i92prdhXi',
-            userPoolWebClientId: '7o396d2rl6dmne8h4cn9ipie91',
+            userPoolWebClientId: '2t1fil96onfblmlrd92or77el8',
         }
     });
 
