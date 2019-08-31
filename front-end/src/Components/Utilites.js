@@ -7,7 +7,7 @@ let AmplifyConfiguration = function () {
         Auth: {
             region: 'us-east-1',
             userPoolId: 'us-east-1_i92prdhXi',
-            userPoolWebClientId: '2tqknhl827t8h9gpj2k4qac20k',
+            userPoolWebClientId: '7o396d2rl6dmne8h4cn9ipie91',
         }
     });
 
@@ -15,8 +15,8 @@ let AmplifyConfiguration = function () {
         oauth: {
             domain: 'login.gear-tracker.com',
             scope: ['phone', 'email', 'profile', 'openid'],
-            redirectSignIn: 'http://localhost:3000',
-            redirectSignOut: 'http://localhost:3000',
+            redirectSignIn: 'https://gear-tracker.com',
+            redirectSignOut: 'https://gear-tracker.com',
             responseType: 'code',
         }
     });
