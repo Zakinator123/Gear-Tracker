@@ -6,6 +6,7 @@ import os
 from flask_cors import CORS
 from flask import request
 import hmac
+import random
 from functools import wraps
 import requests
 from jose import jwt
@@ -222,10 +223,16 @@ def get_condition_types():
 def get_unused_gear_number():
     db = _setup_database_connection('AWS')
     cursor = db.cursor()
-    cursor.execute("SELECT FLOOR(RAND()*9999) AS random_num FROM gear WHERE 'random_num' NOT IN (SELECT number FROM gear) LIMIT 1;")
-    data = cursor.fetchone()
-    db.close()
-    return jsonify(data)
+
+    while(True):
+        random_num = random.randrange(3000, 20000, 1)
+        sql = "SELECT number FROM gear WHERE number='%d'" % random_num
+        cursor.execute(sql)
+        if cursor.rowcount == 0:
+            db.close()
+            break
+
+    return jsonify([random_num])
 
 ##############################
 
@@ -326,6 +333,51 @@ def accession_gear():
     post_body['status'] = "Success!"
     return jsonify(post_body)
 
+@app.route("/users/new", methods=['POST'])
+@requires_authorization
+@read_and_write_access_required
+def add_user():
+    post_body = request.get_json()['member_information']
+
+    rds_db = _setup_database_connection('ODC')
+    cursor = rds_db.cursor(MySQLdb.cursors.DictCursor)
+
+    # Overwrite existing user's information if email exists since emails are unique.
+    sql = "SELECT c_uid FROM m_member WHERE c_email='%s'" % post_body['member_email']
+    cursor.execute(sql)
+    if cursor.rowcount != 0:
+        uid = cursor.fetchone()['c_uid']
+        sql = "UPDATE m_member SET c_full_name='%s' WHERE c_email='%s'" % (post_body['member_name'], post_body['member_email'])
+        cursor.execute(sql)
+        sql = "UPDATE m_membership SET c_expiration_date='%s' WHERE c_member=%d" % ('2017-9-1', uid)
+        cursor.execute(sql)
+        sql = "UPDATE m_phone_number SET c_phone_number='%s' WHERE c_owner=%d" % (post_body['member_phone_number'], uid)
+        cursor.execute(sql)
+        rds_db.commit()
+        rds_db.close()
+        post_body['status'] = "Success!"
+        post_body['message'] = "This email associated with this member already existed in the database, so their name and phonenumber was overwritten!"
+        return jsonify(post_body)
+    else:
+        while(True):
+            random_num = random.randrange(10000, 100000, 1)
+            sql = "SELECT c_uid FROM m_member WHERE c_uid='%d'" % random_num
+            cursor.execute(sql)
+            if cursor.rowcount == 0:
+                break
+
+        sql = "INSERT INTO m_member (c_uid, c_full_name, c_email, c_deleted) VALUES (%d, '%s', '%s', %d)" % (random_num, post_body['member_name'], post_body['member_email'], 0)
+        cursor.execute(sql)
+        sql = "INSERT INTO m_membership (c_member,  c_expiration_date, c_begin_date) VALUES (%d, '%s', '%s')" % (random_num, '2017-9-1', '2004-03-15')
+        cursor.execute(sql)
+        sql = "INSERT INTO m_phone_number (c_owner, c_phone_number) VALUES (%d, '%s')" % (random_num, post_body['member_phone_number'])
+        cursor.execute(sql)
+
+        rds_db.commit()
+        rds_db.close()
+        post_body['status'] = "Success!"
+        post_body['message'] = "Successfully saved member's information!"
+        return jsonify(post_body)
 
 @app.route("/user/<uid>")
 @requires_authorization

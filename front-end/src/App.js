@@ -84,13 +84,10 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log('on component mount');
         // check the current user when the App component is loaded
         Auth.currentAuthenticatedUser().then(user => {
-            console.log(user);
             this.setState({authState: 'signedIn'});
         }).catch(e => {
-            console.log(e);
             this.setState({authState: 'signIn'});
         });
     }
@@ -101,11 +98,9 @@ class App extends Component {
         if (channel === 'auth') {
             switch (payload.event) {
                 case 'signIn':
-                    console.log('signed in');
                     this.setState({authState: 'signedIn'});
                     break;
                 case 'signIn_failure':
-                    console.log('not signed in');
                     this.setState({authState: 'signIn'});
                     break;
                 default:

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
+import AddMember from '../Components/AddMember';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
@@ -55,7 +56,7 @@ class ScrollableTabsButtonAuto extends React.Component {
                             onChange={this.handleChange}
                             indicatorColor="primary"
                             textColor="primary"
-                            scrollable
+                            variant="scrollable"
                             scrollButtons="on"
                             className={classes.tabs}>
 
@@ -65,8 +66,7 @@ class ScrollableTabsButtonAuto extends React.Component {
                             <Tab label="Check In Gear" />
                             <Tab label="Edit Inventory" />
                             <Tab label="Accession Gear" />
-                            <Tab label="Notes"/>
-                            {/*<Tab label="Log"/>*/}
+                            <Tab label="Add Member"/>
                         </Tabs>
                     </Slide>
                 </AppBar>
@@ -76,7 +76,7 @@ class ScrollableTabsButtonAuto extends React.Component {
                 {value === 3 && <TabContainer> <CheckIn apiHost={this.props.apiHost}/>  </TabContainer>}
                 {value === 4 && <InventoryTable loggedIn={this.props.loggedIn} apiHost={this.props.apiHost} data={this.props.data}/> }
                 {value === 5 && <TabContainer><Accession apiHost={this.props.apiHost}/></TabContainer> }
-                {value === 6 && <TabContainer><Notes/></TabContainer>}
+                {value === 6 && <TabContainer><AddMember apiHost={this.props.apiHost}/></TabContainer>}
             </div>
         );
     }
