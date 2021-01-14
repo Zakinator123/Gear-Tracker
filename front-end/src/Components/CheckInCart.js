@@ -224,7 +224,7 @@ class CheckInCart extends React.Component {
                     </DialogActions>
                 </Dialog>
 
-                <List dense={true} subheader={<Typography variant="h6"> Gear Check In Cart</Typography>}>
+                <List dense={true} subheader={<Typography variant="h6" color="textPrimary"> Gear Check In Cart</Typography>}>
 
                     {validatedGearItemsJSX}
 

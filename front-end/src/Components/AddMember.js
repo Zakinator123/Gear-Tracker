@@ -23,13 +23,13 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
-        margin: theme.spacing.unit,
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
         height: '100%',
         color: theme.palette.text.secondary,
     },
     control: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
     },
 });
 
@@ -116,7 +116,7 @@ class AddMember extends React.Component {
                     <Grid container
                           alignItems='center'
                           alignContent="stretch"
-                          spacing={8}
+                          spacing={1}
                     >
                       <Grid sm={12} xs={12} md={5} lg={3} item style={{margin: '3vh'}}>
                             <Typography variant="h6">Full Name: </Typography>
@@ -155,12 +155,11 @@ class AddMember extends React.Component {
                     </Grid>
                 </Paper>
                 <Grid
-                    xs={12}
                     container
                     justify='flex-end'
                 >
                     <Grid item style={{margin: '3vh'}}>
-                        <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                        <Button variant="outlined" style={{backgroundColor: '#43A047'}} color="primary">
                             <Typography variant="button" style={{color: 'white'}} align="left"
                                         onClick={this.accessionGear}>
                                 Save Member Information

@@ -227,7 +227,7 @@ class CheckoutDialog extends React.Component {
                         <DateTimePicker setDateTime={this.setDateTime} datetime={this.state.datetime}/>
                     </DialogContent>
                     <DialogActions style={{marginBottom: '1vh'}}>
-                        <Grid container spacing={16} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
+                        <Grid container spacing={5} alignItems='stretch' justify='center' style={{margin: '1vh'}}>
                             <Grid item xs={12} sm={4}>
                                 <Button onClick={this.props.handleRenewDialogClose} fullWidth size="small" color="red"
                                         variant="contained">

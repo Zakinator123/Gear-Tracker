@@ -18,13 +18,13 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
-        margin: theme.spacing.unit,
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
         height: '100%',
         color: theme.palette.text.secondary,
     },
     control: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
     },
 });
 

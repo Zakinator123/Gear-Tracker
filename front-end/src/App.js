@@ -186,7 +186,7 @@ class App extends Component {
                                 <InfoIcon
                                     style={{
                                         opacity: 0.9,
-                                        marginRight: theme.spacing.unit,
+                                        marginRight: theme.spacing(1),
                                     }}
                                 />
                                 <Button onClick={this.addToHomeScreen}> Add to home screen? </Button>

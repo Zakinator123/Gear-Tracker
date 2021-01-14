@@ -24,13 +24,13 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
-        margin: theme.spacing.unit,
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
         height: '100%',
         color: theme.palette.text.secondary,
     },
     control: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
     },
 });
 
@@ -195,10 +195,10 @@ class Accession extends React.Component {
                     <Grid container
                           alignItems='center'
                           alignContent="stretch"
-                          spacing={8}
+                          spacing={1}
                     >
                         <Grid xs={12} sm={12} md={5} lg={3} item
-                              style={{marginTop: '3vh', marginLeft: '3vh', marginBottom: '1vh', marginRight: '1vh'}}>
+                              style={{marginTop: '1vh', marginLeft: '3vh', marginBottom: '1vh', marginRight: '1vh'}}>
                             <Typography variant="h6">Gear Number: </Typography>
                             <TextField
                                 placeholder="Enter a Number"
@@ -216,7 +216,7 @@ class Accession extends React.Component {
                                 <Typography variant="h6">Or</Typography>
                             </div>
                             <Button
-                                variant="raised"
+                                variant="outlined"
                                 style={{backgroundColor: '#43A047'}}
                                 color="primary"
                                 onClick={this.handleAutoGenerateNumber}>
@@ -290,7 +290,7 @@ class Accession extends React.Component {
                     justify='flex-end'
                 >
                     <Grid item style={{margin: '3vh'}}>
-                        <Button variant="raised" style={{backgroundColor: '#43A047'}} color="primary">
+                        <Button variant="outlined" style={{backgroundColor: '#43A047'}} color="primary">
                             <Typography variant="button" style={{color: 'white'}} align="left"
                                         onClick={this.accessionGear}>
                                 Accession Gear

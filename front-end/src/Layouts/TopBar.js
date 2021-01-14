@@ -130,7 +130,7 @@ class TopBar extends React.Component {
                                 style={{marginRight: '5vh'}}
                                 onClick={this.toggleDrawerOpen}
                             >
-                                <MenuIcon/>
+                                <MenuIcon></MenuIcon>
                             </IconButton>
                             {logo}
                             {loginLogoutButton}

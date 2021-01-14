@@ -139,8 +139,6 @@ def read_and_write_access_required(f):
 #######################
 
 @app.route("/")
-@requires_authorization
-@read_and_write_access_required
 def home():
     return ("The Gear-App API is alive and well!!!")
 

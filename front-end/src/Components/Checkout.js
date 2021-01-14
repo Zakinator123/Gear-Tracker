@@ -19,13 +19,13 @@ const styles = theme => ({
         height: '100%',
     },
     paper: {
-        padding: theme.spacing.unit * 2,
-        margin: theme.spacing.unit,
+        padding: theme.spacing(2),
+        margin: theme.spacing(1),
         height: '100%',
         color: theme.palette.text.secondary,
     },
     control: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing(2),
     },
 });
 
@@ -164,7 +164,7 @@ class Checkout extends React.Component {
                     <Grid container
                           alignItems='center'
                           alignContent="stretch"
-                          spacing={16}
+                          spacing={3}
                     >
                         <Grid xs={12} sm={12} md={5} lg={3} item style={{margin: '3vh'}}>
                             <Typography variant="h6">Member: </Typography>

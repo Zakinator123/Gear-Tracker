@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactTable from "react-table";
-import matchSorter from 'match-sorter'
+import ReactTable from 'react-table-6';
+import { matchSorter } from 'match-sorter'
 import LoadingBar from './Loading';
-import 'react-table/react-table.css'
+import 'react-table-6/react-table.css'
 import './Table.css';
 import Fade from '@material-ui/core/Fade';
 import Snackbar from '@material-ui/core/Snackbar';

@@ -1,4 +1,4 @@
-FROM tiangolo/uwsgi-nginx-flask:python3.6-alpine3.7
+FROM tiangolo/uwsgi-nginx-flask:python3.8-alpine
 
 RUN apk update && \
             apk add git \
@@ -6,7 +6,7 @@ RUN apk update && \
             py-pip \
             python-dev \
             mariadb-dev \
-            mariadb-client-libs \
+            mariadb-client \
             mysql-client && \
             rm -rf /var/cache/apk/*
 
