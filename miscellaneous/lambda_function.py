@@ -63,6 +63,9 @@ def lambda_handler(event, context):
         "sudo docker rm odc",
         "sudo docker rmi zakinator123/gear-tracker-backend:latest",
         'sudo docker pull zakinator123/gear-tracker-backend',
+        'sudo docker pull zakinator123/gear-tracker-flyway',
+        'sudo docker run --name flyway --link mysql --env-file ~/flyway_env_vars zakinator123/gear-tracker-flyway -connectRetries=60 migrate',
+        'sudo docker rm gear-tracker-flyway',
         "sudo docker run -d --name odc --link mysql -p 8080:80 --env-file ./env_vars zakinator123/gear-tracker-backend",
         "sudo service haproxy restart",
     ]

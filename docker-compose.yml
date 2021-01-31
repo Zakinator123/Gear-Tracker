@@ -1,0 +1,45 @@
+version: '3'
+services:
+
+  flyway:
+    build:
+      context: ./database-migrations
+    command: -connectRetries=60 migrate
+    env_file:
+      - database-migrations/flyway_env_vars
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    env_file:
+      - ./mysql/mysql_env_vars
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --local-infile=1
+    volumes:
+      - ./mysql/mysql-volume-mount/:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+  flask:
+    build:
+      context: ./back-end
+    ports:
+      - 5000:80
+    volumes:
+      # Although the flask app is baked into the image in the Dockerfile, this volume is mounted for hot reloading
+      # during development.
+      - ./back-end/app:/app
+    env_file: ./back-end/env_vars
+    environment:
+      - FLASK_APP=main.py
+      - FLASK_DEBUG=1
+    command: flask run --host=0.0.0.0 --port=80
+
+  react:
+    build:
+      context: ./front-end
+    ports:
+      - 3000:3000
+      - 35729:35729
+    volumes:
+      - ./front-end:/app

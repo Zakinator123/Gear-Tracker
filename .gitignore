@@ -1,6 +1,11 @@
-db/*
+mysql/*
 .idea
 odc.pem
 back-end/env_vars
+**/flyway_env_vars
 .DS_Store
 back-end/app/__pycache__/*
+node_modules/
+front-end/.eslintcache
+access-key-and-id-for-gear-tracker-api-instance.csv
+yarn.lock
